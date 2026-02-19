@@ -1,0 +1,27 @@
+{
+  "name": "the-savior",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Savior - Buddhist mind-body stabilization platform",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",
+    "deploy": "wrangler pages deploy public --project-name the-savior",
+    "check": "node --check functions/api/chat.js && node --check functions/api/config.js && node --check public/app.js",
+    "mobile:add:ios": "npx cap add ios",
+    "mobile:add:android": "npx cap add android",
+    "mobile:sync": "npx cap sync",
+    "mobile:sync:ios": "DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer npx cap sync ios",
+    "mobile:copy": "npx cap copy",
+    "mobile:open:ios": "npx cap open ios",
+    "mobile:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/ios": "^7.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.2.0",
+    "wrangler": "^4.9.1"
+  }
+}
