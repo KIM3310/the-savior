@@ -333,6 +333,12 @@ function setAdsConsent(value) {
   localStorage.setItem("theSaviorAdsConsent", value);
 }
 
+function dismissConsentBanner(banner) {
+  if (!banner) return;
+  banner.hidden = true;
+  banner.style.display = "none";
+}
+
 function setupConsentBanner(config) {
   const banner = $("consentBanner");
   if (!banner) return;
@@ -340,23 +346,26 @@ function setupConsentBanner(config) {
   const accept = $("consentAccept");
   const reject = $("consentReject");
 
+  banner.style.display = "";
   banner.hidden = false;
 
   if (banner.dataset.bound === "1") return;
   banner.dataset.bound = "1";
 
   if (accept) {
-    accept.addEventListener("click", () => {
+    accept.addEventListener("click", (event) => {
+      event.preventDefault();
       setAdsConsent("accepted");
-      banner.hidden = true;
+      dismissConsentBanner(banner);
       enableAdsense(config);
     });
   }
 
   if (reject) {
-    reject.addEventListener("click", () => {
+    reject.addEventListener("click", (event) => {
+      event.preventDefault();
       setAdsConsent("rejected");
-      banner.hidden = true;
+      dismissConsentBanner(banner);
     });
   }
 }
