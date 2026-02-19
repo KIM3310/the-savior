@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pricing | The Savior</title>
-    <meta name="description" content="The Savior 요금제 안내" />
+    <title>Service Model | The Savior</title>
+    <meta name="description" content="The Savior 운영 모델 안내" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,33 +25,30 @@
     </header>
 
     <main class="info-page">
-      <h1>요금제</h1>
+      <h1>서비스 운영 모델</h1>
       <p>
-        The Savior는 무료 플랜과 Premium 플랜을 함께 운영하는 수익형 모델입니다.
-        결제 링크는 Cloudflare Pages 환경변수 `STRIPE_PAYMENT_LINK`로 연결됩니다.
+        The Savior는 별도 유료 구독 없이 운영됩니다. AI 기능은 사용자 OpenAI API 키(BYOK)를 우선 사용하고,
+        서비스 수익은 Google AdSense 광고를 기반으로 합니다.
       </p>
 
-      <h2>Free</h2>
+      <h2>1. AI 사용 방식</h2>
       <ul>
-        <li>감정 체크 및 기본 루틴</li>
-        <li>기본 AI 명상 코칭</li>
-        <li>기본 저널 분석</li>
+        <li>사용자가 메인 화면에서 자신의 OpenAI API 키를 입력해 사용합니다.</li>
+        <li>개인 키가 없을 때만 서버 기본 키를 폴백으로 사용합니다.</li>
+        <li>키는 사용자 기기 로컬 저장소에 저장되며, 요청 시에만 전송됩니다.</li>
       </ul>
 
-      <h2>Premium (월 구독)</h2>
+      <h2>2. 수익 방식</h2>
       <ul>
-        <li>개인화 주간 리포트 PDF</li>
-        <li>심화 명상 시퀀스</li>
-        <li>무제한 코칭 및 광고 제거</li>
+        <li>Google AdSense 광고 슬롯 기반 수익화</li>
+        <li>쿠키 동의 시 광고 및 성능 측정 기능 활성화</li>
+        <li>광고 관련 정책 문서(약관/개인정보처리방침) 상시 제공</li>
       </ul>
 
-      <p style="margin-top: 1rem">
-        <a id="checkoutBtn" class="btn btn-primary" href="/">결제 링크 설정 필요</a>
-      </p>
-
-      <h2>환불 정책</h2>
+      <h2>3. 서비스 원칙</h2>
       <p>
-        디지털 구독 특성상 이용 기록이 있는 경우 환불이 제한될 수 있습니다. 결제 전 약관을 확인해 주세요.
+        본 서비스는 웰니스 목적의 도구이며 의료 행위를 대체하지 않습니다.
+        위기 신호가 감지되면 긴급기관 및 전문기관 안내를 우선 제공합니다.
       </p>
     </main>
 
