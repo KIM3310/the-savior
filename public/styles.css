@@ -538,53 +538,40 @@ select:focus {
   flex-wrap: wrap;
 }
 
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.62rem;
+.api-key-form {
+  gap: 0.58rem;
 }
 
-.price-card {
-  border-radius: 14px;
-  border: 0;
-  background: rgba(8, 8, 10, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(255, 211, 143, 0.08);
-  padding: 0.9rem;
+.api-key-actions {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
 }
 
-.price-card h3 {
-  color: #f0d7b1;
-  font-size: 1.1rem;
-}
-
-.price {
-  margin: 0.3rem 0 0.45rem;
-  color: #f2b569;
-  font-family: "Instrument Serif", serif;
-  font-size: 1.3rem;
-}
-
-.price-card ul {
-  margin: 0 0 0.85rem;
-  padding-left: 1.05rem;
+.api-key-status {
+  margin-top: 0.6rem;
   color: #c8b18a;
+  line-height: 1.65;
 }
 
-.price-card.featured {
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 211, 143, 0.18),
-    0 6px 20px rgba(164, 99, 44, 0.09);
+.api-key-status.is-warning {
+  color: #ddad92;
 }
 
-.badge {
-  display: inline-block;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 211, 149, 0.45);
-  background: rgba(224, 145, 71, 0.2);
-  color: #f6c88d;
-  font-size: 0.76rem;
-  padding: 0.14rem 0.48rem;
-  margin-bottom: 0.3rem;
+.api-key-status.is-good {
+  color: #9bc6bd;
+}
+
+.api-key-status.is-checking {
+  color: #c5cfd4;
+}
+
+.model-copy {
+  display: grid;
+  gap: 0.45rem;
+  color: #dac6a4;
+  line-height: 1.75;
+  padding: 0.1rem 0;
 }
 
 .ad-unit {

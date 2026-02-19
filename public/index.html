@@ -11,7 +11,7 @@
     <meta property="og:title" content="The Savior" />
     <meta
       property="og:description"
-      content="실사용 가능한 AI 마음 안정화 서비스. 감정 체크, 명상 코치, 저널 분석, 구독 모델 제공."
+      content="실사용 가능한 AI 마음 안정화 서비스. 감정 체크, 명상 코치, 저널 분석, 사용자 API 키 연동."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://the-savior-9z8.pages.dev" />
@@ -43,7 +43,8 @@
         <a href="#checkin">Check-in</a>
         <a href="#coach">Coach</a>
         <a href="#journal">Journal</a>
-        <a href="#pricing">Pricing</a>
+        <a href="#api-key">API Key</a>
+        <a href="#monetization">Revenue</a>
       </nav>
     </header>
 
@@ -63,7 +64,7 @@
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="#checkin">지금 시작</a>
-            <a class="btn btn-ghost" href="/pricing.html">Premium</a>
+            <a class="btn btn-ghost" href="#api-key">내 API 키 연결</a>
           </div>
 
           <div class="hero-metrics">
@@ -214,6 +215,40 @@
         </article>
       </section>
 
+      <section id="api-key" class="panel reveal">
+        <div class="panel-head veil" tabindex="0">
+          <p class="panel-kicker">Bring Your Own Key</p>
+          <h2>내 OpenAI API 키 연결</h2>
+          <p class="hidden-copy">기본 동작은 사용자 키(BYOK)이며, 키가 없을 때만 서버 키를 대체 사용합니다.</p>
+        </div>
+
+        <form id="userApiKeyForm" class="stack-form api-key-form" autocomplete="off">
+          <label for="userApiKeyInput">
+            OpenAI API Key
+            <input
+              id="userApiKeyInput"
+              name="userApiKey"
+              type="password"
+              placeholder="sk-..."
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+            />
+          </label>
+
+          <div class="api-key-actions">
+            <button id="saveUserApiKeyBtn" class="btn btn-primary" type="submit">키 저장</button>
+            <button id="validateUserApiKeyBtn" class="btn btn-ghost" type="button">유효성 확인</button>
+            <button id="toggleUserApiKeyBtn" class="btn btn-ghost" type="button">보기</button>
+            <button id="clearUserApiKeyBtn" class="btn btn-ghost" type="button">키 삭제</button>
+          </div>
+        </form>
+
+        <p id="userApiKeyStatus" class="api-key-status" aria-live="polite">
+          아직 저장된 키가 없습니다. 저장하면 이 브라우저에서 즉시 사용됩니다.
+        </p>
+      </section>
+
       <section id="breath" class="panel reveal">
         <div class="panel-head veil" tabindex="0">
           <p class="panel-kicker">Breath</p>
@@ -232,36 +267,20 @@
         </div>
       </section>
 
-      <section id="pricing" class="panel reveal">
+      <section id="monetization" class="panel reveal">
         <div class="panel-head veil" tabindex="0">
           <p class="panel-kicker">Revenue Model</p>
-          <h2>수익형 요금제</h2>
-          <p class="hidden-copy">Free와 Premium 구독을 함께 운영하는 실제 비즈니스 구조입니다.</p>
+          <h2>광고 기반 운영</h2>
+          <p class="hidden-copy">요금제 없이 운영되며, 수익은 Google AdSense를 기반으로 창출합니다.</p>
         </div>
 
-        <div class="pricing-grid">
-          <article class="price-card veil" tabindex="0">
-            <h3>Free</h3>
-            <p class="price">₩0</p>
-            <ul class="hidden-copy">
-              <li>일일 감정 체크 3회</li>
-              <li>기본 명상 코치</li>
-              <li>기본 저널 분석</li>
-            </ul>
-          </article>
-
-          <article class="price-card featured veil" tabindex="0">
-            <p class="badge">추천</p>
-            <h3>Premium</h3>
-            <p class="price">₩12,900 / 월</p>
-            <ul class="hidden-copy">
-              <li>무제한 AI 코칭</li>
-              <li>주간 감정 리포트 PDF</li>
-              <li>심화 명상 프로그램</li>
-              <li>광고 제거</li>
-            </ul>
-            <a id="checkoutBtn" class="btn btn-primary" href="/pricing.html">구독 시작</a>
-          </article>
+        <div class="model-copy veil" tabindex="0">
+          <p>
+            AI 기능은 사용자 API 키를 우선 사용하며, 별도 구독 결제 없이 누구나 바로 사용할 수 있습니다.
+          </p>
+          <p class="hidden-copy">
+            서비스 운영 수익은 광고 슬롯에서 발생하며, 쿠키 동의 후에만 AdSense 광고가 활성화됩니다.
+          </p>
         </div>
       </section>
 
