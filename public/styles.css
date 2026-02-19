@@ -170,6 +170,53 @@ p {
   position: relative;
 }
 
+.runtime-strip {
+  margin-top: 0.78rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.64rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0.74rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 213, 145, 0.16);
+  background: rgba(9, 9, 11, 0.48);
+}
+
+.runtime-pill {
+  margin: 0;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  border: 1px solid rgba(255, 212, 146, 0.2);
+  color: #f0dbb9;
+  background: rgba(255, 196, 111, 0.09);
+}
+
+.runtime-pill.is-good {
+  color: #d7f1ea;
+  border-color: rgba(126, 188, 171, 0.45);
+  background: rgba(96, 145, 136, 0.2);
+}
+
+.runtime-pill.is-warning {
+  color: #f4dbbe;
+  border-color: rgba(236, 181, 120, 0.4);
+  background: rgba(157, 107, 58, 0.2);
+}
+
+.runtime-pill.is-error {
+  color: #f7c8bf;
+  border-color: rgba(229, 118, 99, 0.45);
+  background: rgba(126, 54, 44, 0.24);
+}
+
+.runtime-meta {
+  margin: 0;
+  color: #baa889;
+  font-size: 0.82rem;
+}
+
 .hero::before,
 .hero::after {
   content: "";
@@ -384,10 +431,72 @@ p {
   color: #c7b293;
 }
 
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.52rem;
+}
+
+.insight-card {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 211, 143, 0.12);
+  background: rgba(8, 8, 10, 0.32);
+  padding: 0.7rem;
+}
+
+.insight-label {
+  color: #b59f7f;
+  font-size: 0.79rem;
+}
+
+.insight-value {
+  margin-top: 0.22rem;
+  color: #f3dfbc;
+  font-size: 1.08rem;
+  font-weight: 600;
+}
+
+.history-shell {
+  margin-top: 0.78rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 211, 143, 0.1);
+  background: rgba(7, 7, 9, 0.3);
+  padding: 0.72rem;
+}
+
+.history-shell h3 {
+  font-family: "Outfit", "Apple SD Gothic Neo", sans-serif;
+  font-size: 0.9rem;
+  color: #c8b18a;
+}
+
+.history-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.26rem;
+  color: #d7c5a7;
+  font-size: 0.86rem;
+}
+
+.data-actions {
+  margin-top: 0.62rem;
+  display: flex;
+  gap: 0.46rem;
+  flex-wrap: wrap;
+}
+
 .stack-form,
 .chat-form {
   display: grid;
   gap: 0.65rem;
+}
+
+.field-hint {
+  margin: 0.08rem 0 0;
+  font-size: 0.78rem;
+  color: #9f8d70;
+  text-align: right;
 }
 
 label {
@@ -471,6 +580,12 @@ select:focus {
   white-space: pre-wrap;
 }
 
+.result-actions {
+  margin-top: 0.52rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .streak {
   margin-top: 0.58rem;
   font-size: 0.9rem;
@@ -487,6 +602,45 @@ select:focus {
   padding: 0.68rem;
   display: grid;
   gap: 0.55rem;
+}
+
+.chat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  margin-bottom: 0.55rem;
+}
+
+.chat-meta {
+  color: #c5b08d;
+  font-size: 0.84rem;
+}
+
+.quick-prompts {
+  display: flex;
+  gap: 0.46rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.56rem;
+}
+
+.quick-prompt {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 210, 138, 0.22);
+  background: rgba(11, 11, 13, 0.52);
+  color: #dcc7a4;
+  padding: 0.34rem 0.62rem;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.quick-prompt:hover,
+.quick-prompt:focus-visible {
+  border-color: rgba(255, 207, 129, 0.5);
+  color: #fff0d4;
+  transform: translateY(-1px);
 }
 
 .bubble {
@@ -508,6 +662,17 @@ select:focus {
   border: 1px solid rgba(147, 187, 176, 0.32);
   background: rgba(84, 117, 111, 0.24);
   color: #dff1ed;
+}
+
+.chat-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.chat-form-actions .field-hint {
+  text-align: left;
 }
 
 .breath-card {
@@ -546,6 +711,20 @@ select:focus {
   display: flex;
   gap: 0.45rem;
   flex-wrap: wrap;
+}
+
+.remember-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: #bca786;
+  font-size: 0.9rem;
+}
+
+.remember-key input[type="checkbox"] {
+  accent-color: #f1be7a;
+  width: 1rem;
+  height: 1rem;
 }
 
 .api-key-status {
@@ -807,6 +986,10 @@ select:focus {
   .hero-metrics {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .insight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 760px) {
@@ -832,6 +1015,16 @@ select:focus {
 
   .bubble {
     max-width: 100%;
+  }
+
+  .chat-toolbar,
+  .chat-form-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .insight-grid {
+    grid-template-columns: 1fr;
   }
 }
 

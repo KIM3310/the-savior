@@ -13,10 +13,16 @@ npx wrangler pages secret put OPENAI_API_KEY --project-name the-savior
 ```
 
 대시보드 또는 CLI에서 아래 환경변수 추가:
-- `STRIPE_PAYMENT_LINK`
 - `ADSENSE_CLIENT`
 - `ADSENSE_SLOT_TOP`
 - `ADSENSE_SLOT_BOTTOM`
+- `ALLOWED_ORIGINS` (예: `https://the-savior-9z8.pages.dev,capacitor://localhost`)
+- `PUBLIC_API_BASE_URL` (예: `https://the-savior-9z8.pages.dev`)
+- `CHAT_RATE_LIMIT_MAX`, `CHAT_RATE_LIMIT_WINDOW_MS`
+- `KEYCHECK_RATE_LIMIT_MAX`, `KEYCHECK_RATE_LIMIT_WINDOW_MS`
+- `CONFIG_RATE_LIMIT_MAX`, `CONFIG_RATE_LIMIT_WINDOW_MS`
+- `HEALTH_RATE_LIMIT_MAX`, `HEALTH_RATE_LIMIT_WINDOW_MS`
+- `ENABLE_CHAT_FALLBACK` (`false`면 OpenAI 실패 시 폴백 비활성화)
 
 ## 3) 배포
 ```bash
@@ -29,5 +35,6 @@ npm run deploy
 
 ## 5) 확인
 - `/api/config` 응답 확인
+- `/api/health` 응답 확인
 - 홈 체크인/코치/저널 기능 동작 확인
 - 정책 페이지 접근 확인

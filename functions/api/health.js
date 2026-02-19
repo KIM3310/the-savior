@@ -5,12 +5,7 @@ const CORS_OPTIONS = {
   allowHeaders: "Content-Type"
 };
 
-function sanitizeBaseUrl(value) {
-  if (typeof value !== "string") return "";
-  return value.trim().replace(/\/+$/, "");
-}
-
-function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "public, max-age=300" } = {}) {
+function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
     status,
     headers: {
@@ -50,22 +45,24 @@ export async function onRequestGet(context) {
   const requestId = getRequestId(context.request);
   const cors = resolveCors(context.request, context.env, CORS_OPTIONS);
   if (!cors.allowed) {
-    return jsonResponse({ error: "허용되지 않은 요청 출처입니다." }, 403, {
+    return jsonResponse({ status: "forbidden" }, 403, {
       corsHeaders: cors.headers,
       extraHeaders: { "X-Request-Id": requestId }
     });
   }
 
   const rate = checkRateLimit(context.request, context.env, {
-    scope: "config",
-    limitDefault: 120,
-    limitEnvName: "CONFIG_RATE_LIMIT_MAX",
+    scope: "health",
+    limitDefault: 240,
+    limitEnvName: "HEALTH_RATE_LIMIT_MAX",
     windowMsDefault: 60_000,
-    windowMsEnvName: "CONFIG_RATE_LIMIT_WINDOW_MS"
+    windowMsEnvName: "HEALTH_RATE_LIMIT_WINDOW_MS"
   });
   if (!rate.allowed) {
     return jsonResponse(
-      { error: "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요." },
+      {
+        status: "rate_limited"
+      },
       429,
       {
         corsHeaders: cors.headers,
@@ -77,23 +74,11 @@ export async function onRequestGet(context) {
     );
   }
 
-  const hasServerApiKey = Boolean(context.env.OPENAI_API_KEY);
-  const adsenseClient = context.env.ADSENSE_CLIENT || "";
-  const adsenseSlotTop = context.env.ADSENSE_SLOT_TOP || "";
-  const adsenseSlotBottom = context.env.ADSENSE_SLOT_BOTTOM || "";
-  const configuredBaseUrl = sanitizeBaseUrl(context.env.PUBLIC_API_BASE_URL || "");
-  const requestOrigin = sanitizeBaseUrl(new URL(context.request.url).origin);
-
   return jsonResponse(
     {
-      hasServerApiKey,
-      apiBaseUrl: configuredBaseUrl || requestOrigin,
-      adsenseClient,
-      adsenseSlots: {
-        top: adsenseSlotTop,
-        bottom: adsenseSlotBottom
-      },
-      generatedAt: new Date().toISOString(),
+      status: "ok",
+      now: new Date().toISOString(),
+      hasServerApiKey: Boolean(context.env.OPENAI_API_KEY),
       build: {
         branch: context.env.CF_PAGES_BRANCH || "",
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)

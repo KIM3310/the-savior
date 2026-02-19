@@ -11,14 +11,14 @@
 ## 3. Value Proposition
 - 1분 체크인 후 바로 실행 가능한 루틴 제공
 - 불교 기반의 자기관찰/자비 문장을 실천 가능한 형태로 제공
-- 구독형 리포트/심화 코스로 수익화
+- BYOK 우선 구조 + 광고 기반으로 즉시 사용 가능한 운영 모델
 
 ## 4. Core Features
 1. 감정 체크 (mood + stress + note)
 2. AI 명상 코치 대화형 상담
 3. 저널 인사이트 분석
 4. 3분 호흡 타이머
-5. Free/Premium 가격 구조
+5. BYOK + 서버 키 폴백 구조
 6. AdSense 광고 슬롯/동의 배너
 
 ## 5. Non-Functional Requirements
@@ -31,12 +31,12 @@
 - 의료 진단/치료 대체 문구 금지
 
 ## 7. Monetization
-- Premium 월 구독 (Stripe 링크)
 - AdSense 광고
+- BYOK 우선 구조로 서버 추론 비용 최소화
 - B2B 복지 프로그램/명상 챌린지 확장 가능
 
 ## 8. Judging Criteria Mapping
-- 시장성/사업성: 구독 + 광고 + B2B 확장
+- 시장성/사업성: 광고 + BYOK 비용 구조 + B2B 확장
 - 차별성/독창성: 불교 기반 실천 루틴 + AI 코칭
 - 개발 완성도: 실제 동작하는 API 연동 서비스
 - AI 활용도: OpenAI 기반 개인화 응답 생성

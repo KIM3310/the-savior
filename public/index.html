@@ -41,6 +41,7 @@
       </a>
       <nav class="site-nav" aria-label="메인 네비게이션">
         <a href="#checkin">Check-in</a>
+        <a href="#insights">Insights</a>
         <a href="#coach">Coach</a>
         <a href="#journal">Journal</a>
         <a href="#api-key">API Key</a>
@@ -49,6 +50,11 @@
     </header>
 
     <main>
+      <section class="runtime-strip reveal" aria-live="polite">
+        <p id="runtimeStatus" class="runtime-pill">서비스 연결 상태 확인 중...</p>
+        <p id="apiBaseStatus" class="runtime-meta">API 기준 주소: 확인 중</p>
+      </section>
+
       <section class="hero veil reveal" tabindex="0">
         <div class="hero-left">
           <p class="micro">Buddhist Minimal Wellness Platform</p>
@@ -156,6 +162,7 @@
               maxlength="350"
               placeholder="예: 발표 전이라 긴장으로 호흡이 짧아졌어요"
             ></textarea>
+            <p class="field-hint"><span id="checkinNoteCount">0</span>/350자</p>
           </label>
 
           <button class="btn btn-primary" type="submit">안정 루틴 받기</button>
@@ -164,8 +171,58 @@
         <article class="result-card" id="checkinOutput" aria-live="polite">
           입력 후 결과가 여기에 표시됩니다.
         </article>
+        <div class="result-actions">
+          <button id="copyCheckinBtn" class="btn btn-ghost" type="button">결과 복사</button>
+        </div>
 
         <p class="streak">연속 실천일: <strong id="streakCount">0</strong>일</p>
+      </section>
+
+      <section id="insights" class="panel reveal">
+        <div class="panel-head veil" tabindex="0">
+          <p class="panel-kicker">Depth Analytics</p>
+          <h2>개인 회복 인사이트</h2>
+          <p class="hidden-copy">최근 체크인/대화/저널 활동에서 추세를 자동 계산해 실천 깊이를 보여줍니다.</p>
+        </div>
+
+        <div class="insight-grid">
+          <article class="insight-card">
+            <p class="insight-label">14일 체크인</p>
+            <p id="insightCheckinCount" class="insight-value">0회</p>
+          </article>
+          <article class="insight-card">
+            <p class="insight-label">최근 7일 평균 스트레스</p>
+            <p id="insightAvgStress" class="insight-value">-</p>
+          </article>
+          <article class="insight-card">
+            <p class="insight-label">가장 잦은 감정</p>
+            <p id="insightTopMood" class="insight-value">-</p>
+          </article>
+          <article class="insight-card">
+            <p class="insight-label">스트레스 추세</p>
+            <p id="insightTrend" class="insight-value">-</p>
+          </article>
+          <article class="insight-card">
+            <p class="insight-label">코치 대화 누적</p>
+            <p id="insightChatCount" class="insight-value">0회</p>
+          </article>
+          <article class="insight-card">
+            <p class="insight-label">저널 생성 누적</p>
+            <p id="insightJournalCount" class="insight-value">0회</p>
+          </article>
+        </div>
+
+        <div class="history-shell">
+          <h3>최근 체크인 기록</h3>
+          <ul id="checkinHistoryList" class="history-list">
+            <li>아직 기록이 없습니다.</li>
+          </ul>
+        </div>
+
+        <div class="data-actions">
+          <button id="exportDataBtn" class="btn btn-ghost" type="button">내 데이터 내보내기</button>
+          <button id="resetDataBtn" class="btn btn-ghost" type="button">내 데이터 초기화</button>
+        </div>
       </section>
 
       <section id="coach" class="panel reveal">
@@ -173,6 +230,17 @@
           <p class="panel-kicker">Dialogue</p>
           <h2>AI 명상 코치</h2>
           <p class="hidden-copy">지금의 감정 맥락을 반영해 짧고 실전적인 안내를 제공합니다.</p>
+        </div>
+
+        <div class="quick-prompts" aria-label="빠른 대화 시작">
+          <button class="quick-prompt" type="button" data-message="지금 불안해서 집중이 어렵습니다. 3분 루틴을 알려줘요.">불안 진정</button>
+          <button class="quick-prompt" type="button" data-message="오늘 해야 할 일이 많은데 머리가 하얘져요. 우선순위를 정리해줘요.">우선순위 정리</button>
+          <button class="quick-prompt" type="button" data-message="자기 전에 마음이 복잡합니다. 수면 전 루틴을 알려줘요.">수면 준비</button>
+        </div>
+
+        <div class="chat-toolbar">
+          <p id="chatMeta" class="chat-meta">최근 대화 0개</p>
+          <button id="clearChatBtn" class="btn btn-ghost" type="button">대화 초기화</button>
         </div>
 
         <div class="chat-shell" id="chatBox" aria-live="polite"></div>
@@ -185,7 +253,10 @@
             placeholder="예: 마음이 산만해서 잠들기가 어려워요"
             required
           ></textarea>
-          <button class="btn btn-primary" type="submit">코치에게 묻기</button>
+          <div class="chat-form-actions">
+            <p class="field-hint"><span id="chatInputCount">0</span>/500자</p>
+            <button class="btn btn-primary" type="submit">코치에게 묻기</button>
+          </div>
         </form>
       </section>
 
@@ -206,6 +277,7 @@
               placeholder="오늘 하루를 자유롭게 기록하세요"
               required
             ></textarea>
+            <p class="field-hint"><span id="journalInputCount">0</span>/2500자</p>
           </label>
           <button class="btn btn-primary" type="submit">인사이트 생성</button>
         </form>
@@ -213,6 +285,9 @@
         <article class="result-card" id="journalOutput" aria-live="polite">
           저널을 입력하면 결과가 여기에 표시됩니다.
         </article>
+        <div class="result-actions">
+          <button id="copyJournalBtn" class="btn btn-ghost" type="button">결과 복사</button>
+        </div>
       </section>
 
       <section id="api-key" class="panel reveal">
@@ -242,10 +317,15 @@
             <button id="toggleUserApiKeyBtn" class="btn btn-ghost" type="button">보기</button>
             <button id="clearUserApiKeyBtn" class="btn btn-ghost" type="button">키 삭제</button>
           </div>
+
+          <label class="remember-key" for="rememberUserApiKey">
+            <input id="rememberUserApiKey" type="checkbox" />
+            이 브라우저에 키 유지 (공용 기기에서는 비권장)
+          </label>
         </form>
 
         <p id="userApiKeyStatus" class="api-key-status" aria-live="polite">
-          아직 저장된 키가 없습니다. 저장하면 이 브라우저에서 즉시 사용됩니다.
+          아직 저장된 키가 없습니다. 저장 시 기본값은 현재 세션에만 유지됩니다.
         </p>
       </section>
 

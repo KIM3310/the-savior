@@ -1,5 +1,6 @@
 window.THE_SAVIOR_RUNTIME = {
-  // For native app packaging, set this to your deployed domain.
-  // Example: "https://the-savior.pages.dev"
+  // Optional: override API base URL.
+  // Web defaults to current origin, native defaults to production origin.
+  // Example: "https://the-savior-9z8.pages.dev"
   apiBaseUrl: ""
 };
