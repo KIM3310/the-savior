@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://the-savior.pages.dev/sitemap.xml
+Sitemap: https://the-savior-9z8.pages.dev/sitemap.xml

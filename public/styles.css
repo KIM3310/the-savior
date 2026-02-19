@@ -298,6 +298,50 @@ p {
   color: #cfbe9f;
 }
 
+.real-gallery {
+  margin-top: 0.95rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.real-card {
+  position: relative;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  min-height: 280px;
+  background: #0b1018;
+  box-shadow: 0 14px 34px rgba(7, 10, 16, 0.42);
+}
+
+.real-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+}
+
+.real-card-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.85rem 0.82rem;
+  background: linear-gradient(180deg, transparent, rgba(8, 12, 18, 0.88));
+}
+
+.real-card-copy h2 {
+  font-size: 1.25rem;
+  color: #ffe0b1;
+}
+
+.real-card-copy p {
+  margin-top: 0.25rem;
+  color: #d8c7a8;
+  font-size: 0.86rem;
+}
+
 .panel {
   margin-top: 0.95rem;
   border-radius: 22px;
@@ -721,6 +765,10 @@ select:focus {
   }
 
   .ritual-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .real-gallery {
     grid-template-columns: 1fr;
   }
 }
