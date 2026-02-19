@@ -1,0 +1,14 @@
+node_modules
+.wrangler
+.DS_Store
+.env
+android/local.properties
+android/.gradle
+android/app/build
+android/build
+android/app/src/main/assets/public
+ios/Pods
+ios/App/Pods
+ios/App/App/public
+ios/App/build
+DerivedData

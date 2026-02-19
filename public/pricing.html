@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing | The Savior</title>
+    <meta name="description" content="The Savior 요금제 안내" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="logo" href="/">The Savior</a>
+      <nav class="site-nav" aria-label="서브 네비게이션">
+        <a href="/">홈</a>
+        <a href="/about.html">소개</a>
+        <a href="/resources.html">리소스</a>
+        <a href="/contact.html">문의</a>
+      </nav>
+    </header>
+
+    <main class="info-page">
+      <h1>요금제</h1>
+      <p>
+        The Savior는 무료 플랜과 Premium 플랜을 함께 운영하는 수익형 모델입니다.
+        결제 링크는 Cloudflare Pages 환경변수 `STRIPE_PAYMENT_LINK`로 연결됩니다.
+      </p>
+
+      <h2>Free</h2>
+      <ul>
+        <li>감정 체크 및 기본 루틴</li>
+        <li>기본 AI 명상 코칭</li>
+        <li>기본 저널 분석</li>
+      </ul>
+
+      <h2>Premium (월 구독)</h2>
+      <ul>
+        <li>개인화 주간 리포트 PDF</li>
+        <li>심화 명상 시퀀스</li>
+        <li>무제한 코칭 및 광고 제거</li>
+      </ul>
+
+      <p style="margin-top: 1rem">
+        <a id="checkoutBtn" class="btn btn-primary" href="/">결제 링크 설정 필요</a>
+      </p>
+
+      <h2>환불 정책</h2>
+      <p>
+        디지털 구독 특성상 이용 기록이 있는 경우 환불이 제한될 수 있습니다. 결제 전 약관을 확인해 주세요.
+      </p>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="currentYear"></span> The Savior</p>
+    </footer>
+    <script src="/runtime-config.js"></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

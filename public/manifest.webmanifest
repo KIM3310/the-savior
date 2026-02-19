@@ -1,0 +1,15 @@
+{
+  "name": "The Savior",
+  "short_name": "Savior",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8f2e5",
+  "theme_color": "#f2eadb",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
