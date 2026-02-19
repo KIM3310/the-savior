@@ -3,7 +3,7 @@
 ## 0) 전제
 - 웹 서비스가 Cloudflare Pages에 먼저 배포되어 있어야 함.
 - `public/runtime-config.js`의 `apiBaseUrl`에 배포 도메인을 설정.
-  - 예: `https://the-savior.pages.dev`
+  - 예: `https://the-savior-9z8.pages.dev`
 - macOS에서는 아래 도구가 필요:
   - Xcode 설치
   - CocoaPods 설치 (`brew install cocoapods`)
