@@ -6,7 +6,7 @@
 - 1분 감정 체크 -> 3분 안정 루틴 생성
 - AI 명상 코치 대화
 - 저널 인사이트 생성
-- 무료/프리미엄 구독 모델
+- 사용자 OpenAI API 키(BYOK) 우선 사용 + 서버 키 폴백
 - AdSense 광고 슬롯 + 동의 배너
 - 정책 페이지(Privacy/Terms/Contact) 포함
 - Capacitor 기반 iOS/Android 앱 패키징 가능
@@ -20,8 +20,7 @@ npm run dev
 브라우저에서 `http://localhost:8788` 접속.
 
 ## 필수 환경변수 (Cloudflare Pages)
-- `OPENAI_API_KEY`: OpenAI 서버 키
-- `STRIPE_PAYMENT_LINK`: 프리미엄 결제 링크(선택)
+- `OPENAI_API_KEY`: OpenAI 서버 키(선택, 사용자 키 없을 때 폴백)
 - `ADSENSE_CLIENT`: 예) `ca-pub-xxxxxxxxxxxxxxxx` (선택)
 - `ADSENSE_SLOT_TOP`: 상단 슬롯 ID (선택)
 - `ADSENSE_SLOT_BOTTOM`: 하단 슬롯 ID (선택)

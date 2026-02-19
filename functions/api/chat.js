@@ -1,12 +1,18 @@
 const MODEL_NAME = "gpt-4.1-mini";
 const MAX_INPUT_CHARS = 2000;
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, X-User-OpenAI-Key"
+};
 
 function jsonResponse(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      ...CORS_HEADERS
     }
   });
 }
@@ -122,17 +128,34 @@ function extractTextFromResponse(apiPayload) {
   return chunks.join("\n").trim();
 }
 
-async function runOpenAI(env, systemPrompt, userPrompt) {
-  const key = env.OPENAI_API_KEY;
-  if (!key) {
-    throw new Error("OPENAI_API_KEY is not configured on the server.");
+function normalizeApiKey(value) {
+  if (typeof value !== "string") return "";
+  return value.trim();
+}
+
+function isLikelyOpenAIKey(value) {
+  const key = normalizeApiKey(value);
+  return key.startsWith("sk-") && !/\s/.test(key) && key.length >= 20 && key.length <= 260;
+}
+
+function resolveApiKey(request, env) {
+  const userKeyRaw = request.headers.get("x-user-openai-key") || "";
+  const serverKeyRaw = typeof env.OPENAI_API_KEY === "string" ? env.OPENAI_API_KEY : "";
+  const userKey = isLikelyOpenAIKey(userKeyRaw) ? normalizeApiKey(userKeyRaw) : "";
+  const serverKey = isLikelyOpenAIKey(serverKeyRaw) ? normalizeApiKey(serverKeyRaw) : "";
+  return userKey || serverKey;
+}
+
+async function runOpenAI(apiKey, systemPrompt, userPrompt) {
+  if (!apiKey) {
+    throw new Error("OpenAI API key is not available.");
   }
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${key}`
+      Authorization: `Bearer ${apiKey}`
     },
     body: JSON.stringify({
       model: MODEL_NAME,
@@ -169,7 +192,8 @@ export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
     headers: {
-      "Allow": "POST, OPTIONS"
+      Allow: "POST, OPTIONS",
+      ...CORS_HEADERS
     }
   });
 }
@@ -194,9 +218,20 @@ export async function onRequestPost(context) {
       return jsonResponse(crisisResponse(), 200);
     }
 
+    const apiKey = resolveApiKey(context.request, context.env);
+    if (!apiKey) {
+      return jsonResponse(
+        {
+          error: "OpenAI API 키가 설정되지 않았습니다.",
+          detail: "내 API 키를 입력하거나 서버 기본 키를 설정해 주세요."
+        },
+        400
+      );
+    }
+
     const systemPrompt = buildSystemPrompt(mode);
     const userPrompt = buildUserPrompt(mode, payload || {});
-    const reply = await runOpenAI(context.env, systemPrompt, userPrompt);
+    const reply = await runOpenAI(apiKey, systemPrompt, userPrompt);
 
     return jsonResponse({ reply, escalated: false, mode });
   } catch (error) {

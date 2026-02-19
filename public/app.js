@@ -6,8 +6,17 @@ const state = {
   breathTick: 0,
   adsEnabled: false,
   apiBase: "",
-  adConfig: null
+  adConfig: null,
+  userApiKey: "",
+  hasServerApiKey: false,
+  keyValidationTimer: null,
+  keyValidationAbort: null,
+  keyValidationSeq: 0,
+  lastValidatedCandidate: "",
+  lastValidationResult: null
 };
+
+const USER_API_KEY_STORAGE_KEY = "theSaviorUserOpenAIKey";
 
 function $(id) {
   return document.getElementById(id);
@@ -62,12 +71,295 @@ function renderResult(element, text) {
   element.textContent = text;
 }
 
+function normalizeApiKey(value) {
+  if (typeof value !== "string") return "";
+  return value.trim();
+}
+
+function isLikelyOpenAIKey(value) {
+  const key = normalizeApiKey(value);
+  return key.startsWith("sk-") && !/\s/.test(key) && key.length >= 20 && key.length <= 260;
+}
+
+function maskApiKey(value) {
+  const key = normalizeApiKey(value);
+  if (!key) return "";
+  if (key.length <= 12) return `${key.slice(0, 4)}...`;
+  return `${key.slice(0, 7)}...${key.slice(-4)}`;
+}
+
+function getStoredUserApiKey() {
+  return normalizeApiKey(localStorage.getItem(USER_API_KEY_STORAGE_KEY) || "");
+}
+
+function saveUserApiKey(value) {
+  const key = normalizeApiKey(value);
+  if (!key) return;
+  localStorage.setItem(USER_API_KEY_STORAGE_KEY, key);
+  state.userApiKey = key;
+}
+
+function clearUserApiKey() {
+  localStorage.removeItem(USER_API_KEY_STORAGE_KEY);
+  state.userApiKey = "";
+}
+
+function updateUserApiKeyStatus(message, tone = "default") {
+  const status = $("userApiKeyStatus");
+  if (!status) return;
+
+  status.classList.remove("is-warning", "is-good", "is-checking");
+  if (tone === "warning") status.classList.add("is-warning");
+  if (tone === "good") status.classList.add("is-good");
+  if (tone === "checking") status.classList.add("is-checking");
+  status.textContent = message;
+}
+
+function refreshUserApiKeyStatus() {
+  if (state.userApiKey) {
+    updateUserApiKeyStatus(`개인 API 키 사용 중 (${maskApiKey(state.userApiKey)})`, "good");
+    return;
+  }
+
+  if (state.hasServerApiKey) {
+    updateUserApiKeyStatus("개인 API 키가 없어 서버 기본 키로 동작합니다.", "default");
+    return;
+  }
+
+  updateUserApiKeyStatus("개인 API 키를 저장해야 AI 기능이 동작합니다.", "warning");
+}
+
+function clearScheduledKeyValidation() {
+  if (!state.keyValidationTimer) return;
+  clearTimeout(state.keyValidationTimer);
+  state.keyValidationTimer = null;
+}
+
+function abortInFlightKeyValidation() {
+  if (!state.keyValidationAbort) return;
+  state.keyValidationAbort.abort();
+  state.keyValidationAbort = null;
+}
+
+function rememberValidationResult(candidate, result) {
+  state.lastValidatedCandidate = candidate;
+  state.lastValidationResult = result;
+}
+
+function getRememberedValidationResult(candidate) {
+  if (candidate && state.lastValidatedCandidate === candidate && state.lastValidationResult) {
+    return state.lastValidationResult;
+  }
+  return null;
+}
+
+function renderValidationStatus(result, saved = false) {
+  if (!result || result.aborted) return;
+
+  if (result.valid && result.usable) {
+    const suffix = saved ? " 저장되었습니다." : "";
+    updateUserApiKeyStatus((result.message || "유효한 API 키입니다.") + suffix, "good");
+    return;
+  }
+
+  if (result.valid && !result.usable) {
+    const suffix = saved ? " 키는 저장되었지만 결제/한도 확인이 필요합니다." : "";
+    updateUserApiKeyStatus((result.message || "키 확인됨. 결제/한도 상태를 확인해 주세요.") + suffix, "warning");
+    return;
+  }
+
+  updateUserApiKeyStatus(result.message || "유효하지 않은 API 키입니다.", "warning");
+}
+
+async function verifyUserApiKeyCandidate(candidate, { fromRealtime = false } = {}) {
+  const normalized = normalizeApiKey(candidate);
+  if (!isLikelyOpenAIKey(normalized)) {
+    return {
+      valid: false,
+      usable: false,
+      message: "유효한 OpenAI API 키 형식이 아닙니다. `sk-`로 시작하는 키를 확인해 주세요."
+    };
+  }
+
+  const cached = getRememberedValidationResult(normalized);
+  if (cached) {
+    return cached;
+  }
+
+  abortInFlightKeyValidation();
+  const controller = new AbortController();
+  state.keyValidationAbort = controller;
+  state.keyValidationSeq += 1;
+  const currentSeq = state.keyValidationSeq;
+
+  if (fromRealtime) {
+    updateUserApiKeyStatus("키 유효성 확인 중...", "checking");
+  }
+
+  try {
+    const response = await fetch(apiUrl("/api/key-check"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      signal: controller.signal,
+      body: JSON.stringify({ key: normalized })
+    });
+
+    let payload = null;
+    try {
+      payload = await response.json();
+    } catch {
+      payload = null;
+    }
+
+    if (currentSeq !== state.keyValidationSeq) {
+      return { aborted: true };
+    }
+
+    const result = {
+      valid: Boolean(payload && payload.valid),
+      usable: Boolean(payload && payload.usable),
+      message:
+        (payload && (payload.message || payload.detail || payload.error)) ||
+        (response.ok ? "키 확인에 성공했습니다." : "키 확인에 실패했습니다.")
+    };
+
+    rememberValidationResult(normalized, result);
+    return result;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return { aborted: true };
+    }
+
+    return {
+      valid: false,
+      usable: false,
+      message: "키 확인 중 네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
+    };
+  } finally {
+    if (state.keyValidationAbort === controller) {
+      state.keyValidationAbort = null;
+    }
+  }
+}
+
+function scheduleRealtimeValidation(inputValue) {
+  const candidate = normalizeApiKey(inputValue || "");
+  clearScheduledKeyValidation();
+
+  if (!candidate) {
+    refreshUserApiKeyStatus();
+    return;
+  }
+
+  if (candidate === state.userApiKey) {
+    refreshUserApiKeyStatus();
+    return;
+  }
+
+  if (!isLikelyOpenAIKey(candidate)) {
+    updateUserApiKeyStatus("형식을 확인하는 중입니다. `sk-`로 시작하는 키를 입력해 주세요.", "warning");
+    return;
+  }
+
+  state.keyValidationTimer = setTimeout(async () => {
+    const input = $("userApiKeyInput");
+    const liveValue = normalizeApiKey(input?.value || "");
+    if (liveValue !== candidate) return;
+
+    const result = await verifyUserApiKeyCandidate(candidate, { fromRealtime: true });
+    if (!result.aborted) {
+      renderValidationStatus(result, false);
+    }
+  }, 700);
+}
+
+function setupUserApiKeyForm() {
+  const form = $("userApiKeyForm");
+  if (!form) return;
+
+  const input = $("userApiKeyInput");
+  const validate = $("validateUserApiKeyBtn");
+  const toggle = $("toggleUserApiKeyBtn");
+  const clear = $("clearUserApiKeyBtn");
+
+  if (input) {
+    input.addEventListener("input", () => {
+      scheduleRealtimeValidation(input.value);
+    });
+  }
+
+  if (validate && input) {
+    validate.addEventListener("click", async () => {
+      const candidate = normalizeApiKey(input.value || "");
+      const result = await verifyUserApiKeyCandidate(candidate);
+      renderValidationStatus(result, false);
+    });
+  }
+
+  if (toggle && input) {
+    toggle.addEventListener("click", () => {
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+      toggle.textContent = isPassword ? "숨기기" : "보기";
+    });
+  }
+
+  if (clear && input) {
+    clear.addEventListener("click", () => {
+      clearScheduledKeyValidation();
+      abortInFlightKeyValidation();
+      clearUserApiKey();
+      input.value = "";
+      input.type = "password";
+      if (toggle) toggle.textContent = "보기";
+      state.lastValidatedCandidate = "";
+      state.lastValidationResult = null;
+      refreshUserApiKeyStatus();
+    });
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearScheduledKeyValidation();
+    const candidate = normalizeApiKey(input?.value || "");
+
+    if (!isLikelyOpenAIKey(candidate)) {
+      updateUserApiKeyStatus("유효한 OpenAI API 키 형식이 아닙니다. `sk-`로 시작하는 키를 확인해 주세요.", "warning");
+      return;
+    }
+
+    const result = await verifyUserApiKeyCandidate(candidate);
+    if (!result.valid) {
+      renderValidationStatus(result, false);
+      return;
+    }
+
+    saveUserApiKey(candidate);
+    if (input) {
+      input.value = "";
+      input.type = "password";
+    }
+    if (toggle) toggle.textContent = "보기";
+    renderValidationStatus(result, true);
+  });
+
+  refreshUserApiKeyStatus();
+}
+
 async function requestAI(payload) {
+  const headers = {
+    "Content-Type": "application/json"
+  };
+
+  if (state.userApiKey) {
+    headers["X-User-OpenAI-Key"] = state.userApiKey;
+  }
+
   const response = await fetch(apiUrl("/api/chat"), {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers,
     body: JSON.stringify(payload)
   });
 
@@ -278,21 +570,6 @@ function setupTimer() {
   });
 }
 
-function setCheckoutLink(config) {
-  const button = $("checkoutBtn");
-  if (!button) return;
-
-  if (config.paymentLink) {
-    button.href = config.paymentLink;
-    button.target = "_blank";
-    button.rel = "noopener noreferrer";
-    button.textContent = "Premium 결제 시작";
-  } else {
-    button.href = "/pricing.html";
-    button.textContent = "결제 링크 설정 필요";
-  }
-}
-
 function enableAdsense(config) {
   const { adsenseClient, adsenseSlots } = config;
   if (!adsenseClient || state.adsEnabled) return;
@@ -389,14 +666,19 @@ function applyAdsPolicy(config) {
 async function loadConfig() {
   try {
     const response = await fetch(apiUrl("/api/config"), { method: "GET" });
-    if (!response.ok) return;
+    if (!response.ok) {
+      refreshUserApiKeyStatus();
+      return;
+    }
 
     const config = await response.json();
     state.adConfig = config;
-    setCheckoutLink(config);
+    state.hasServerApiKey = Boolean(config.hasServerApiKey);
+    refreshUserApiKeyStatus();
     applyAdsPolicy(config);
   } catch (error) {
     console.error("Config load failed", error);
+    refreshUserApiKeyStatus();
   }
 }
 
@@ -420,9 +702,11 @@ function setupRevealAnimation() {
 
 function init() {
   state.apiBase = resolveApiBase();
+  state.userApiKey = getStoredUserApiKey();
   setCurrentYear();
   setStressPreview();
   loadStreak();
+  setupUserApiKeyForm();
   setupCheckinForm();
   setupChatForm();
   setupJournalForm();
