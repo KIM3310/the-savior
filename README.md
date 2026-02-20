@@ -6,6 +6,7 @@
 - 1분 감정 체크 -> 3분 안정 루틴 생성
 - AI 명상 코치 대화
 - 저널 인사이트 생성
+- OpenAI/Ollama(provider 자동/강제 전환) 지원
 - 사용자 OpenAI API 키(BYOK) 우선 사용 + 서버 키 폴백
 - OpenAI 장애/쿼터 시 기본 코칭 모드 자동 폴백
 - AdSense 광고 슬롯 + 동의 배너
@@ -21,6 +22,17 @@ npm run dev
 ```
 
 브라우저에서 `http://localhost:8788` 접속.
+
+## 로컬 실행 (Ollama)
+```bash
+ollama serve
+ollama pull llama3.2:latest
+npm run dev:ollama
+```
+
+- 기본 Ollama 주소: `http://127.0.0.1:11434`
+- `npm run dev:ollama`는 `.dev.vars`가 없으면 `.dev.vars.example`을 자동 복사합니다.
+- 다른 모델/주소를 쓰려면 `.dev.vars` 값을 수정하세요.
 
 ## 필수 환경변수 (Cloudflare Pages)
 - `OPENAI_API_KEY`: OpenAI 서버 키(선택, 사용자 키 없을 때 폴백)
@@ -41,6 +53,10 @@ npm run dev
 - `HEALTH_RATE_LIMIT_WINDOW_MS`: `/api/health` 레이트리밋 윈도우 (기본 `60000`)
 - `PUBLIC_API_BASE_URL`: 클라이언트가 참조할 API 기본 URL (선택)
 - `ENABLE_CHAT_FALLBACK`: `false`로 설정 시 OpenAI 실패 시 자동 폴백 비활성화
+- `LLM_PROVIDER`: `auto | openai | ollama` (기본 `auto`)
+- `ENABLE_OLLAMA`: `true/false` (미설정 시 로컬 요청에서는 자동 활성화)
+- `OLLAMA_BASE_URL`: Ollama API 주소 (기본 `http://127.0.0.1:11434`)
+- `OLLAMA_MODEL`: Ollama 모델명 (기본 `llama3.2:latest`)
 
 ## API 엔드포인트
 - `GET /api/config`: 클라이언트 런타임 설정
