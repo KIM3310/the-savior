@@ -13,6 +13,9 @@ const state = {
   userApiKey: "",
   userApiKeyPersistent: false,
   hasServerApiKey: false,
+  llmProviderPreference: "auto",
+  ollamaEnabled: false,
+  ollamaModel: "",
   keyValidationTimer: null,
   keyValidationAbort: null,
   keyValidationSeq: 0,
@@ -516,6 +519,12 @@ function fallbackNoticeText(result) {
   if (result.fallbackReason === "api_key_missing") {
     return "API 키가 없어 기본 코칭 모드로 제공되었습니다.";
   }
+  if (result.fallbackReason === "ollama_unavailable") {
+    return "Ollama 설정을 찾지 못해 기본 코칭 모드로 제공되었습니다.";
+  }
+  if (typeof result.fallbackReason === "string" && result.fallbackReason.startsWith("ollama_")) {
+    return "Ollama 연결 이슈로 기본 코칭 모드가 제공되었습니다.";
+  }
   return "AI 연결 이슈로 기본 코칭 모드가 제공되었습니다.";
 }
 
@@ -532,6 +541,20 @@ function applyRuntimeStatusFromResult(result, defaultSuccessMessage) {
     setRuntimeStatus(notice, "warning");
     return;
   }
+
+  const provider = safeText(result && result.provider ? result.provider : "");
+  if (provider === "ollama") {
+    const model = safeText(result && result.model ? result.model : state.ollamaModel);
+    const suffix = model ? ` · Ollama (${model})` : " · Ollama";
+    setRuntimeStatus(`${defaultSuccessMessage}${suffix}`, "good");
+    return;
+  }
+
+  if (provider === "openai") {
+    setRuntimeStatus(`${defaultSuccessMessage} · OpenAI`, "good");
+    return;
+  }
+
   setRuntimeStatus(defaultSuccessMessage, "good");
 }
 
@@ -553,8 +576,22 @@ function refreshUserApiKeyStatus() {
     return;
   }
 
+  if (state.llmProviderPreference === "ollama" && state.ollamaEnabled) {
+    const model = safeText(state.ollamaModel);
+    const modelSuffix = model ? ` (${model})` : "";
+    updateUserApiKeyStatus(`Ollama 로컬 모델${modelSuffix}로 동작합니다. OpenAI 키 없이 사용 가능합니다.`, "good");
+    return;
+  }
+
   if (state.hasServerApiKey) {
     updateUserApiKeyStatus("개인 API 키가 없어 서버 기본 키로 동작합니다.", "default");
+    return;
+  }
+
+  if (state.ollamaEnabled) {
+    const model = safeText(state.ollamaModel);
+    const modelSuffix = model ? ` (${model})` : "";
+    updateUserApiKeyStatus(`로컬 Ollama${modelSuffix}를 사용할 수 있습니다. OpenAI 키 입력은 선택입니다.`, "default");
     return;
   }
 
@@ -1318,9 +1355,12 @@ async function loadConfig() {
 
     state.adConfig = config;
     state.hasServerApiKey = Boolean(config.hasServerApiKey);
+    state.llmProviderPreference = safeText(config.llmProviderPreference || "auto").toLowerCase() || "auto";
+    state.ollamaEnabled = Boolean(config.ollamaEnabled);
+    state.ollamaModel = safeText(config.ollamaModel || "");
     refreshUserApiKeyStatus();
     applyAdsPolicy(config);
-    if (state.userApiKey || state.hasServerApiKey) {
+    if (state.userApiKey || state.hasServerApiKey || state.ollamaEnabled) {
       setRuntimeStatus("AI 응답 준비 완료", "good");
     } else {
       setRuntimeStatus("API 키가 없어 AI 기능이 제한됩니다.", "warning");

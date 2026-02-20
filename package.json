@@ -5,6 +5,7 @@
   "description": "The Savior - Buddhist mind-body stabilization platform",
   "scripts": {
     "dev": "wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",
+    "dev:ollama": "if [ ! -f .dev.vars ]; then cp .dev.vars.example .dev.vars; fi; wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",
     "deploy": "wrangler pages deploy public --project-name the-savior",
     "check": "node --check functions/api/_security.js && node --check functions/api/chat.js && node --check functions/api/config.js && node --check functions/api/key-check.js && node --check functions/api/health.js && node --check public/app.js",
     "test": "node --test tests/**/*.test.mjs",
