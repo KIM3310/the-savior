@@ -1,8 +1,11 @@
 import { RequestValidationError, checkRateLimit, getRequestId, readJsonBody, resolveCors } from "./_security.js";
 
-const MODEL_NAME = "gpt-4.1-mini";
+const OPENAI_MODEL_NAME = "gpt-4.1-mini";
+const OLLAMA_MODEL_NAME = "llama3.2:latest";
+const OLLAMA_DEFAULT_BASE_URL = "http://127.0.0.1:11434";
 const MAX_INPUT_CHARS = 2000;
 const OPENAI_TIMEOUT_MS = 20_000;
+const OLLAMA_TIMEOUT_MS = 25_000;
 const CORS_OPTIONS = {
   methods: "POST, OPTIONS",
   allowHeaders: "Content-Type, X-User-OpenAI-Key"
@@ -12,6 +15,14 @@ class OpenAIRequestError extends Error {
   constructor(message, status) {
     super(message);
     this.name = "OpenAIRequestError";
+    this.status = status;
+  }
+}
+
+class OllamaRequestError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.name = "OllamaRequestError";
     this.status = status;
   }
 }
@@ -152,6 +163,7 @@ function buildFallbackPayload(mode, sourcePayload, reason) {
     reply: buildFallbackReply(mode, sourcePayload || {}, reason),
     escalated: false,
     mode,
+    provider: "fallback",
     fallback: true,
     fallbackReason: reason
   };
@@ -160,6 +172,7 @@ function buildFallbackPayload(mode, sourcePayload, reason) {
 function shouldFallbackForError(error, mappedStatus, env) {
   if (!isFallbackEnabled(env)) return false;
   if (error instanceof OpenAIRequestError) return true;
+  if (error instanceof OllamaRequestError) return true;
   return mappedStatus === 429 || mappedStatus === 502 || mappedStatus === 504;
 }
 
@@ -258,6 +271,77 @@ function resolveApiKey(request, env) {
   return userKey || serverKey;
 }
 
+function sanitizeBaseUrl(value) {
+  if (typeof value !== "string") return "";
+  return value.trim().replace(/\/+$/, "");
+}
+
+function normalizeProvider(value) {
+  const raw = sanitizeText(value || "", 16).toLowerCase();
+  if (raw === "openai" || raw === "ollama") return raw;
+  return "auto";
+}
+
+function isLocalHostname(hostname) {
+  const host = String(hostname || "").toLowerCase();
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+function isOllamaEnabled(env, requestUrl) {
+  const flag = String(env.ENABLE_OLLAMA || "").trim().toLowerCase();
+  if (flag) {
+    return flag !== "false" && flag !== "0" && flag !== "off" && flag !== "no";
+  }
+
+  try {
+    return isLocalHostname(new URL(requestUrl).hostname);
+  } catch {
+    return false;
+  }
+}
+
+function resolveOllamaBaseUrl(env, requestUrl) {
+  const configured = sanitizeBaseUrl(env.OLLAMA_BASE_URL || "");
+  if (configured) return configured;
+
+  try {
+    const host = new URL(requestUrl).hostname;
+    if (isLocalHostname(host)) return OLLAMA_DEFAULT_BASE_URL;
+  } catch {
+    // Ignore parse failures and return empty URL.
+  }
+
+  return "";
+}
+
+function resolveProvider(payload, env, request, hasOpenAIKey) {
+  const payloadProvider = normalizeProvider(payload && payload.provider ? payload.provider : "");
+  const envProvider = normalizeProvider(env.LLM_PROVIDER || "");
+
+  if (payloadProvider !== "auto") return payloadProvider;
+  if (envProvider !== "auto") return envProvider;
+
+  const ollamaEnabled = isOllamaEnabled(env, request.url);
+  const ollamaBaseUrl = resolveOllamaBaseUrl(env, request.url);
+  if (!hasOpenAIKey && ollamaEnabled && ollamaBaseUrl) {
+    return "ollama";
+  }
+
+  return "openai";
+}
+
+function extractTextFromOllama(payload) {
+  if (payload && payload.message && typeof payload.message.content === "string" && payload.message.content.trim()) {
+    return payload.message.content.trim();
+  }
+
+  if (typeof payload?.response === "string" && payload.response.trim()) {
+    return payload.response.trim();
+  }
+
+  return "";
+}
+
 async function runOpenAI(apiKey, systemPrompt, userPrompt) {
   if (!apiKey) {
     throw new Error("OpenAI API key is not available.");
@@ -275,7 +359,7 @@ async function runOpenAI(apiKey, systemPrompt, userPrompt) {
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: MODEL_NAME,
+        model: OPENAI_MODEL_NAME,
         temperature: 0.7,
         max_output_tokens: 500,
         input: [
@@ -319,6 +403,63 @@ async function runOpenAI(apiKey, systemPrompt, userPrompt) {
   return text;
 }
 
+async function runOllama(baseUrl, model, systemPrompt, userPrompt) {
+  if (!baseUrl) {
+    throw new OllamaRequestError("Ollama base URL is not configured.", 500);
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), OLLAMA_TIMEOUT_MS);
+  let response = null;
+  try {
+    response = await fetch(`${baseUrl}/api/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        stream: false,
+        options: {
+          temperature: 0.7,
+          num_predict: 500
+        },
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new OllamaRequestError("Ollama request timed out.", 504);
+    }
+    throw new OllamaRequestError("Ollama request failed.", 502);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const apiMessage = payload && payload.error ? String(payload.error) : "Ollama request failed.";
+    throw new OllamaRequestError(apiMessage, response.status);
+  }
+
+  const text = extractTextFromOllama(payload);
+  if (!text) {
+    throw new OllamaRequestError("Ollama response was empty.", 502);
+  }
+
+  return text;
+}
+
 function mapClientError(error) {
   if (error instanceof RequestValidationError) {
     return {
@@ -353,6 +494,36 @@ function mapClientError(error) {
       return {
         status: 502,
         message: "AI 응답 생성 중 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
+      };
+    }
+  }
+
+  if (error instanceof OllamaRequestError) {
+    if (error.status === 404) {
+      return {
+        status: 502,
+        message: "Ollama 엔드포인트를 찾지 못했습니다. Ollama 실행 상태를 확인해 주세요."
+      };
+    }
+
+    if (error.status === 429) {
+      return {
+        status: 429,
+        message: "Ollama 요청이 과다합니다. 잠시 후 다시 시도해 주세요."
+      };
+    }
+
+    if (error.status === 504) {
+      return {
+        status: 504,
+        message: "Ollama 응답이 지연되고 있습니다. 모델 상태를 확인해 주세요."
+      };
+    }
+
+    if (error.status >= 500) {
+      return {
+        status: 502,
+        message: "Ollama 응답 생성 중 문제가 발생했습니다. Ollama 서버와 모델 상태를 확인해 주세요."
       };
     }
   }
@@ -461,6 +632,62 @@ export async function onRequestPost(context) {
     }
 
     const apiKey = resolveApiKey(context.request, context.env);
+    const provider = resolveProvider(payload, context.env, context.request, Boolean(apiKey));
+    const systemPrompt = buildSystemPrompt(mode);
+    const userPrompt = buildUserPrompt(mode, payload || {});
+
+    if (provider === "ollama") {
+      const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
+      const ollamaBaseUrl = resolveOllamaBaseUrl(context.env, context.request.url);
+      if (!ollamaEnabled || !ollamaBaseUrl) {
+        if (isFallbackEnabled(context.env)) {
+          return jsonResponse(buildFallbackPayload(mode, parsedPayload, "ollama_unavailable"), 200, {
+            corsHeaders: cors.headers,
+            extraHeaders: {
+              ...rate.headers,
+              "X-Request-Id": requestId
+            }
+          });
+        }
+
+        return jsonResponse(
+          {
+            error: "Ollama 설정이 유효하지 않습니다.",
+            detail: "ENABLE_OLLAMA, OLLAMA_BASE_URL 환경변수를 확인해 주세요."
+          },
+          400,
+          {
+            corsHeaders: cors.headers,
+            extraHeaders: {
+              ...rate.headers,
+              "X-Request-Id": requestId
+            }
+          }
+        );
+      }
+
+      const ollamaModel = sanitizeText(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME, 80) || OLLAMA_MODEL_NAME;
+      const reply = await runOllama(ollamaBaseUrl, ollamaModel, systemPrompt, userPrompt);
+
+      return jsonResponse(
+        {
+          reply,
+          escalated: false,
+          mode,
+          provider: "ollama",
+          model: ollamaModel
+        },
+        200,
+        {
+          corsHeaders: cors.headers,
+          extraHeaders: {
+            ...rate.headers,
+            "X-Request-Id": requestId
+          }
+        }
+      );
+    }
+
     if (!apiKey) {
       if (isFallbackEnabled(context.env)) {
         return jsonResponse(buildFallbackPayload(mode, parsedPayload, "api_key_missing"), 200, {
@@ -488,15 +715,14 @@ export async function onRequestPost(context) {
       );
     }
 
-    const systemPrompt = buildSystemPrompt(mode);
-    const userPrompt = buildUserPrompt(mode, payload || {});
     const reply = await runOpenAI(apiKey, systemPrompt, userPrompt);
 
     return jsonResponse(
       {
         reply,
         escalated: false,
-        mode
+        mode,
+        provider: "openai"
       },
       200,
       {
@@ -513,6 +739,8 @@ export async function onRequestPost(context) {
       const fallbackReason =
         error instanceof OpenAIRequestError
           ? `openai_${error.status || "error"}`
+          : error instanceof OllamaRequestError
+            ? `ollama_${error.status || "error"}`
           : mapped.status === 429
             ? "rate_limited"
             : "temporary_failure";

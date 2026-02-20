@@ -4,10 +4,35 @@ const CORS_OPTIONS = {
   methods: "GET, OPTIONS",
   allowHeaders: "Content-Type"
 };
+const OLLAMA_MODEL_NAME = "llama3.2:latest";
 
 function sanitizeBaseUrl(value) {
   if (typeof value !== "string") return "";
   return value.trim().replace(/\/+$/, "");
+}
+
+function normalizeProvider(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (raw === "openai" || raw === "ollama") return raw;
+  return "auto";
+}
+
+function isLocalHostname(hostname) {
+  const host = String(hostname || "").toLowerCase();
+  return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+function isOllamaEnabled(env, requestUrl) {
+  const flag = String(env.ENABLE_OLLAMA || "").trim().toLowerCase();
+  if (flag) {
+    return flag !== "false" && flag !== "0" && flag !== "off" && flag !== "no";
+  }
+
+  try {
+    return isLocalHostname(new URL(requestUrl).hostname);
+  } catch {
+    return false;
+  }
 }
 
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "public, max-age=300" } = {}) {
@@ -78,6 +103,9 @@ export async function onRequestGet(context) {
   }
 
   const hasServerApiKey = Boolean(context.env.OPENAI_API_KEY);
+  const llmProviderPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
+  const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
+  const ollamaModel = String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME;
   const adsenseClient = context.env.ADSENSE_CLIENT || "";
   const adsenseSlotTop = context.env.ADSENSE_SLOT_TOP || "";
   const adsenseSlotBottom = context.env.ADSENSE_SLOT_BOTTOM || "";
@@ -87,6 +115,9 @@ export async function onRequestGet(context) {
   return jsonResponse(
     {
       hasServerApiKey,
+      llmProviderPreference,
+      ollamaEnabled,
+      ollamaModel,
       apiBaseUrl: configuredBaseUrl || requestOrigin,
       adsenseClient,
       adsenseSlots: {
