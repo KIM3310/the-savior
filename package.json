@@ -2,6 +2,7 @@
   "name": "the-savior",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "The Savior - Buddhist mind-body stabilization platform",
   "scripts": {
     "dev": "wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",

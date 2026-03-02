@@ -65,6 +65,27 @@ function hasCrisisSignal(text) {
   return crisisPattern.test(text);
 }
 
+function buildCrisisSourceText(payload) {
+  if (!payload || typeof payload !== "object") return "";
+
+  const parts = [
+    payload.message,
+    payload.entry,
+    payload.note,
+    payload.mood
+  ];
+
+  if (Array.isArray(payload.history)) {
+    payload.history.slice(-6).forEach((turn) => {
+      if (turn && typeof turn.content === "string") {
+        parts.push(turn.content);
+      }
+    });
+  }
+
+  return sanitizeText(parts.filter((part) => typeof part === "string" && part).join(" "), 2400);
+}
+
 function crisisResponse() {
   return {
     reply:
@@ -605,11 +626,7 @@ export async function onRequestPost(context) {
     const modeRaw = sanitizeText(payload && payload.mode ? payload.mode : "coach", 20).toLowerCase();
     mode = modeRaw === "checkin" || modeRaw === "journal" ? modeRaw : "coach";
 
-    const sourceText = sanitizeText(
-      payload && (payload.message || payload.entry || payload.note)
-        ? payload.message || payload.entry || payload.note
-        : ""
-    );
+    const sourceText = buildCrisisSourceText(payload);
 
     if (!sourceText && mode !== "checkin") {
       return jsonResponse({ error: "메시지를 입력해 주세요." }, 400, {
