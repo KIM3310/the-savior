@@ -13,3 +13,6 @@ ios/App/Pods
 ios/App/App/public
 ios/App/build
 DerivedData
+
+# Debug artifacts
+.venv_*/
