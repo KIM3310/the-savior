@@ -17,6 +17,16 @@ function normalizeProvider(value) {
   return "auto";
 }
 
+function parseBoolFlag(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return false;
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+function hasEnabledServerApiKey(env) {
+  return parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY);
+}
+
 function isLocalHostname(hostname) {
   const host = String(hostname || "").toLowerCase();
   return host === "localhost" || host === "127.0.0.1" || host === "::1";
@@ -102,7 +112,7 @@ export async function onRequestGet(context) {
     );
   }
 
-  const hasServerApiKey = Boolean(context.env.OPENAI_API_KEY);
+  const hasServerApiKey = hasEnabledServerApiKey(context.env);
   const llmProviderPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
   const ollamaModel = String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME;

@@ -35,7 +35,8 @@ npm run dev:ollama
 - 다른 모델/주소를 쓰려면 `.dev.vars` 값을 수정하세요.
 
 ## 필수 환경변수 (Cloudflare Pages)
-- `OPENAI_API_KEY`: OpenAI 서버 키(선택, 사용자 키 없을 때 폴백)
+- `OPENAI_API_KEY`: OpenAI 서버 키(기본 비활성, `ALLOW_SERVER_OPENAI_KEY=true`일 때만 사용)
+- `ALLOW_SERVER_OPENAI_KEY`: `true`일 때만 서버 키 사용 허용(기본값: 비활성)
 - `ADSENSE_CLIENT`: 예) `ca-pub-xxxxxxxxxxxxxxxx` (선택)
 - `ADSENSE_SLOT_TOP`: 상단 슬롯 ID (선택)
 - `ADSENSE_SLOT_BOTTOM`: 하단 슬롯 ID (선택)
@@ -86,7 +87,8 @@ npm run mobile:sync
 
 ## 보안 주의
 - API 키를 코드/깃에 절대 커밋하지 마세요.
-- `OPENAI_API_KEY`는 Cloudflare Secrets로만 주입하세요.
+- 서버 과금 방지를 위해 기본 운영은 `x-user-openai-key`(BYOK) 또는 fallback만 사용합니다.
+- `OPENAI_API_KEY`를 쓰더라도 `ALLOW_SERVER_OPENAI_KEY=true`를 함께 설정한 경우에만 실제 호출됩니다.
 - 키 노출이 의심되면 즉시 폐기(Rotate) 후 새 키를 발급하세요.
 - 사용자 API 키 저장 기본값은 세션 저장입니다(브라우저 종료 시 삭제).
 
