@@ -258,6 +258,12 @@ function normalizeApiKey(value) {
   return value.trim();
 }
 
+function parseBoolFlag(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return false;
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
 function isLikelyOpenAIKey(value) {
   const key = normalizeApiKey(value);
   return key.startsWith("sk-") && !/\s/.test(key) && key.length >= 20 && key.length <= 260;
@@ -266,8 +272,10 @@ function isLikelyOpenAIKey(value) {
 function resolveApiKey(request, env) {
   const userKeyRaw = request.headers.get("x-user-openai-key") || "";
   const serverKeyRaw = typeof env.OPENAI_API_KEY === "string" ? env.OPENAI_API_KEY : "";
+  const allowServerKey = parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY);
   const userKey = isLikelyOpenAIKey(userKeyRaw) ? normalizeApiKey(userKeyRaw) : "";
-  const serverKey = isLikelyOpenAIKey(serverKeyRaw) ? normalizeApiKey(serverKeyRaw) : "";
+  const serverKey =
+    allowServerKey && isLikelyOpenAIKey(serverKeyRaw) ? normalizeApiKey(serverKeyRaw) : "";
   return userKey || serverKey;
 }
 
