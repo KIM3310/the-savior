@@ -5,6 +5,16 @@ const CORS_OPTIONS = {
   allowHeaders: "Content-Type"
 };
 
+function parseBoolFlag(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  if (!raw) return false;
+  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
+}
+
+function hasEnabledServerApiKey(env) {
+  return parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY);
+}
+
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
     status,
@@ -78,7 +88,7 @@ export async function onRequestGet(context) {
     {
       status: "ok",
       now: new Date().toISOString(),
-      hasServerApiKey: Boolean(context.env.OPENAI_API_KEY),
+      hasServerApiKey: hasEnabledServerApiKey(context.env),
       build: {
         branch: context.env.CF_PAGES_BRANCH || "",
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)
