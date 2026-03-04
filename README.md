@@ -95,3 +95,18 @@ npm run mobile:sync
 npm run check
 npm test
 ```
+
+<!-- codex:local-verification:start -->
+## Local Verification
+```bash
+npm install
+npm run check
+npm run test
+```
+
+## Repository Hygiene
+- Keep runtime artifacts out of commits (`.codex_runs/`, cache folders, temporary venvs).
+- Prefer running verification commands above before opening a PR.
+
+_Last updated: 2026-03-04_
+<!-- codex:local-verification:end -->
