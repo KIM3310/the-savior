@@ -92,6 +92,10 @@ export async function onRequestGet(context) {
       build: {
         branch: context.env.CF_PAGES_BRANCH || "",
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)
+      },
+      links: {
+        config: "/api/config",
+        meta: "/api/meta"
       }
     },
     200,
