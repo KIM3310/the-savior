@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { onRequestGet, onRequestOptions } from "../functions/api/meta.js";
+import { onRequestGet as getHealth } from "../functions/api/health.js";
+import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
 
 function createContext(url = "https://the-savior-9z8.pages.dev/api/meta", env = {}) {
   return {
@@ -18,9 +19,10 @@ function createContext(url = "https://the-savior-9z8.pages.dev/api/meta", env = 
 }
 
 test("meta route returns runtime diagnostics", async () => {
-  const response = await onRequestGet(
+  const response = await getMeta(
     createContext("https://the-savior-9z8.pages.dev/api/meta", {
       OPENAI_API_KEY: "sk-test",
+      ALLOW_SERVER_OPENAI_KEY: "true",
       LLM_PROVIDER: "openai",
       PUBLIC_API_BASE_URL: "https://api.example.com/",
       ADSENSE_CLIENT: "ca-pub-123",
@@ -39,7 +41,27 @@ test("meta route returns runtime diagnostics", async () => {
   assert.equal(body.build.commit, "abcdef12");
   assert.equal(body.monetization.adsenseConfigured, true);
   assert.ok(body.api.routes.includes("/api/meta"));
+  assert.equal(body.diagnostics.runtimeMode, "server-key");
+  assert.equal(body.diagnostics.llmReady, true);
+  assert.match(body.diagnostics.nextAction, /\/api\/chat|\/api\/config/);
   assert.equal(response.headers.get("X-Request-Id"), response.headers.get("x-request-id"));
+});
+
+test("health route exposes actionable llm guidance", async () => {
+  const response = await getHealth(
+    createContext("https://the-savior-9z8.pages.dev/api/health", {
+      ALLOW_SERVER_OPENAI_KEY: "true",
+      OPENAI_API_KEY: "sk-test"
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.status, "ok");
+  assert.equal(body.hasServerApiKey, true);
+  assert.equal(body.diagnostics.providerReady, true);
+  assert.equal(body.diagnostics.llmMode, "server-key");
+  assert.match(body.diagnostics.nextAction, /\/api\/chat/);
 });
 
 test("meta route supports CORS preflight", async () => {
