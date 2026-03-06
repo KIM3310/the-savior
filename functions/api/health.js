@@ -15,6 +15,17 @@ function hasEnabledServerApiKey(env) {
   return parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY);
 }
 
+function buildHealthDiagnostics(env) {
+  const providerReady = hasEnabledServerApiKey(env);
+  return {
+    llmMode: providerReady ? "server-key" : "runtime-key-or-local",
+    providerReady,
+    nextAction: providerReady
+      ? "Call /api/chat to validate the live counseling flow."
+      : "Provide a runtime API key via /api/key-check or enable ALLOW_SERVER_OPENAI_KEY."
+  };
+}
+
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
     status,
@@ -84,11 +95,14 @@ export async function onRequestGet(context) {
     );
   }
 
+  const diagnostics = buildHealthDiagnostics(context.env);
+
   return jsonResponse(
     {
       status: "ok",
       now: new Date().toISOString(),
       hasServerApiKey: hasEnabledServerApiKey(context.env),
+      diagnostics,
       build: {
         branch: context.env.CF_PAGES_BRANCH || "",
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)

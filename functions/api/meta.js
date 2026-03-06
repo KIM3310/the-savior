@@ -35,6 +35,27 @@ function isOllamaEnabled(env, requestUrl) {
   }
 }
 
+function buildMetaDiagnostics({
+  hasServerApiKey,
+  monetizationReady,
+  ollamaEnabled,
+  providerPreference
+}) {
+  const llmReady = hasServerApiKey || ollamaEnabled;
+  let runtimeMode = "runtime-key";
+  if (hasServerApiKey) runtimeMode = "server-key";
+  else if (ollamaEnabled && providerPreference !== "openai") runtimeMode = "ollama-local";
+
+  return {
+    runtimeMode,
+    llmReady,
+    monetizationReady,
+    nextAction: llmReady
+      ? "Call /api/chat or /api/config to validate the active runtime path."
+      : "Provide BYOK at runtime or enable local/server LLM support before launch."
+  };
+}
+
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
     status,
@@ -104,6 +125,16 @@ export async function onRequestGet(context) {
 
   const requestOrigin = sanitizeBaseUrl(new URL(context.request.url).origin);
   const configuredBaseUrl = sanitizeBaseUrl(context.env.PUBLIC_API_BASE_URL || "");
+  const providerPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
+  const hasServerApiKey = Boolean(context.env.OPENAI_API_KEY);
+  const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
+  const monetizationReady = Boolean(String(context.env.ADSENSE_CLIENT || "").trim());
+  const diagnostics = buildMetaDiagnostics({
+    hasServerApiKey,
+    monetizationReady,
+    ollamaEnabled,
+    providerPreference
+  });
 
   return jsonResponse(
     {
@@ -115,9 +146,9 @@ export async function onRequestGet(context) {
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)
       },
       llm: {
-        providerPreference: normalizeProvider(context.env.LLM_PROVIDER || ""),
-        hasServerApiKey: Boolean(context.env.OPENAI_API_KEY),
-        ollamaEnabled: isOllamaEnabled(context.env, context.request.url),
+        providerPreference,
+        hasServerApiKey,
+        ollamaEnabled,
         ollamaModel: String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME
       },
       api: {
@@ -125,12 +156,13 @@ export async function onRequestGet(context) {
         routes: ["/api/health", "/api/config", "/api/key-check", "/api/chat", "/api/meta"]
       },
       monetization: {
-        adsenseConfigured: Boolean(String(context.env.ADSENSE_CLIENT || "").trim()),
+        adsenseConfigured: monetizationReady,
         slotsConfigured: {
           top: Boolean(String(context.env.ADSENSE_SLOT_TOP || "").trim()),
           bottom: Boolean(String(context.env.ADSENSE_SLOT_BOTTOM || "").trim())
         }
       },
+      diagnostics,
       rateLimits: {
         health: {
           limit: String(context.env.HEALTH_RATE_LIMIT_MAX || "240"),
