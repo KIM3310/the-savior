@@ -163,6 +163,11 @@ export async function onRequestGet(context) {
         }
       },
       diagnostics,
+      ops_contract: {
+        schema: "ops-envelope-v1",
+        version: 1,
+        required_fields: ["service", "status", "diagnostics.nextAction"]
+      },
       rateLimits: {
         health: {
           limit: String(context.env.HEALTH_RATE_LIMIT_MAX || "240"),

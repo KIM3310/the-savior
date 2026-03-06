@@ -100,9 +100,15 @@ export async function onRequestGet(context) {
   return jsonResponse(
     {
       status: "ok",
+      service: "the-savior",
       now: new Date().toISOString(),
       hasServerApiKey: hasEnabledServerApiKey(context.env),
       diagnostics,
+      ops_contract: {
+        schema: "ops-envelope-v1",
+        version: 1,
+        required_fields: ["service", "status", "diagnostics.nextAction"]
+      },
       build: {
         branch: context.env.CF_PAGES_BRANCH || "",
         commit: String(context.env.CF_PAGES_COMMIT_SHA || "").slice(0, 8)
