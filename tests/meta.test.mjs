@@ -41,6 +41,7 @@ test("meta route returns runtime diagnostics", async () => {
   assert.equal(body.build.commit, "abcdef12");
   assert.equal(body.monetization.adsenseConfigured, true);
   assert.ok(body.api.routes.includes("/api/meta"));
+  assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.equal(body.diagnostics.runtimeMode, "server-key");
   assert.equal(body.diagnostics.llmReady, true);
   assert.match(body.diagnostics.nextAction, /\/api\/chat|\/api\/config/);
@@ -61,6 +62,7 @@ test("health route exposes actionable llm guidance", async () => {
   assert.equal(body.hasServerApiKey, true);
   assert.equal(body.diagnostics.providerReady, true);
   assert.equal(body.diagnostics.llmMode, "server-key");
+  assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.match(body.diagnostics.nextAction, /\/api\/chat/);
 });
 
