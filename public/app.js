@@ -138,6 +138,27 @@ function renderBriefList(id, items, fallbackText) {
   });
 }
 
+function renderProofAssets(id, items, fallbackText) {
+  const list = $(id);
+  if (!list) return;
+
+  const values = Array.isArray(items) && items.length
+    ? items.map((item) => {
+        const label = safeText(item?.label || "Asset");
+        const path = safeText(item?.path || "");
+        const why = safeText(item?.why || "");
+        return why ? `${label} (${path}) - ${why}` : `${label} (${path})`;
+      })
+    : [fallbackText];
+
+  list.innerHTML = "";
+  values.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    list.appendChild(li);
+  });
+}
+
 function renderRuntimeBrief(payload) {
   state.runtimeBrief = payload || null;
 
@@ -149,7 +170,9 @@ function renderRuntimeBrief(payload) {
     fillText("briefProvider", "network-check-required");
     fillText("briefRouteCount", "0");
     renderBriefList("briefReviewFlow", [], "runtime brief fetch 실패 시 health/meta부터 확인합니다.");
+    renderBriefList("briefTwoMinuteReview", [], "health, runtime brief, review pack, live/fallback 검토 순으로 확인합니다.");
     renderBriefList("briefOperatorRules", [], "BYOK, fallback, crisis escalation 정책을 수동 검토합니다.");
+    renderProofAssets("briefProofAssets", [], "핵심 증거 surface를 불러오지 못했습니다.");
     renderBriefList("briefWatchouts", [], "런타임 surface가 없으면 배포 전 검증 증거가 약해집니다.");
     return;
   }
@@ -173,7 +196,9 @@ function renderRuntimeBrief(payload) {
   fillText("briefProvider", providerParts.join(" · "), "auto");
   fillText("briefRouteCount", routes.length > 0 ? `${routes.length} routes` : "0");
   renderBriefList("briefReviewFlow", payload.review_flow, "review flow unavailable");
+  renderBriefList("briefTwoMinuteReview", payload.two_minute_review, "two-minute review unavailable");
   renderBriefList("briefOperatorRules", payload.operator_rules, "operator rules unavailable");
+  renderProofAssets("briefProofAssets", payload.proof_assets, "proof assets unavailable");
   renderBriefList("briefWatchouts", payload.watchouts, "watchouts unavailable");
 }
 
@@ -189,7 +214,9 @@ function renderReviewPack(payload) {
     fillText("reviewPackRoutes", "0");
     renderBriefList("reviewPackSafety", [], "safety boundary fetch 실패 시 crisis/fallback 정책을 수동 확인합니다.");
     renderBriefList("reviewPackRevenue", [], "monetization boundary를 수동 검토합니다.");
+    renderBriefList("reviewPackTwoMinuteReview", [], "health, runtime brief, review pack, live/fallback 검토 순으로 확인합니다.");
     renderBriefList("reviewPackSequence", [], "review pack fetch 실패 시 health/meta/runtime-brief부터 확인합니다.");
+    renderProofAssets("reviewPackProofAssets", [], "review pack proof assets unavailable");
     return;
   }
 
@@ -202,7 +229,9 @@ function renderReviewPack(payload) {
   fillText("reviewPackRoutes", Array.isArray(proof.review_routes) ? `${proof.review_routes.length} routes` : "0");
   renderBriefList("reviewPackSafety", payload.safety_boundary, "safety boundary unavailable");
   renderBriefList("reviewPackRevenue", payload.revenue_boundary, "revenue boundary unavailable");
+  renderBriefList("reviewPackTwoMinuteReview", payload.two_minute_review, "two-minute review unavailable");
   renderBriefList("reviewPackSequence", payload.review_sequence, "review sequence unavailable");
+  renderProofAssets("reviewPackProofAssets", payload.proof_assets, "proof assets unavailable");
 }
 
 function setButtonLoading(button, loading, loadingText) {

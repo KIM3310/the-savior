@@ -126,6 +126,12 @@ export function buildRuntimeBrief(env, requestUrl) {
       "Validate BYOK or server-key posture before enabling live OpenAI responses.",
       "Keep fallback mode visible so operators can distinguish scripted coaching from live LLM output."
     ],
+    two_minute_review: [
+      "Open /api/health and /api/meta to confirm provider posture, monetization state, and route coverage.",
+      "Open /api/runtime-brief to verify runtime mode, schema contract, and fallback behavior.",
+      "Open /api/review-pack and confirm safety boundary versus revenue boundary before public traffic.",
+      "Validate live chat plus fallback copy only after BYOK, server-key, or Ollama posture is understood."
+    ],
     operator_rules: [
       "Crisis keywords always override monetization or engagement goals.",
       "Do not imply therapy, diagnosis, or guaranteed outcomes.",
@@ -134,6 +140,28 @@ export function buildRuntimeBrief(env, requestUrl) {
     watchouts: [
       "If neither BYOK, server key, nor Ollama is available, only fallback coaching can run.",
       "AdSense state must never affect safety routing or crisis escalation."
+    ],
+    proof_assets: [
+      {
+        label: "Health Route",
+        path: "/api/health",
+        why: "Shows active provider posture, LLM readiness, and next operator action."
+      },
+      {
+        label: "Runtime Brief",
+        path: "/api/runtime-brief",
+        why: "Pins runtime mode, schema contract, review flow, and watchouts."
+      },
+      {
+        label: "Review Pack",
+        path: "/api/review-pack",
+        why: "Packages safety boundary, revenue boundary, and reviewer sequence in one payload."
+      },
+      {
+        label: "Coach Schema",
+        path: "/api/schema/coach-response",
+        why: "Locks the expected coach response contract before a public demo."
+      }
     ],
     routes: RUNTIME_ROUTES,
     diagnostics,
@@ -189,10 +217,38 @@ export function buildReviewPack(env, requestUrl) {
       "Read /api/runtime-brief and /api/review-pack before enabling public traffic or demo sessions.",
       "Validate live chat plus fallback behavior only after safety and provider boundaries are understood."
     ],
+    two_minute_review: [
+      "Open /api/health, /api/meta, and /api/runtime-brief to confirm provider and fallback posture.",
+      "Open /api/review-pack to check safety escalation and revenue separation before public traffic.",
+      "Compare live and fallback behavior only after schema, provider, and monetization state are understood.",
+      "Treat crisis escalation as a precondition, not a post-demo check."
+    ],
     watchouts: [
       "A ready provider path does not by itself prove safe prompts, moderation, or escalation copy are correct.",
       "When neither BYOK, server key, nor Ollama is available, the service must stay visibly in fallback mode.",
       "Monetization readiness is operational metadata and must not leak into coach tone or decision logic."
+    ],
+    proof_assets: [
+      {
+        label: "Health Route",
+        path: "/api/health",
+        why: "Confirms provider readiness, llm mode, and next action."
+      },
+      {
+        label: "Runtime Brief",
+        path: "/api/runtime-brief",
+        why: "Summarizes runtime posture and fallback boundaries before a demo."
+      },
+      {
+        label: "Review Pack",
+        path: "/api/review-pack",
+        why: "Packages safety and revenue boundaries for reviewer handoff."
+      },
+      {
+        label: "Coach Schema",
+        path: "/api/schema/coach-response",
+        why: "Pins the expected coach response contract for live and fallback paths."
+      }
     ],
     links: {
       health: "/api/health",

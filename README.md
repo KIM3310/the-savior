@@ -76,6 +76,18 @@ npm run dev:ollama
 - `/api/health`, `/api/meta`, `/api/runtime-brief`, `/api/review-pack`, `/api/schema/coach-response` 조합으로 리뷰어가 운영 posture를 빠르게 확인할 수 있습니다.
 - fallback 모드와 위기 대응 경계가 런타임 surface와 테스트에서 명시적으로 드러납니다.
 
+## 2-Minute Review Path
+- `/api/health`와 `/api/meta`로 provider posture, monetization state, route coverage를 확인합니다.
+- `/api/runtime-brief`에서 runtime mode, schema contract, fallback behavior를 확인합니다.
+- `/api/review-pack`에서 safety boundary와 revenue boundary를 public traffic 전에 분리해 읽습니다.
+- live chat과 fallback copy 검증은 provider posture를 이해한 뒤에만 진행합니다.
+
+## Proof Assets
+- `Health Route` -> `/api/health`
+- `Runtime Brief` -> `/api/runtime-brief`
+- `Review Pack` -> `/api/review-pack`
+- `Coach Schema` -> `/api/schema/coach-response`
+
 ## 배포
 ```bash
 npm run deploy
