@@ -590,6 +590,13 @@ p {
   flex-wrap: wrap;
 }
 
+.brief-actions {
+  margin-top: 0.7rem;
+  display: flex;
+  gap: 0.46rem;
+  flex-wrap: wrap;
+}
+
 .stack-form,
 .chat-form {
   display: grid;

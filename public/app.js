@@ -1567,6 +1567,8 @@ function restoreSessionSnapshots() {
 function setupCopyButtons() {
   const copyCheckinBtn = $("copyCheckinBtn");
   const copyJournalBtn = $("copyJournalBtn");
+  const copyRuntimeBriefBtn = $("copyRuntimeBriefBtn");
+  const copyReviewPackBtn = $("copyReviewPackBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1581,6 +1583,26 @@ function setupCopyButtons() {
     copyJournalBtn.addEventListener("click", async () => {
       const ok = await copyTextToClipboard(journalOutput.textContent || "");
       setRuntimeStatus(ok ? "저널 결과를 복사했습니다." : "저널 결과 복사에 실패했습니다.", ok ? "good" : "warning");
+    });
+  }
+
+  if (copyRuntimeBriefBtn) {
+    copyRuntimeBriefBtn.addEventListener("click", async () => {
+      const payload = state.runtimeBrief
+        ? JSON.stringify(state.runtimeBrief, null, 2)
+        : "";
+      const ok = await copyTextToClipboard(payload);
+      setRuntimeStatus(ok ? "Runtime brief를 복사했습니다." : "Runtime brief 복사에 실패했습니다.", ok ? "good" : "warning");
+    });
+  }
+
+  if (copyReviewPackBtn) {
+    copyReviewPackBtn.addEventListener("click", async () => {
+      const payload = state.reviewPack
+        ? JSON.stringify(state.reviewPack, null, 2)
+        : "";
+      const ok = await copyTextToClipboard(payload);
+      setRuntimeStatus(ok ? "Review pack을 복사했습니다." : "Review pack 복사에 실패했습니다.", ok ? "good" : "warning");
     });
   }
 }
