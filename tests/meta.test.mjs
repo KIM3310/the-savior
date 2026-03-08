@@ -95,6 +95,8 @@ test("runtime brief route exposes operator contract", async () => {
   assert.equal(body.monetization.adsenseConfigured, true);
   assert.ok(body.routes.includes("/api/runtime-brief"));
   assert.ok(body.review_flow.length >= 3);
+  assert.equal(body.two_minute_review.length, 4);
+  assert.equal(body.proof_assets[0].path, "/api/health");
 });
 
 test("review pack route exposes safety and revenue boundaries", async () => {
@@ -112,6 +114,8 @@ test("review pack route exposes safety and revenue boundaries", async () => {
   assert.ok(body.proof_bundle.review_routes.includes("/api/review-pack"));
   assert.ok(body.safety_boundary.length >= 3);
   assert.ok(body.revenue_boundary.length >= 3);
+  assert.equal(body.two_minute_review.length, 4);
+  assert.equal(body.proof_assets[0].label, "Health Route");
 });
 
 test("coach schema route exposes response contract", async () => {
