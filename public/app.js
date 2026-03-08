@@ -234,6 +234,30 @@ function renderReviewPack(payload) {
   renderProofAssets("reviewPackProofAssets", payload.proof_assets, "proof assets unavailable");
 }
 
+async function copyProviderPostureSnapshot() {
+  const brief = state.runtimeBrief || {};
+  const llm = brief.llm || {};
+  const diagnostics = brief.diagnostics || {};
+  const monetization = brief.monetization || {};
+  const reviewPack = state.reviewPack || {};
+  const lines = [
+    "the-savior provider posture",
+    `Headline: ${brief.headline || "-"}`,
+    `Provider preference: ${llm.providerPreference || state.llmProviderPreference || "-"}`,
+    `Runtime mode: ${diagnostics.runtimeMode || llm.runtimeMode || "-"}`,
+    `Provider ready: ${llm.canServeWithoutUserKey ? "yes" : "no"}`,
+    `Server key: ${llm.hasServerApiKey ? "enabled" : "disabled"}`,
+    `Ollama: ${llm.ollamaEnabled ? `enabled (${llm.ollamaModel || state.ollamaModel || "-"})` : "disabled"}`,
+    `AdSense: ${monetization.adsenseConfigured ? "configured" : "not configured"}`,
+    "",
+    "Boundary checks",
+    ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    ...((reviewPack.revenue_boundary || []).slice(0, 1).map((item) => `- ${item}`)),
+  ];
+  const ok = await copyTextToClipboard(lines.join("\n"));
+  setRuntimeStatus(ok ? "Provider posture를 복사했습니다." : "Provider posture 복사에 실패했습니다.", ok ? "good" : "warning");
+}
+
 function setButtonLoading(button, loading, loadingText) {
   if (!button) return;
   if (!button.dataset.defaultText) {
@@ -1570,6 +1594,7 @@ function setupCopyButtons() {
   const copyRuntimeBriefBtn = $("copyRuntimeBriefBtn");
   const copyReviewRoutesBtn = $("copyReviewRoutesBtn");
   const copyReviewPackBtn = $("copyReviewPackBtn");
+  const copyProviderPostureBtn = $("copyProviderPostureBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1614,6 +1639,10 @@ function setupCopyButtons() {
       const ok = await copyTextToClipboard(payload);
       setRuntimeStatus(ok ? "Review pack을 복사했습니다." : "Review pack 복사에 실패했습니다.", ok ? "good" : "warning");
     });
+  }
+
+  if (copyProviderPostureBtn) {
+    copyProviderPostureBtn.addEventListener("click", copyProviderPostureSnapshot);
   }
 }
 
