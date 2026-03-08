@@ -17,6 +17,7 @@ const state = {
   ollamaEnabled: false,
   ollamaModel: "",
   runtimeBrief: null,
+  reviewPack: null,
   keyValidationTimer: null,
   keyValidationAbort: null,
   keyValidationSeq: 0,
@@ -174,6 +175,34 @@ function renderRuntimeBrief(payload) {
   renderBriefList("briefReviewFlow", payload.review_flow, "review flow unavailable");
   renderBriefList("briefOperatorRules", payload.operator_rules, "operator rules unavailable");
   renderBriefList("briefWatchouts", payload.watchouts, "watchouts unavailable");
+}
+
+function renderReviewPack(payload) {
+  state.reviewPack = payload || null;
+
+  if (!payload || payload.status !== "ok") {
+    fillText("reviewPackBadge", "review-unavailable");
+    fillText("reviewPackHeadline", "리뷰 패키지 정보를 가져오지 못했습니다. health/meta/runtime surface를 확인해 주세요.");
+    fillText("reviewPackRuntime", "degraded");
+    fillText("reviewPackLlmReady", "check-required");
+    fillText("reviewPackAdsense", "unknown");
+    fillText("reviewPackRoutes", "0");
+    renderBriefList("reviewPackSafety", [], "safety boundary fetch 실패 시 crisis/fallback 정책을 수동 확인합니다.");
+    renderBriefList("reviewPackRevenue", [], "monetization boundary를 수동 검토합니다.");
+    renderBriefList("reviewPackSequence", [], "review pack fetch 실패 시 health/meta/runtime-brief부터 확인합니다.");
+    return;
+  }
+
+  const proof = payload.proof_bundle || {};
+  fillText("reviewPackBadge", payload.readiness_contract, "review-pack");
+  fillText("reviewPackHeadline", payload.headline, "review pack unavailable");
+  fillText("reviewPackRuntime", proof.runtimeMode, "runtime-key");
+  fillText("reviewPackLlmReady", proof.llmReady ? "ready" : "fallback-only");
+  fillText("reviewPackAdsense", proof.adsenseConfigured ? "configured" : "not-configured");
+  fillText("reviewPackRoutes", Array.isArray(proof.review_routes) ? `${proof.review_routes.length} routes` : "0");
+  renderBriefList("reviewPackSafety", payload.safety_boundary, "safety boundary unavailable");
+  renderBriefList("reviewPackRevenue", payload.revenue_boundary, "revenue boundary unavailable");
+  renderBriefList("reviewPackSequence", payload.review_sequence, "review sequence unavailable");
 }
 
 function setButtonLoading(button, loading, loadingText) {
@@ -1415,6 +1444,21 @@ async function loadRuntimeBrief() {
   }
 }
 
+async function loadReviewPack() {
+  try {
+    const response = await fetch(apiUrl("/api/review-pack"), { method: "GET" });
+    if (!response.ok) {
+      renderReviewPack(null);
+      return;
+    }
+
+    const payload = await response.json();
+    renderReviewPack(payload);
+  } catch {
+    renderReviewPack(null);
+  }
+}
+
 async function loadConfig() {
   try {
     const response = await fetch(apiUrl("/api/config"), { method: "GET" });
@@ -1453,10 +1497,12 @@ async function loadConfig() {
     }
     loadHealth();
     loadRuntimeBrief();
+    loadReviewPack();
   } catch (error) {
     console.error("Config load failed", error);
     refreshUserApiKeyStatus();
     renderRuntimeBrief(null);
+    renderReviewPack(null);
     setRuntimeStatus("네트워크 오류로 구성 로드에 실패했습니다.", "error");
   }
 }
