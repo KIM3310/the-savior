@@ -1568,6 +1568,7 @@ function setupCopyButtons() {
   const copyCheckinBtn = $("copyCheckinBtn");
   const copyJournalBtn = $("copyJournalBtn");
   const copyRuntimeBriefBtn = $("copyRuntimeBriefBtn");
+  const copyReviewRoutesBtn = $("copyReviewRoutesBtn");
   const copyReviewPackBtn = $("copyReviewPackBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
@@ -1593,6 +1594,15 @@ function setupCopyButtons() {
         : "";
       const ok = await copyTextToClipboard(payload);
       setRuntimeStatus(ok ? "Runtime brief를 복사했습니다." : "Runtime brief 복사에 실패했습니다.", ok ? "good" : "warning");
+    });
+  }
+
+  if (copyReviewRoutesBtn) {
+    copyReviewRoutesBtn.addEventListener("click", async () => {
+      const routes = state.reviewPack?.proof_bundle?.review_routes || [];
+      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const ok = await copyTextToClipboard(payload);
+      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
     });
   }
 
