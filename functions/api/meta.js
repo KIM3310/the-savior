@@ -123,6 +123,7 @@ export async function onRequestGet(context) {
       },
       diagnostics,
       readiness_contract: READINESS_CONTRACT,
+      review_pack_contract: "the-savior-review-pack-v1",
       report_contract: buildCoachResponseSchema(),
       ops_contract: {
         schema: "ops-envelope-v1",

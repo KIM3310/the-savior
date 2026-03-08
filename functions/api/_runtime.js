@@ -1,5 +1,6 @@
 export const OLLAMA_MODEL_NAME = "llama3.2:latest";
 export const READINESS_CONTRACT = "the-savior-runtime-brief-v1";
+export const REVIEW_PACK_CONTRACT = "the-savior-review-pack-v1";
 export const COACH_RESPONSE_SCHEMA = "the-savior-coach-response-v1";
 export const RUNTIME_ROUTES = [
   "/api/health",
@@ -8,6 +9,7 @@ export const RUNTIME_ROUTES = [
   "/api/chat",
   "/api/meta",
   "/api/runtime-brief",
+  "/api/review-pack",
   "/api/schema/coach-response"
 ];
 
@@ -140,6 +142,63 @@ export function buildRuntimeBrief(env, requestUrl) {
       config: "/api/config",
       meta: "/api/meta",
       runtime_brief: "/api/runtime-brief",
+      review_pack: "/api/review-pack",
+      coach_schema: "/api/schema/coach-response"
+    }
+  };
+}
+
+export function buildReviewPack(env, requestUrl) {
+  const runtimeBrief = buildRuntimeBrief(env, requestUrl);
+  const diagnostics = runtimeBrief.diagnostics || {};
+  const llm = runtimeBrief.llm || {};
+  const monetization = runtimeBrief.monetization || {};
+
+  return {
+    status: "ok",
+    service: "the-savior",
+    generated_at: new Date().toISOString(),
+    readiness_contract: REVIEW_PACK_CONTRACT,
+    headline:
+      "Reviewer pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and monetization separation in one contract.",
+    proof_bundle: {
+      runtimeMode: diagnostics.runtimeMode || "runtime-key",
+      llmReady: Boolean(diagnostics.llmReady),
+      providerReady: Boolean(llm.canServeWithoutUserKey),
+      adsenseConfigured: Boolean(monetization.adsenseConfigured),
+      review_routes: [
+        "/api/health",
+        "/api/meta",
+        "/api/runtime-brief",
+        "/api/review-pack",
+        "/api/schema/coach-response"
+      ]
+    },
+    safety_boundary: [
+      "Crisis or self-harm signals override engagement and monetization concerns.",
+      "Fallback coaching must remain explicit when no live LLM path is available.",
+      "BYOK and server-key paths are runtime choices, not hidden defaults."
+    ],
+    revenue_boundary: [
+      "AdSense state must never influence crisis routing or coach response content.",
+      "Wellness coaching and monetization surfaces are separated so reviewers can inspect them independently.",
+      "Operators should confirm that fallback mode still behaves safely when ads are configured."
+    ],
+    review_sequence: [
+      "Open /api/health and /api/meta to confirm active provider posture and monetization configuration.",
+      "Read /api/runtime-brief and /api/review-pack before enabling public traffic or demo sessions.",
+      "Validate live chat plus fallback behavior only after safety and provider boundaries are understood."
+    ],
+    watchouts: [
+      "A ready provider path does not by itself prove safe prompts, moderation, or escalation copy are correct.",
+      "When neither BYOK, server key, nor Ollama is available, the service must stay visibly in fallback mode.",
+      "Monetization readiness is operational metadata and must not leak into coach tone or decision logic."
+    ],
+    links: {
+      health: "/api/health",
+      meta: "/api/meta",
+      runtime_brief: "/api/runtime-brief",
+      review_pack: "/api/review-pack",
       coach_schema: "/api/schema/coach-response"
     }
   };

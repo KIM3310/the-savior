@@ -13,12 +13,12 @@ Last updated: 2026-03-08
 ## E - Execution
 - emotional check-in, coach, journal, recovery dashboard를 한 흐름으로 유지
 - runtime key / fallback / health surface를 명확히 유지
-- 이번 iteration에서 `/api/runtime-brief`, `/api/schema/coach-response`, first-screen runtime panel을 추가
+- 이번 iteration에서 `/api/runtime-brief`, `/api/review-pack`, `/api/schema/coach-response`, first-screen runtime panel을 추가
 
 ## C - Criteria
 - `npm run check`, `npm test` green
 - README 첫 화면에서 가치와 보안 주의가 동시에 이해됨
-- 첫 화면에서 BYOK, Ollama, fallback, response schema contract가 즉시 보임
+- 첫 화면에서 BYOK, Ollama, fallback, safety/revenue boundary, response schema contract가 즉시 보임
 - Cloudflare runtime CI가 main push에서 자동 실행됨
 
 ## K - Keep

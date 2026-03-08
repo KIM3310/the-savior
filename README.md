@@ -66,13 +66,14 @@ npm run dev:ollama
 - `GET /api/health`: 운영 헬스체크 상태
 - `GET /api/meta`: LLM/광고/레이트리밋 메타데이터
 - `GET /api/runtime-brief`: operator readiness brief
+- `GET /api/review-pack`: safety/revenue boundary review pack
 - `GET /api/schema/coach-response`: 코치 응답 계약 스키마
 
 모든 API 응답은 `X-Request-Id` 헤더를 포함해 장애 추적에 사용할 수 있습니다.
 
 ## Service-Grade Surfaces
-- 첫 화면에서 `Operator Readiness Brief`가 BYOK, Ollama, fallback, schema contract를 바로 보여줍니다.
-- `/api/health`, `/api/meta`, `/api/runtime-brief`, `/api/schema/coach-response` 조합으로 리뷰어가 운영 posture를 빠르게 확인할 수 있습니다.
+- 첫 화면에서 `Operator Readiness Brief`와 `Executive Review Pack`이 BYOK, Ollama, fallback, safety/revenue boundary를 바로 보여줍니다.
+- `/api/health`, `/api/meta`, `/api/runtime-brief`, `/api/review-pack`, `/api/schema/coach-response` 조합으로 리뷰어가 운영 posture를 빠르게 확인할 수 있습니다.
 - fallback 모드와 위기 대응 경계가 런타임 surface와 테스트에서 명시적으로 드러납니다.
 
 ## 배포
