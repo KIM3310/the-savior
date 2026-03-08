@@ -217,6 +217,110 @@ p {
   font-size: 0.82rem;
 }
 
+.brief-panel {
+  margin-top: 1rem;
+  padding: 0.92rem 0 1.08rem;
+  position: relative;
+}
+
+.brief-panel::before,
+.brief-panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 210, 140, 0.2), transparent);
+}
+
+.brief-panel::before {
+  top: 0;
+}
+
+.brief-panel::after {
+  bottom: 0;
+}
+
+.brief-head {
+  display: grid;
+  gap: 0.22rem;
+  margin-bottom: 0.7rem;
+}
+
+.brief-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.brief-grid + .brief-grid {
+  margin-top: 0.55rem;
+}
+
+.brief-card {
+  border-radius: 14px;
+  border: 1px solid rgba(255, 214, 146, 0.12);
+  background: rgba(10, 10, 12, 0.42);
+  padding: 0.8rem;
+  min-height: 100%;
+}
+
+.brief-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0.28rem 0.58rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: #f0dbb9;
+  border: 1px solid rgba(255, 212, 146, 0.2);
+  background: rgba(255, 196, 111, 0.09);
+}
+
+.brief-badge.is-good {
+  color: #d7f1ea;
+  border-color: rgba(126, 188, 171, 0.45);
+  background: rgba(96, 145, 136, 0.2);
+}
+
+.brief-badge.is-warning {
+  color: #f4dbbe;
+  border-color: rgba(236, 181, 120, 0.4);
+  background: rgba(157, 107, 58, 0.2);
+}
+
+.brief-copy {
+  margin-top: 0.72rem;
+  color: #dbc8a7;
+  line-height: 1.7;
+}
+
+.brief-label {
+  color: #a9c9c2;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.brief-value {
+  margin-top: 0.18rem;
+  margin-bottom: 0.72rem;
+  color: #f3dfbc;
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+
+.brief-list {
+  margin: 0.54rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  color: #d7c5a7;
+  font-size: 0.86rem;
+  line-height: 1.58;
+}
+
 .hero::before,
 .hero::after {
   content: "";
@@ -971,6 +1075,10 @@ select:focus {
 }
 
 @media (max-width: 940px) {
+  .brief-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero {
     grid-template-columns: 1fr;
   }
@@ -993,6 +1101,10 @@ select:focus {
 }
 
 @media (max-width: 760px) {
+  .brief-card {
+    padding: 0.72rem;
+  }
+
   .site-header {
     flex-direction: column;
     align-items: flex-start;

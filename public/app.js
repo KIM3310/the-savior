@@ -16,6 +16,7 @@ const state = {
   llmProviderPreference: "auto",
   ollamaEnabled: false,
   ollamaModel: "",
+  runtimeBrief: null,
   keyValidationTimer: null,
   keyValidationAbort: null,
   keyValidationSeq: 0,
@@ -105,6 +106,74 @@ function setApiBaseStatus() {
   const label = $("apiBaseStatus");
   if (!label) return;
   label.textContent = `API 기준 주소: ${state.apiBase || "(미설정)"}`;
+}
+
+function setBriefBadge(message, tone = "default") {
+  const badge = $("briefBadge");
+  if (!badge) return;
+  badge.classList.remove("is-good", "is-warning");
+  if (tone === "good") badge.classList.add("is-good");
+  if (tone === "warning") badge.classList.add("is-warning");
+  badge.textContent = message;
+}
+
+function fillText(id, value, fallback = "-") {
+  const element = $(id);
+  if (!element) return;
+  const text = safeText(typeof value === "string" ? value : String(value ?? ""));
+  element.textContent = text || fallback;
+}
+
+function renderBriefList(id, items, fallbackText) {
+  const list = $(id);
+  if (!list) return;
+
+  const values = Array.isArray(items) && items.length ? items : [fallbackText];
+  list.innerHTML = "";
+  values.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = safeText(item || "") || fallbackText;
+    list.appendChild(li);
+  });
+}
+
+function renderRuntimeBrief(payload) {
+  state.runtimeBrief = payload || null;
+
+  if (!payload || payload.status !== "ok") {
+    setBriefBadge("brief-unavailable", "warning");
+    fillText("briefHeadline", "런타임 계약 정보를 가져오지 못했습니다. health/config 경로를 확인해 주세요.");
+    fillText("briefSchema", "unavailable");
+    fillText("briefMode", "degraded");
+    fillText("briefProvider", "network-check-required");
+    fillText("briefRouteCount", "0");
+    renderBriefList("briefReviewFlow", [], "runtime brief fetch 실패 시 health/meta부터 확인합니다.");
+    renderBriefList("briefOperatorRules", [], "BYOK, fallback, crisis escalation 정책을 수동 검토합니다.");
+    renderBriefList("briefWatchouts", [], "런타임 surface가 없으면 배포 전 검증 증거가 약해집니다.");
+    return;
+  }
+
+  const reportContract = payload.report_contract || {};
+  const llm = payload.llm || {};
+  const routes = Array.isArray(payload.routes) ? payload.routes : [];
+  const providerParts = [safeText(llm.providerPreference || "auto")];
+  if (llm.ollamaEnabled && safeText(llm.ollamaModel || "")) {
+    providerParts.push(safeText(llm.ollamaModel || ""));
+  }
+  providerParts.push(llm.canServeWithoutUserKey ? "ready" : "BYOK required");
+
+  setBriefBadge(
+    safeText(payload.readiness_contract || "runtime-brief"),
+    llm.canServeWithoutUserKey ? "good" : "warning"
+  );
+  fillText("briefHeadline", payload.headline, "runtime brief unavailable");
+  fillText("briefSchema", reportContract.schema, "unknown");
+  fillText("briefMode", llm.runtimeMode, "runtime-key");
+  fillText("briefProvider", providerParts.join(" · "), "auto");
+  fillText("briefRouteCount", routes.length > 0 ? `${routes.length} routes` : "0");
+  renderBriefList("briefReviewFlow", payload.review_flow, "review flow unavailable");
+  renderBriefList("briefOperatorRules", payload.operator_rules, "operator rules unavailable");
+  renderBriefList("briefWatchouts", payload.watchouts, "watchouts unavailable");
 }
 
 function setButtonLoading(button, loading, loadingText) {
@@ -1330,11 +1399,28 @@ async function loadHealth() {
   }
 }
 
+async function loadRuntimeBrief() {
+  setBriefBadge("brief-loading", "warning");
+  try {
+    const response = await fetch(apiUrl("/api/runtime-brief"), { method: "GET" });
+    if (!response.ok) {
+      renderRuntimeBrief(null);
+      return;
+    }
+
+    const payload = await response.json();
+    renderRuntimeBrief(payload);
+  } catch {
+    renderRuntimeBrief(null);
+  }
+}
+
 async function loadConfig() {
   try {
     const response = await fetch(apiUrl("/api/config"), { method: "GET" });
     if (!response.ok) {
       refreshUserApiKeyStatus();
+      renderRuntimeBrief(null);
       setRuntimeStatus("서비스 구성 정보를 불러오지 못했습니다.", "error");
       return;
     }
@@ -1366,9 +1452,11 @@ async function loadConfig() {
       setRuntimeStatus("API 키가 없어 AI 기능이 제한됩니다.", "warning");
     }
     loadHealth();
+    loadRuntimeBrief();
   } catch (error) {
     console.error("Config load failed", error);
     refreshUserApiKeyStatus();
+    renderRuntimeBrief(null);
     setRuntimeStatus("네트워크 오류로 구성 로드에 실패했습니다.", "error");
   }
 }

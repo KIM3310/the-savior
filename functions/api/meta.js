@@ -1,60 +1,19 @@
 import { checkRateLimit, getRequestId, resolveCors } from "./_security.js";
+import {
+  READINESS_CONTRACT,
+  RUNTIME_ROUTES,
+  buildCoachResponseSchema,
+  buildRuntimeDiagnostics,
+  hasEnabledServerApiKey,
+  isOllamaEnabled,
+  normalizeProvider,
+  sanitizeBaseUrl
+} from "./_runtime.js";
 
 const CORS_OPTIONS = {
   methods: "GET, OPTIONS",
   allowHeaders: "Content-Type"
 };
-const OLLAMA_MODEL_NAME = "llama3.2:latest";
-
-function sanitizeBaseUrl(value) {
-  if (typeof value !== "string") return "";
-  return value.trim().replace(/\/+$/, "");
-}
-
-function normalizeProvider(value) {
-  const raw = String(value || "").trim().toLowerCase();
-  if (raw === "openai" || raw === "ollama") return raw;
-  return "auto";
-}
-
-function isLocalHostname(hostname) {
-  const host = String(hostname || "").toLowerCase();
-  return host === "localhost" || host === "127.0.0.1" || host === "::1";
-}
-
-function isOllamaEnabled(env, requestUrl) {
-  const flag = String(env.ENABLE_OLLAMA || "").trim().toLowerCase();
-  if (flag) {
-    return !["false", "0", "off", "no"].includes(flag);
-  }
-
-  try {
-    return isLocalHostname(new URL(requestUrl).hostname);
-  } catch {
-    return false;
-  }
-}
-
-function buildMetaDiagnostics({
-  hasServerApiKey,
-  monetizationReady,
-  ollamaEnabled,
-  providerPreference
-}) {
-  const llmReady = hasServerApiKey || ollamaEnabled;
-  let runtimeMode = "runtime-key";
-  if (hasServerApiKey) runtimeMode = "server-key";
-  else if (ollamaEnabled && providerPreference !== "openai") runtimeMode = "ollama-local";
-
-  return {
-    runtimeMode,
-    llmReady,
-    monetizationReady,
-    nextAction: llmReady
-      ? "Call /api/chat or /api/config to validate the active runtime path."
-      : "Provide BYOK at runtime or enable local/server LLM support before launch."
-  };
-}
 
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
@@ -126,10 +85,10 @@ export async function onRequestGet(context) {
   const requestOrigin = sanitizeBaseUrl(new URL(context.request.url).origin);
   const configuredBaseUrl = sanitizeBaseUrl(context.env.PUBLIC_API_BASE_URL || "");
   const providerPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
-  const hasServerApiKey = Boolean(context.env.OPENAI_API_KEY);
+  const hasServerApiKey = hasEnabledServerApiKey(context.env);
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
   const monetizationReady = Boolean(String(context.env.ADSENSE_CLIENT || "").trim());
-  const diagnostics = buildMetaDiagnostics({
+  const diagnostics = buildRuntimeDiagnostics({
     hasServerApiKey,
     monetizationReady,
     ollamaEnabled,
@@ -149,11 +108,11 @@ export async function onRequestGet(context) {
         providerPreference,
         hasServerApiKey,
         ollamaEnabled,
-        ollamaModel: String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME
+        ollamaModel: String(context.env.OLLAMA_MODEL || "").trim() || "llama3.2:latest"
       },
       api: {
         publicBaseUrl: configuredBaseUrl || requestOrigin,
-        routes: ["/api/health", "/api/config", "/api/key-check", "/api/chat", "/api/meta"]
+        routes: RUNTIME_ROUTES
       },
       monetization: {
         adsenseConfigured: monetizationReady,
@@ -163,6 +122,8 @@ export async function onRequestGet(context) {
         }
       },
       diagnostics,
+      readiness_contract: READINESS_CONTRACT,
+      report_contract: buildCoachResponseSchema(),
       ops_contract: {
         schema: "ops-envelope-v1",
         version: 1,
