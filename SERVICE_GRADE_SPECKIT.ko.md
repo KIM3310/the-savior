@@ -13,11 +13,12 @@ Last updated: 2026-03-08
 ## E - Execution
 - emotional check-in, coach, journal, recovery dashboard를 한 흐름으로 유지
 - runtime key / fallback / health surface를 명확히 유지
-- 이번 baseline에서 GitHub Actions CI를 추가해 check/test가 자동 실행되게 함
+- 이번 iteration에서 `/api/runtime-brief`, `/api/schema/coach-response`, first-screen runtime panel을 추가
 
 ## C - Criteria
 - `npm run check`, `npm test` green
 - README 첫 화면에서 가치와 보안 주의가 동시에 이해됨
+- 첫 화면에서 BYOK, Ollama, fallback, response schema contract가 즉시 보임
 - Cloudflare runtime CI가 main push에서 자동 실행됨
 
 ## K - Keep
@@ -27,10 +28,11 @@ Last updated: 2026-03-08
 ## I - Improve
 - screenshot pack 및 mobile evidence 강화
 - recovery trend export / retention narrative 강화
+- crisis escalation evidence와 schema-driven QA 확장
 
 ## T - Trace
 - `README.md`
 - `functions/`
 - `tests/`
+- `public/`
 - `.github/workflows/ci.yml`
-

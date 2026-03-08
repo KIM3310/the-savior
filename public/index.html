@@ -55,6 +55,58 @@
         <p id="apiBaseStatus" class="runtime-meta">API 기준 주소: 확인 중</p>
       </section>
 
+      <section id="runtime-brief" class="brief-panel reveal" aria-live="polite">
+        <div class="brief-head veil" tabindex="0">
+          <p class="panel-kicker">Runtime Contract</p>
+          <h2>Operator Readiness Brief</h2>
+          <p class="hidden-copy">BYOK, Ollama, fallback, schema contract를 한 화면에서 확인할 수 있는 운영 surface입니다.</p>
+        </div>
+
+        <div class="brief-grid">
+          <article class="brief-card veil" tabindex="0">
+            <p id="briefBadge" class="brief-badge">brief-loading</p>
+            <p id="briefHeadline" class="brief-copy">런타임 계약 정보를 불러오는 중입니다.</p>
+          </article>
+
+          <article class="brief-card veil" tabindex="0">
+            <p class="brief-label">Schema</p>
+            <p id="briefSchema" class="brief-value">-</p>
+            <p class="brief-label">Mode</p>
+            <p id="briefMode" class="brief-value">-</p>
+          </article>
+
+          <article class="brief-card veil" tabindex="0">
+            <p class="brief-label">Provider</p>
+            <p id="briefProvider" class="brief-value">-</p>
+            <p class="brief-label">Route Count</p>
+            <p id="briefRouteCount" class="brief-value">-</p>
+          </article>
+        </div>
+
+        <div class="brief-grid brief-grid-lists">
+          <article class="brief-card veil" tabindex="0">
+            <p class="brief-label">Review Flow</p>
+            <ul id="briefReviewFlow" class="brief-list">
+              <li>서비스 계약 정보를 불러오는 중입니다.</li>
+            </ul>
+          </article>
+
+          <article class="brief-card veil" tabindex="0">
+            <p class="brief-label">Operator Rules</p>
+            <ul id="briefOperatorRules" class="brief-list">
+              <li>런타임 정책을 확인하는 중입니다.</li>
+            </ul>
+          </article>
+
+          <article class="brief-card veil" tabindex="0">
+            <p class="brief-label">Watchouts</p>
+            <ul id="briefWatchouts" class="brief-list">
+              <li>fallback 및 안전 경계를 확인하는 중입니다.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
       <section class="hero veil reveal" tabindex="0">
         <div class="hero-left">
           <p class="micro">Buddhist Minimal Wellness Platform</p>

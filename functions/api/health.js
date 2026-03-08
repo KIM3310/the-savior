@@ -1,30 +1,10 @@
 import { checkRateLimit, getRequestId, resolveCors } from "./_security.js";
+import { READINESS_CONTRACT, RUNTIME_ROUTES, buildRuntimeBrief, hasEnabledServerApiKey } from "./_runtime.js";
 
 const CORS_OPTIONS = {
   methods: "GET, OPTIONS",
   allowHeaders: "Content-Type"
 };
-
-function parseBoolFlag(value) {
-  const raw = String(value || "").trim().toLowerCase();
-  if (!raw) return false;
-  return raw === "1" || raw === "true" || raw === "yes" || raw === "on";
-}
-
-function hasEnabledServerApiKey(env) {
-  return parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY);
-}
-
-function buildHealthDiagnostics(env) {
-  const providerReady = hasEnabledServerApiKey(env);
-  return {
-    llmMode: providerReady ? "server-key" : "runtime-key-or-local",
-    providerReady,
-    nextAction: providerReady
-      ? "Call /api/chat to validate the live counseling flow."
-      : "Provide a runtime API key via /api/key-check or enable ALLOW_SERVER_OPENAI_KEY."
-  };
-}
 
 function jsonResponse(payload, status = 200, { corsHeaders = {}, extraHeaders = {}, cacheControl = "no-store" } = {}) {
   return new Response(JSON.stringify(payload), {
@@ -95,7 +75,14 @@ export async function onRequestGet(context) {
     );
   }
 
-  const diagnostics = buildHealthDiagnostics(context.env);
+  const runtimeBrief = buildRuntimeBrief(context.env, context.request.url);
+  const diagnostics = {
+    llmMode: runtimeBrief.diagnostics.runtimeMode,
+    providerReady: runtimeBrief.llm.canServeWithoutUserKey || hasEnabledServerApiKey(context.env),
+    nextAction: runtimeBrief.diagnostics.llmReady
+      ? "Call /api/chat to validate the live counseling flow."
+      : "Provide a runtime API key via /api/key-check or enable ALLOW_SERVER_OPENAI_KEY."
+  };
 
   return jsonResponse(
     {
@@ -104,6 +91,10 @@ export async function onRequestGet(context) {
       now: new Date().toISOString(),
       hasServerApiKey: hasEnabledServerApiKey(context.env),
       diagnostics,
+      readiness_contract: READINESS_CONTRACT,
+      report_contract: runtimeBrief.report_contract,
+      capabilities: ["byok-runtime-key", "server-key-guardrail", "ollama-local", "fallback-coach"],
+      routes: RUNTIME_ROUTES,
       ops_contract: {
         schema: "ops-envelope-v1",
         version: 1,
@@ -115,7 +106,9 @@ export async function onRequestGet(context) {
       },
       links: {
         config: "/api/config",
-        meta: "/api/meta"
+        meta: "/api/meta",
+        runtime_brief: "/api/runtime-brief",
+        coach_schema: "/api/schema/coach-response"
       }
     },
     200,

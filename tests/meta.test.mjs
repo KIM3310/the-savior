@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 
 import { onRequestGet as getHealth } from "../functions/api/health.js";
 import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
+import { onRequestGet as getRuntimeBrief } from "../functions/api/runtime-brief.js";
+import { onRequestGet as getCoachSchema } from "../functions/api/schema/coach-response.js";
 
 function createContext(url = "https://the-savior-9z8.pages.dev/api/meta", env = {}) {
   return {
@@ -41,10 +43,13 @@ test("meta route returns runtime diagnostics", async () => {
   assert.equal(body.build.commit, "abcdef12");
   assert.equal(body.monetization.adsenseConfigured, true);
   assert.ok(body.api.routes.includes("/api/meta"));
+  assert.ok(body.api.routes.includes("/api/runtime-brief"));
+  assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
+  assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
   assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.equal(body.diagnostics.runtimeMode, "server-key");
   assert.equal(body.diagnostics.llmReady, true);
-  assert.match(body.diagnostics.nextAction, /\/api\/chat|\/api\/config/);
+  assert.match(body.diagnostics.nextAction, /\/api\/runtime-brief|\/api\/chat/);
   assert.equal(response.headers.get("X-Request-Id"), response.headers.get("x-request-id"));
 });
 
@@ -62,8 +67,43 @@ test("health route exposes actionable llm guidance", async () => {
   assert.equal(body.hasServerApiKey, true);
   assert.equal(body.diagnostics.providerReady, true);
   assert.equal(body.diagnostics.llmMode, "server-key");
+  assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
+  assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
+  assert.ok(body.routes.includes("/api/schema/coach-response"));
   assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.match(body.diagnostics.nextAction, /\/api\/chat/);
+});
+
+test("runtime brief route exposes operator contract", async () => {
+  const response = await getRuntimeBrief(
+    createContext("https://the-savior-9z8.pages.dev/api/runtime-brief", {
+      ENABLE_OLLAMA: "true",
+      ADSENSE_CLIENT: "ca-pub-123"
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.service, "the-savior");
+  assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
+  assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
+  assert.equal(body.llm.runtimeMode, "ollama-local");
+  assert.equal(body.monetization.adsenseConfigured, true);
+  assert.ok(body.routes.includes("/api/runtime-brief"));
+  assert.ok(body.review_flow.length >= 3);
+});
+
+test("coach schema route exposes response contract", async () => {
+  const response = await getCoachSchema(
+    createContext("https://the-savior-9z8.pages.dev/api/schema/coach-response")
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.service, "the-savior");
+  assert.equal(body.schema.schema, "the-savior-coach-response-v1");
+  assert.ok(body.schema.required_fields.includes("reply"));
+  assert.ok(body.schema.operator_rules.length >= 3);
 });
 
 test("meta route supports CORS preflight", async () => {
