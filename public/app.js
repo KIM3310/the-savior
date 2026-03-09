@@ -258,6 +258,31 @@ async function copyProviderPostureSnapshot() {
   setRuntimeStatus(ok ? "Provider posture를 복사했습니다." : "Provider posture 복사에 실패했습니다.", ok ? "good" : "warning");
 }
 
+async function copyCrisisSnapshot() {
+  const brief = state.runtimeBrief || {};
+  const reviewPack = state.reviewPack || {};
+  const diagnostics = brief.diagnostics || {};
+  const proof = reviewPack.proof_bundle || {};
+  const lines = [
+    "the-savior crisis snapshot",
+    `Headline: ${reviewPack.headline || brief.headline || "-"}`,
+    `Runtime mode: ${diagnostics.runtimeMode || proof.runtimeMode || "-"}`,
+    `Provider ready: ${proof.llmReady ? "yes" : "no"}`,
+    `AdSense: ${proof.adsenseConfigured ? "configured" : "not configured"}`,
+    "",
+    "Safety boundary",
+    ...((reviewPack.safety_boundary || []).slice(0, 3).map((item) => `- ${item}`)),
+    "",
+    "Revenue boundary",
+    ...((reviewPack.revenue_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    "",
+    "Focused routes",
+    ...((proof.review_routes || []).slice(0, 4).map((item) => `- ${item}`)),
+  ];
+  const ok = await copyTextToClipboard(lines.join("\n"));
+  setRuntimeStatus(ok ? "Crisis snapshot을 복사했습니다." : "Crisis snapshot 복사에 실패했습니다.", ok ? "good" : "warning");
+}
+
 function setButtonLoading(button, loading, loadingText) {
   if (!button) return;
   if (!button.dataset.defaultText) {
@@ -1595,6 +1620,7 @@ function setupCopyButtons() {
   const copyReviewRoutesBtn = $("copyReviewRoutesBtn");
   const copyReviewPackBtn = $("copyReviewPackBtn");
   const copyProviderPostureBtn = $("copyProviderPostureBtn");
+  const copyCrisisSnapshotBtn = $("copyCrisisSnapshotBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1643,6 +1669,10 @@ function setupCopyButtons() {
 
   if (copyProviderPostureBtn) {
     copyProviderPostureBtn.addEventListener("click", copyProviderPostureSnapshot);
+  }
+
+  if (copyCrisisSnapshotBtn) {
+    copyCrisisSnapshotBtn.addEventListener("click", copyCrisisSnapshot);
   }
 }
 
