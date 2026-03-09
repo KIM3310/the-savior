@@ -76,7 +76,7 @@ npm run dev:ollama
 - `/api/health`, `/api/meta`, `/api/runtime-brief`, `/api/review-pack`, `/api/schema/coach-response` 조합으로 리뷰어가 운영 posture를 빠르게 확인할 수 있습니다.
 - fallback 모드와 위기 대응 경계가 런타임 surface와 테스트에서 명시적으로 드러납니다.
 
-## 2-Minute Review Path
+## Quick Review Path
 - `/api/health`와 `/api/meta`로 provider posture, monetization state, route coverage를 확인합니다.
 - `/api/runtime-brief`에서 runtime mode, schema contract, fallback behavior를 확인합니다.
 - `/api/review-pack`에서 safety boundary와 revenue boundary를 public traffic 전에 분리해 읽습니다.
@@ -119,7 +119,6 @@ npm run check
 npm test
 ```
 
-<!-- codex:local-verification:start -->
 ## Local Verification
 ```bash
 npm install
@@ -130,6 +129,3 @@ npm run test
 ## Repository Hygiene
 - Keep runtime artifacts out of commits (`.codex_runs/`, cache folders, temporary venvs).
 - Prefer running verification commands above before opening a PR.
-
-_Last updated: 2026-03-04_
-<!-- codex:local-verification:end -->
