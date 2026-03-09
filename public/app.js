@@ -11,7 +11,6 @@ const state = {
   apiBase: "",
   adConfig: null,
   userApiKey: "",
-  userApiKeyPersistent: false,
   hasServerApiKey: false,
   llmProviderPreference: "auto",
   ollamaEnabled: false,
@@ -25,9 +24,9 @@ const state = {
   lastValidationResult: null
 };
 
-const USER_API_KEY_STORAGE_KEY = "theSaviorUserOpenAIKey";
 const USER_API_KEY_SESSION_STORAGE_KEY = "theSaviorUserOpenAIKeySession";
-const USER_API_KEY_PERSIST_FLAG_KEY = "theSaviorRememberUserOpenAIKey";
+const USER_API_KEY_LEGACY_STORAGE_KEY = "theSaviorUserOpenAIKey";
+const USER_API_KEY_LEGACY_PERSIST_FLAG_KEY = "theSaviorRememberUserOpenAIKey";
 const CHAT_HISTORY_SESSION_KEY = "theSaviorChatHistory";
 const CHECKIN_OUTPUT_SESSION_KEY = "theSaviorCheckinOutput";
 const JOURNAL_OUTPUT_SESSION_KEY = "theSaviorJournalOutput";
@@ -382,60 +381,40 @@ function writeJsonStorage(storage, key, value) {
   }
 }
 
-function getPersistPreference() {
-  return readStorage(localStorage, USER_API_KEY_PERSIST_FLAG_KEY) === "1";
-}
-
 function getStoredUserApiKey() {
   const sessionKey = normalizeApiKey(readStorage(sessionStorage, USER_API_KEY_SESSION_STORAGE_KEY));
   if (sessionKey) {
-    state.userApiKeyPersistent = getPersistPreference();
     return sessionKey;
   }
 
-  const shouldPersist = getPersistPreference();
-  const localKey = normalizeApiKey(readStorage(localStorage, USER_API_KEY_STORAGE_KEY));
-  if (localKey && shouldPersist) {
-    writeStorage(sessionStorage, USER_API_KEY_SESSION_STORAGE_KEY, localKey);
-    state.userApiKeyPersistent = true;
-    return localKey;
-  }
-
+  const localKey = normalizeApiKey(readStorage(localStorage, USER_API_KEY_LEGACY_STORAGE_KEY));
   if (localKey) {
-    // Legacy migration: previously persisted keys are downgraded to session-only by default.
     writeStorage(sessionStorage, USER_API_KEY_SESSION_STORAGE_KEY, localKey);
-    removeStorage(localStorage, USER_API_KEY_STORAGE_KEY);
-    state.userApiKeyPersistent = false;
+    removeStorage(localStorage, USER_API_KEY_LEGACY_STORAGE_KEY);
+    removeStorage(localStorage, USER_API_KEY_LEGACY_PERSIST_FLAG_KEY);
     return localKey;
   }
 
-  state.userApiKeyPersistent = false;
+  removeStorage(localStorage, USER_API_KEY_LEGACY_PERSIST_FLAG_KEY);
   return "";
 }
 
-function saveUserApiKey(value, { persistent = false } = {}) {
+function saveUserApiKey(value) {
   const key = normalizeApiKey(value);
   if (!key) return;
 
   writeStorage(sessionStorage, USER_API_KEY_SESSION_STORAGE_KEY, key);
-  if (persistent) {
-    writeStorage(localStorage, USER_API_KEY_STORAGE_KEY, key);
-    writeStorage(localStorage, USER_API_KEY_PERSIST_FLAG_KEY, "1");
-  } else {
-    removeStorage(localStorage, USER_API_KEY_STORAGE_KEY);
-    removeStorage(localStorage, USER_API_KEY_PERSIST_FLAG_KEY);
-  }
+  removeStorage(localStorage, USER_API_KEY_LEGACY_STORAGE_KEY);
+  removeStorage(localStorage, USER_API_KEY_LEGACY_PERSIST_FLAG_KEY);
 
   state.userApiKey = key;
-  state.userApiKeyPersistent = persistent;
 }
 
 function clearUserApiKey() {
   removeStorage(sessionStorage, USER_API_KEY_SESSION_STORAGE_KEY);
-  removeStorage(localStorage, USER_API_KEY_STORAGE_KEY);
-  removeStorage(localStorage, USER_API_KEY_PERSIST_FLAG_KEY);
+  removeStorage(localStorage, USER_API_KEY_LEGACY_STORAGE_KEY);
+  removeStorage(localStorage, USER_API_KEY_LEGACY_PERSIST_FLAG_KEY);
   state.userApiKey = "";
-  state.userApiKeyPersistent = false;
 }
 
 function persistChatHistory() {
@@ -747,8 +726,7 @@ function updateUserApiKeyStatus(message, tone = "default") {
 
 function refreshUserApiKeyStatus() {
   if (state.userApiKey) {
-    const persistenceLabel = state.userApiKeyPersistent ? "이 브라우저에 저장됨" : "현재 세션에서만 사용";
-    updateUserApiKeyStatus(`개인 API 키 사용 중 (${maskApiKey(state.userApiKey)} · ${persistenceLabel})`, "good");
+    updateUserApiKeyStatus(`개인 API 키 사용 중 (${maskApiKey(state.userApiKey)} · 현재 세션에서만 사용)`, "good");
     return;
   }
 
@@ -801,20 +779,15 @@ function getRememberedValidationResult(candidate) {
 function renderValidationStatus(result, options = {}) {
   if (!result || result.aborted) return;
   const saved = Boolean(typeof options === "object" ? options.saved : options);
-  const persistent = Boolean(typeof options === "object" ? options.persistent : false);
 
   if (result.valid && result.usable) {
-    const suffix = saved ? (persistent ? " 이 브라우저에 저장되었습니다." : " 현재 세션에 저장되었습니다.") : "";
+    const suffix = saved ? " 현재 세션에 저장되었습니다." : "";
     updateUserApiKeyStatus((result.message || "유효한 API 키입니다.") + suffix, "good");
     return;
   }
 
   if (result.valid && !result.usable) {
-    const suffix = saved
-      ? persistent
-        ? " 키는 저장되었지만 결제/한도 확인이 필요합니다."
-        : " 키는 세션에 저장되었지만 결제/한도 확인이 필요합니다."
-      : "";
+    const suffix = saved ? " 키는 세션에 저장되었지만 결제/한도 확인이 필요합니다." : "";
     updateUserApiKeyStatus((result.message || "키 확인됨. 결제/한도 상태를 확인해 주세요.") + suffix, "warning");
     return;
   }
@@ -931,15 +904,10 @@ function setupUserApiKeyForm() {
   if (!form) return;
 
   const input = $("userApiKeyInput");
-  const remember = $("rememberUserApiKey");
   const save = $("saveUserApiKeyBtn");
   const validate = $("validateUserApiKeyBtn");
   const toggle = $("toggleUserApiKeyBtn");
   const clear = $("clearUserApiKeyBtn");
-
-  if (remember) {
-    remember.checked = state.userApiKeyPersistent;
-  }
 
   if (input) {
     input.addEventListener("input", () => {
@@ -978,7 +946,6 @@ function setupUserApiKeyForm() {
       clearUserApiKey();
       input.value = "";
       input.type = "password";
-      if (remember) remember.checked = false;
       if (toggle) toggle.textContent = "보기";
       state.lastValidatedCandidate = "";
       state.lastValidationResult = null;
@@ -1005,14 +972,13 @@ function setupUserApiKeyForm() {
         return;
       }
 
-      const persistent = Boolean(remember && remember.checked);
-      saveUserApiKey(candidate, { persistent });
+      saveUserApiKey(candidate);
       if (input) {
         input.value = "";
         input.type = "password";
       }
       if (toggle) toggle.textContent = "보기";
-      renderValidationStatus(result, { saved: true, persistent });
+      renderValidationStatus(result, { saved: true });
       setRuntimeStatus("개인 API 키 저장이 완료되었습니다.", "good");
     } finally {
       if (save) setButtonLoading(save, false, "저장 중...");
@@ -1700,7 +1666,7 @@ function setupDataActions() {
         exportedAt: new Date().toISOString(),
         profile: {
           hasUserApiKey: Boolean(state.userApiKey),
-          userApiKeyPersistent: Boolean(state.userApiKeyPersistent),
+          userApiKeyStorage: state.userApiKey ? "session" : "none",
           apiBase: state.apiBase || ""
         },
         streak: {
@@ -1738,13 +1704,11 @@ function setupDataActions() {
       clearUserApiKey();
 
       const keyInput = $("userApiKeyInput");
-      const remember = $("rememberUserApiKey");
       const toggle = $("toggleUserApiKeyBtn");
       if (keyInput) {
         keyInput.value = "";
         keyInput.type = "password";
       }
-      if (remember) remember.checked = false;
       if (toggle) toggle.textContent = "보기";
 
       state.lastValidatedCandidate = "";
