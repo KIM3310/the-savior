@@ -9,6 +9,9 @@ const state = {
   breathTick: 0,
   adsEnabled: false,
   apiBase: "",
+  apiMisconfigured: false,
+  backendReachable: false,
+  reviewOnly: false,
   adConfig: null,
   userApiKey: "",
   hasServerApiKey: false,
@@ -59,7 +62,7 @@ function safeText(value) {
   return value.trim();
 }
 
-function resolveApiBase() {
+function resolveRuntimeConnection() {
   const runtime = window.THE_SAVIOR_RUNTIME || {};
   const configured = safeText(runtime.apiBaseUrl || "");
   const hasCapacitor = Boolean(
@@ -67,20 +70,45 @@ function resolveApiBase() {
       typeof window.Capacitor.isNativePlatform === "function" &&
       window.Capacitor.isNativePlatform()
   );
+  const isLocalWeb = Boolean(
+    window.location &&
+      /^https?:$/i.test(window.location.protocol) &&
+      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+  );
 
   if (configured) {
-    return configured.replace(/\/+$/, "");
+    return {
+      apiBase: configured.replace(/\/+$/, ""),
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
   if (hasCapacitor) {
-    return DEFAULT_NATIVE_API_BASE;
+    return {
+      apiBase: DEFAULT_NATIVE_API_BASE,
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
-  if (window.location && /^https?:$/i.test(window.location.protocol)) {
-    return window.location.origin.replace(/\/+$/, "");
+  if (isLocalWeb && window.location) {
+    return {
+      apiBase: window.location.origin.replace(/\/+$/, ""),
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
-  return "";
+  return {
+    apiBase: "",
+    apiMisconfigured: true,
+    backendReachable: false,
+    reviewOnly: true
+  };
 }
 
 function apiUrl(path) {
@@ -105,7 +133,59 @@ function setRuntimeStatus(message, tone = "default") {
 function setApiBaseStatus() {
   const label = $("apiBaseStatus");
   if (!label) return;
-  label.textContent = `API 기준 주소: ${state.apiBase || "(미설정)"}`;
+  const statusSuffix = state.apiMisconfigured
+    ? " · production 설정 필요"
+    : state.reviewOnly && !state.backendReachable
+      ? " · review-only"
+      : state.backendReachable
+        ? " · live"
+        : " · 연결 확인 중";
+  label.textContent = `API 기준 주소: ${state.apiBase || "(미설정)"}${statusSuffix}`;
+}
+
+function setAiSurfacesEnabled(enabled, lockedLabel) {
+  [
+    ["checkinForm", lockedLabel],
+    ["chatForm", lockedLabel],
+    ["journalForm", lockedLabel],
+    ["userApiKeyForm", lockedLabel],
+  ].forEach(([formId, label]) => {
+    const form = $(formId);
+    if (!form) return;
+    form.querySelectorAll("input, textarea, select, button").forEach((field) => {
+      field.disabled = !enabled;
+    });
+    const submit = form.querySelector("button[type='submit']");
+    if (submit) {
+      if (!submit.dataset.defaultText) {
+        submit.dataset.defaultText = submit.textContent || "";
+      }
+      submit.textContent = enabled ? submit.dataset.defaultText : label;
+    }
+  });
+}
+
+function applyAiAvailability() {
+  if (state.apiMisconfigured) {
+    state.backendReachable = false;
+    state.reviewOnly = true;
+    setAiSurfacesEnabled(false, "백엔드 설정 필요");
+    setRuntimeStatus("리뷰 전용 화면 · runtime-config.js에 apiBaseUrl을 지정해야 live 기능이 열립니다.", "warning");
+    setApiBaseStatus();
+    return;
+  }
+
+  if (!state.backendReachable) {
+    state.reviewOnly = true;
+    setAiSurfacesEnabled(false, "백엔드 연결 필요");
+    setRuntimeStatus("리뷰 전용 화면 · 백엔드 미연결 상태입니다.", "warning");
+    setApiBaseStatus();
+    return;
+  }
+
+  state.reviewOnly = false;
+  setAiSurfacesEnabled(true, "");
+  setApiBaseStatus();
 }
 
 function setBriefBadge(message, tone = "default") {
@@ -282,6 +362,31 @@ async function copyCrisisSnapshot() {
   setRuntimeStatus(ok ? "Crisis snapshot을 복사했습니다." : "Crisis snapshot 복사에 실패했습니다.", ok ? "good" : "warning");
 }
 
+async function copyReviewerBundle() {
+  const brief = state.runtimeBrief || {};
+  const reviewPack = state.reviewPack || {};
+  const proof = reviewPack.proof_bundle || {};
+  const shareRoutes = Array.isArray(proof.review_routes) ? proof.review_routes : [];
+  const lines = [
+    "the-savior reviewer bundle",
+    `Headline: ${reviewPack.headline || brief.headline || "-"}`,
+    `API base: ${state.apiBase || "(unset)"}`,
+    `Runtime posture: ${state.reviewOnly ? "review-only" : state.backendReachable ? "live" : "checking"}`,
+    `Provider preference: ${brief.llm?.providerPreference || state.llmProviderPreference || "-"}`,
+    "",
+    "Review routes",
+    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Review routes unavailable."]),
+    "",
+    "Safety boundary",
+    ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    "",
+    "Revenue boundary",
+    ...((reviewPack.revenue_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+  ];
+  const ok = await copyTextToClipboard(lines.join("\n"));
+  setRuntimeStatus(ok ? "Reviewer bundle을 복사했습니다." : "Reviewer bundle 복사에 실패했습니다.", ok ? "good" : "warning");
+}
+
 function setButtonLoading(button, loading, loadingText) {
   if (!button) return;
   if (!button.dataset.defaultText) {
@@ -318,6 +423,51 @@ function setupCharacterCounters() {
     const handler = () => updateCounter(inputId, counterId);
     input.addEventListener("input", handler);
     handler();
+  });
+}
+
+function setupKeyboardShortcuts() {
+  document.addEventListener("keydown", async (event) => {
+    const target = event.target;
+    const tagName = String(target?.tagName || "").toLowerCase();
+    const isTypingTarget =
+      Boolean(target?.isContentEditable) ||
+      tagName === "input" ||
+      tagName === "textarea" ||
+      tagName === "select";
+    if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey || !event.shiftKey) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === "r") {
+      event.preventDefault();
+      const routes = state.reviewPack?.proof_bundle?.review_routes || [];
+      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const ok = await copyTextToClipboard(payload);
+      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
+    } else if (key === "p") {
+      event.preventDefault();
+      await copyProviderPostureSnapshot();
+    } else if (key === "c") {
+      event.preventDefault();
+      await copyCrisisSnapshot();
+    } else if (key === "b") {
+      event.preventDefault();
+      await copyReviewerBundle();
+    } else if (key === "t") {
+      event.preventDefault();
+      const start = $("startTimer");
+      const pause = $("pauseTimer");
+      if (state.timerHandle) {
+        pause?.click();
+      } else {
+        start?.click();
+      }
+    } else if (key === "?") {
+      event.preventDefault();
+      setRuntimeStatus("Shortcuts: Shift+R routes · Shift+P posture · Shift+C crisis · Shift+B reviewer bundle · Shift+T breathing timer", "good");
+    }
   });
 }
 
@@ -1451,11 +1601,20 @@ async function loadHealth() {
   try {
     const response = await fetch(apiUrl("/api/health"), { method: "GET" });
     if (!response.ok) {
+      state.backendReachable = false;
+      applyAiAvailability();
       return;
     }
 
     const payload = await response.json();
-    if (!payload || payload.status !== "ok") return;
+    if (!payload || payload.status !== "ok") {
+      state.backendReachable = false;
+      applyAiAvailability();
+      return;
+    }
+
+    state.backendReachable = true;
+    applyAiAvailability();
 
     const build = payload.build || {};
     const branch = safeText(build.branch || "");
@@ -1468,7 +1627,8 @@ async function loadHealth() {
       }
     }
   } catch {
-    // Ignore health check errors. Config status already covers user-facing state.
+    state.backendReachable = false;
+    applyAiAvailability();
   }
 }
 
@@ -1504,12 +1664,23 @@ async function loadReviewPack() {
 }
 
 async function loadConfig() {
+  if (!state.apiBase) {
+    state.backendReachable = false;
+    refreshUserApiKeyStatus();
+    renderRuntimeBrief(null);
+    renderReviewPack(null);
+    applyAiAvailability();
+    return;
+  }
+
   try {
     const response = await fetch(apiUrl("/api/config"), { method: "GET" });
     if (!response.ok) {
+      state.backendReachable = false;
       refreshUserApiKeyStatus();
       renderRuntimeBrief(null);
-      setRuntimeStatus("서비스 구성 정보를 불러오지 못했습니다.", "error");
+      renderReviewPack(null);
+      applyAiAvailability();
       return;
     }
 
@@ -1534,20 +1705,23 @@ async function loadConfig() {
     state.ollamaModel = safeText(config.ollamaModel || "");
     refreshUserApiKeyStatus();
     applyAdsPolicy(config);
+    state.backendReachable = true;
     if (state.userApiKey || state.hasServerApiKey || state.ollamaEnabled) {
       setRuntimeStatus("AI 응답 준비 완료", "good");
     } else {
       setRuntimeStatus("API 키가 없어 AI 기능이 제한됩니다.", "warning");
     }
+    applyAiAvailability();
     loadHealth();
     loadRuntimeBrief();
     loadReviewPack();
   } catch (error) {
     console.error("Config load failed", error);
+    state.backendReachable = false;
     refreshUserApiKeyStatus();
     renderRuntimeBrief(null);
     renderReviewPack(null);
-    setRuntimeStatus("네트워크 오류로 구성 로드에 실패했습니다.", "error");
+    applyAiAvailability();
   }
 }
 
@@ -1587,6 +1761,7 @@ function setupCopyButtons() {
   const copyReviewPackBtn = $("copyReviewPackBtn");
   const copyProviderPostureBtn = $("copyProviderPostureBtn");
   const copyCrisisSnapshotBtn = $("copyCrisisSnapshotBtn");
+  const copyReviewerBundleBtn = $("copyReviewerBundleBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1639,6 +1814,10 @@ function setupCopyButtons() {
 
   if (copyCrisisSnapshotBtn) {
     copyCrisisSnapshotBtn.addEventListener("click", copyCrisisSnapshot);
+  }
+
+  if (copyReviewerBundleBtn) {
+    copyReviewerBundleBtn.addEventListener("click", copyReviewerBundle);
   }
 }
 
@@ -1744,7 +1923,11 @@ function setupNetworkStatus() {
 }
 
 function init() {
-  state.apiBase = resolveApiBase();
+  const runtimeConnection = resolveRuntimeConnection();
+  state.apiBase = runtimeConnection.apiBase;
+  state.apiMisconfigured = runtimeConnection.apiMisconfigured;
+  state.backendReachable = runtimeConnection.backendReachable;
+  state.reviewOnly = runtimeConnection.reviewOnly;
   state.userApiKey = getStoredUserApiKey();
   setRuntimeStatus("서비스 구성 정보를 확인 중입니다.", "warning");
   setApiBaseStatus();
@@ -1755,6 +1938,7 @@ function init() {
   renderInsights();
   restoreSessionSnapshots();
   setupCopyButtons();
+  setupKeyboardShortcuts();
   setupDataActions();
   setupUserApiKeyForm();
   setupCheckinForm();
@@ -1764,6 +1948,7 @@ function init() {
   setupTimer();
   setupRevealAnimation();
   setupNetworkStatus();
+  applyAiAvailability();
   loadConfig();
 }
 
