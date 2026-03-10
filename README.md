@@ -2,6 +2,10 @@
 
 불교 기반 심신 안정화 플랫폼 (`Cloudflare Pages + Functions + OpenAI API`) 입니다.
 
+## 포트폴리오 포지션
+- 이 저장소는 감정 안정화 제품의 데모/리뷰 표면이며, 항상 live 백엔드가 붙어 있다고 가정하면 안 됩니다.
+- 핵심 증거는 `runtime brief`, `review pack`, 안전/수익 경계 표면과 fallback 동작 명시입니다.
+
 ## 핵심 기능
 - 1분 감정 체크 -> 3분 안정 루틴 생성
 - AI 명상 코치 대화
