@@ -9,6 +9,9 @@ const state = {
   breathTick: 0,
   adsEnabled: false,
   apiBase: "",
+  apiMisconfigured: false,
+  backendReachable: false,
+  reviewOnly: false,
   adConfig: null,
   userApiKey: "",
   hasServerApiKey: false,
@@ -59,7 +62,7 @@ function safeText(value) {
   return value.trim();
 }
 
-function resolveApiBase() {
+function resolveRuntimeConnection() {
   const runtime = window.THE_SAVIOR_RUNTIME || {};
   const configured = safeText(runtime.apiBaseUrl || "");
   const hasCapacitor = Boolean(
@@ -67,20 +70,45 @@ function resolveApiBase() {
       typeof window.Capacitor.isNativePlatform === "function" &&
       window.Capacitor.isNativePlatform()
   );
+  const isLocalWeb = Boolean(
+    window.location &&
+      /^https?:$/i.test(window.location.protocol) &&
+      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+  );
 
   if (configured) {
-    return configured.replace(/\/+$/, "");
+    return {
+      apiBase: configured.replace(/\/+$/, ""),
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
   if (hasCapacitor) {
-    return DEFAULT_NATIVE_API_BASE;
+    return {
+      apiBase: DEFAULT_NATIVE_API_BASE,
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
-  if (window.location && /^https?:$/i.test(window.location.protocol)) {
-    return window.location.origin.replace(/\/+$/, "");
+  if (isLocalWeb && window.location) {
+    return {
+      apiBase: window.location.origin.replace(/\/+$/, ""),
+      apiMisconfigured: false,
+      backendReachable: false,
+      reviewOnly: false
+    };
   }
 
-  return "";
+  return {
+    apiBase: "",
+    apiMisconfigured: true,
+    backendReachable: false,
+    reviewOnly: true
+  };
 }
 
 function apiUrl(path) {
@@ -105,7 +133,59 @@ function setRuntimeStatus(message, tone = "default") {
 function setApiBaseStatus() {
   const label = $("apiBaseStatus");
   if (!label) return;
-  label.textContent = `API 기준 주소: ${state.apiBase || "(미설정)"}`;
+  const statusSuffix = state.apiMisconfigured
+    ? " · production 설정 필요"
+    : state.reviewOnly && !state.backendReachable
+      ? " · review-only"
+      : state.backendReachable
+        ? " · live"
+        : " · 연결 확인 중";
+  label.textContent = `API 기준 주소: ${state.apiBase || "(미설정)"}${statusSuffix}`;
+}
+
+function setAiSurfacesEnabled(enabled, lockedLabel) {
+  [
+    ["checkinForm", lockedLabel],
+    ["chatForm", lockedLabel],
+    ["journalForm", lockedLabel],
+    ["userApiKeyForm", lockedLabel],
+  ].forEach(([formId, label]) => {
+    const form = $(formId);
+    if (!form) return;
+    form.querySelectorAll("input, textarea, select, button").forEach((field) => {
+      field.disabled = !enabled;
+    });
+    const submit = form.querySelector("button[type='submit']");
+    if (submit) {
+      if (!submit.dataset.defaultText) {
+        submit.dataset.defaultText = submit.textContent || "";
+      }
+      submit.textContent = enabled ? submit.dataset.defaultText : label;
+    }
+  });
+}
+
+function applyAiAvailability() {
+  if (state.apiMisconfigured) {
+    state.backendReachable = false;
+    state.reviewOnly = true;
+    setAiSurfacesEnabled(false, "백엔드 설정 필요");
+    setRuntimeStatus("리뷰 전용 화면 · runtime-config.js에 apiBaseUrl을 지정해야 live 기능이 열립니다.", "warning");
+    setApiBaseStatus();
+    return;
+  }
+
+  if (!state.backendReachable) {
+    state.reviewOnly = true;
+    setAiSurfacesEnabled(false, "백엔드 연결 필요");
+    setRuntimeStatus("리뷰 전용 화면 · 백엔드 미연결 상태입니다.", "warning");
+    setApiBaseStatus();
+    return;
+  }
+
+  state.reviewOnly = false;
+  setAiSurfacesEnabled(true, "");
+  setApiBaseStatus();
 }
 
 function setBriefBadge(message, tone = "default") {
@@ -1451,11 +1531,20 @@ async function loadHealth() {
   try {
     const response = await fetch(apiUrl("/api/health"), { method: "GET" });
     if (!response.ok) {
+      state.backendReachable = false;
+      applyAiAvailability();
       return;
     }
 
     const payload = await response.json();
-    if (!payload || payload.status !== "ok") return;
+    if (!payload || payload.status !== "ok") {
+      state.backendReachable = false;
+      applyAiAvailability();
+      return;
+    }
+
+    state.backendReachable = true;
+    applyAiAvailability();
 
     const build = payload.build || {};
     const branch = safeText(build.branch || "");
@@ -1468,7 +1557,8 @@ async function loadHealth() {
       }
     }
   } catch {
-    // Ignore health check errors. Config status already covers user-facing state.
+    state.backendReachable = false;
+    applyAiAvailability();
   }
 }
 
@@ -1504,12 +1594,23 @@ async function loadReviewPack() {
 }
 
 async function loadConfig() {
+  if (!state.apiBase) {
+    state.backendReachable = false;
+    refreshUserApiKeyStatus();
+    renderRuntimeBrief(null);
+    renderReviewPack(null);
+    applyAiAvailability();
+    return;
+  }
+
   try {
     const response = await fetch(apiUrl("/api/config"), { method: "GET" });
     if (!response.ok) {
+      state.backendReachable = false;
       refreshUserApiKeyStatus();
       renderRuntimeBrief(null);
-      setRuntimeStatus("서비스 구성 정보를 불러오지 못했습니다.", "error");
+      renderReviewPack(null);
+      applyAiAvailability();
       return;
     }
 
@@ -1534,20 +1635,23 @@ async function loadConfig() {
     state.ollamaModel = safeText(config.ollamaModel || "");
     refreshUserApiKeyStatus();
     applyAdsPolicy(config);
+    state.backendReachable = true;
     if (state.userApiKey || state.hasServerApiKey || state.ollamaEnabled) {
       setRuntimeStatus("AI 응답 준비 완료", "good");
     } else {
       setRuntimeStatus("API 키가 없어 AI 기능이 제한됩니다.", "warning");
     }
+    applyAiAvailability();
     loadHealth();
     loadRuntimeBrief();
     loadReviewPack();
   } catch (error) {
     console.error("Config load failed", error);
+    state.backendReachable = false;
     refreshUserApiKeyStatus();
     renderRuntimeBrief(null);
     renderReviewPack(null);
-    setRuntimeStatus("네트워크 오류로 구성 로드에 실패했습니다.", "error");
+    applyAiAvailability();
   }
 }
 
@@ -1744,7 +1848,11 @@ function setupNetworkStatus() {
 }
 
 function init() {
-  state.apiBase = resolveApiBase();
+  const runtimeConnection = resolveRuntimeConnection();
+  state.apiBase = runtimeConnection.apiBase;
+  state.apiMisconfigured = runtimeConnection.apiMisconfigured;
+  state.backendReachable = runtimeConnection.backendReachable;
+  state.reviewOnly = runtimeConnection.reviewOnly;
   state.userApiKey = getStoredUserApiKey();
   setRuntimeStatus("서비스 구성 정보를 확인 중입니다.", "warning");
   setApiBaseStatus();
@@ -1764,6 +1872,7 @@ function init() {
   setupTimer();
   setupRevealAnimation();
   setupNetworkStatus();
+  applyAiAvailability();
   loadConfig();
 }
 
