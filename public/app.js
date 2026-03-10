@@ -362,6 +362,31 @@ async function copyCrisisSnapshot() {
   setRuntimeStatus(ok ? "Crisis snapshot을 복사했습니다." : "Crisis snapshot 복사에 실패했습니다.", ok ? "good" : "warning");
 }
 
+async function copyReviewerBundle() {
+  const brief = state.runtimeBrief || {};
+  const reviewPack = state.reviewPack || {};
+  const proof = reviewPack.proof_bundle || {};
+  const shareRoutes = Array.isArray(proof.review_routes) ? proof.review_routes : [];
+  const lines = [
+    "the-savior reviewer bundle",
+    `Headline: ${reviewPack.headline || brief.headline || "-"}`,
+    `API base: ${state.apiBase || "(unset)"}`,
+    `Runtime posture: ${state.reviewOnly ? "review-only" : state.backendReachable ? "live" : "checking"}`,
+    `Provider preference: ${brief.llm?.providerPreference || state.llmProviderPreference || "-"}`,
+    "",
+    "Review routes",
+    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Review routes unavailable."]),
+    "",
+    "Safety boundary",
+    ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    "",
+    "Revenue boundary",
+    ...((reviewPack.revenue_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+  ];
+  const ok = await copyTextToClipboard(lines.join("\n"));
+  setRuntimeStatus(ok ? "Reviewer bundle을 복사했습니다." : "Reviewer bundle 복사에 실패했습니다.", ok ? "good" : "warning");
+}
+
 function setButtonLoading(button, loading, loadingText) {
   if (!button) return;
   if (!button.dataset.defaultText) {
@@ -398,6 +423,51 @@ function setupCharacterCounters() {
     const handler = () => updateCounter(inputId, counterId);
     input.addEventListener("input", handler);
     handler();
+  });
+}
+
+function setupKeyboardShortcuts() {
+  document.addEventListener("keydown", async (event) => {
+    const target = event.target;
+    const tagName = String(target?.tagName || "").toLowerCase();
+    const isTypingTarget =
+      Boolean(target?.isContentEditable) ||
+      tagName === "input" ||
+      tagName === "textarea" ||
+      tagName === "select";
+    if (isTypingTarget || event.metaKey || event.ctrlKey || event.altKey || !event.shiftKey) {
+      return;
+    }
+
+    const key = event.key.toLowerCase();
+    if (key === "r") {
+      event.preventDefault();
+      const routes = state.reviewPack?.proof_bundle?.review_routes || [];
+      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const ok = await copyTextToClipboard(payload);
+      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
+    } else if (key === "p") {
+      event.preventDefault();
+      await copyProviderPostureSnapshot();
+    } else if (key === "c") {
+      event.preventDefault();
+      await copyCrisisSnapshot();
+    } else if (key === "b") {
+      event.preventDefault();
+      await copyReviewerBundle();
+    } else if (key === "t") {
+      event.preventDefault();
+      const start = $("startTimer");
+      const pause = $("pauseTimer");
+      if (state.timerHandle) {
+        pause?.click();
+      } else {
+        start?.click();
+      }
+    } else if (key === "?") {
+      event.preventDefault();
+      setRuntimeStatus("Shortcuts: Shift+R routes · Shift+P posture · Shift+C crisis · Shift+B reviewer bundle · Shift+T breathing timer", "good");
+    }
   });
 }
 
@@ -1691,6 +1761,7 @@ function setupCopyButtons() {
   const copyReviewPackBtn = $("copyReviewPackBtn");
   const copyProviderPostureBtn = $("copyProviderPostureBtn");
   const copyCrisisSnapshotBtn = $("copyCrisisSnapshotBtn");
+  const copyReviewerBundleBtn = $("copyReviewerBundleBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1743,6 +1814,10 @@ function setupCopyButtons() {
 
   if (copyCrisisSnapshotBtn) {
     copyCrisisSnapshotBtn.addEventListener("click", copyCrisisSnapshot);
+  }
+
+  if (copyReviewerBundleBtn) {
+    copyReviewerBundleBtn.addEventListener("click", copyReviewerBundle);
   }
 }
 
@@ -1863,6 +1938,7 @@ function init() {
   renderInsights();
   restoreSessionSnapshots();
   setupCopyButtons();
+  setupKeyboardShortcuts();
   setupDataActions();
   setupUserApiKeyForm();
   setupCheckinForm();
