@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { onRequestGet as getHealth } from "../functions/api/health.js";
 import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
+import { onRequestGet as getProgressTrends } from "../functions/api/progress-trends.js";
 import { onRequestGet as getRuntimeBrief } from "../functions/api/runtime-brief.js";
 import { onRequestGet as getReviewPack } from "../functions/api/review-pack.js";
 import { onRequestGet as getCoachSchema } from "../functions/api/schema/coach-response.js";
@@ -46,6 +47,7 @@ test("meta route returns runtime diagnostics", async () => {
   assert.ok(body.api.routes.includes("/api/meta"));
   assert.ok(body.api.routes.includes("/api/runtime-brief"));
   assert.ok(body.api.routes.includes("/api/review-pack"));
+  assert.ok(body.api.routes.includes("/api/progress-trends"));
   assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
   assert.equal(body.review_pack_contract, "the-savior-review-pack-v1");
   assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
@@ -74,6 +76,7 @@ test("health route exposes actionable llm guidance", async () => {
   assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
   assert.ok(body.routes.includes("/api/schema/coach-response"));
   assert.equal(body.links.review_pack, "/api/review-pack");
+  assert.equal(body.links.progress_trends, "/api/progress-trends");
   assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.match(body.diagnostics.nextAction, /\/api\/chat/);
 });
@@ -94,9 +97,11 @@ test("runtime brief route exposes operator contract", async () => {
   assert.equal(body.llm.runtimeMode, "ollama-local");
   assert.equal(body.monetization.adsenseConfigured, true);
   assert.ok(body.routes.includes("/api/runtime-brief"));
+  assert.ok(body.routes.includes("/api/progress-trends"));
   assert.ok(body.review_flow.length >= 3);
   assert.equal(body.two_minute_review.length, 4);
   assert.equal(body.proof_assets[0].path, "/api/health");
+  assert.equal(body.links.progress_trends, "/api/progress-trends");
 });
 
 test("review pack route exposes safety and revenue boundaries", async () => {
@@ -112,10 +117,27 @@ test("review pack route exposes safety and revenue boundaries", async () => {
   assert.equal(body.readiness_contract, "the-savior-review-pack-v1");
   assert.equal(body.proof_bundle.runtimeMode, "ollama-local");
   assert.ok(body.proof_bundle.review_routes.includes("/api/review-pack"));
+  assert.ok(body.proof_bundle.review_routes.includes("/api/progress-trends"));
   assert.ok(body.safety_boundary.length >= 3);
   assert.ok(body.revenue_boundary.length >= 3);
   assert.equal(body.two_minute_review.length, 4);
   assert.equal(body.proof_assets[0].label, "Health Route");
+});
+
+test("progress trends route exposes reviewer-facing coaching deltas", async () => {
+  const response = await getProgressTrends(
+    createContext("https://the-savior-9z8.pages.dev/api/progress-trends", {
+      ENABLE_OLLAMA: "true",
+      ADSENSE_CLIENT: "ca-pub-123"
+    })
+  );
+  const body = await response.json();
+
+  assert.equal(response.status, 200);
+  assert.equal(body.contract_version, "the-savior-progress-trends-v1");
+  assert.equal(body.summary.sessions, 3);
+  assert.equal(body.links.progress_trends, "/api/progress-trends");
+  assert.ok(Array.isArray(body.items));
 });
 
 test("coach schema route exposes response contract", async () => {

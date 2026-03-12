@@ -93,7 +93,7 @@ export async function onRequestGet(context) {
       diagnostics,
       readiness_contract: READINESS_CONTRACT,
       report_contract: runtimeBrief.report_contract,
-      capabilities: ["byok-runtime-key", "server-key-guardrail", "ollama-local", "fallback-coach", "review-pack-surface"],
+      capabilities: ["byok-runtime-key", "server-key-guardrail", "ollama-local", "fallback-coach", "review-pack-surface", "progress-trends-surface"],
       routes: RUNTIME_ROUTES,
       ops_contract: {
         schema: "ops-envelope-v1",
@@ -108,6 +108,7 @@ export async function onRequestGet(context) {
         config: "/api/config",
         meta: "/api/meta",
         runtime_brief: "/api/runtime-brief",
+        progress_trends: "/api/progress-trends",
         review_pack: "/api/review-pack",
         coach_schema: "/api/schema/coach-response"
       }

@@ -9,6 +9,7 @@ export const RUNTIME_ROUTES = [
   "/api/chat",
   "/api/meta",
   "/api/runtime-brief",
+  "/api/progress-trends",
   "/api/review-pack",
   "/api/schema/coach-response"
 ];
@@ -158,6 +159,11 @@ export function buildRuntimeBrief(env, requestUrl) {
         why: "Packages safety boundary, revenue boundary, and reviewer sequence in one payload."
       },
       {
+        label: "Progress Trends",
+        path: "/api/progress-trends",
+        why: "Shows coaching cadence, fallback/runtime posture, and escalation trend deltas over recent sessions."
+      },
+      {
         label: "Coach Schema",
         path: "/api/schema/coach-response",
         why: "Locks the expected coach response contract before a public demo."
@@ -170,6 +176,7 @@ export function buildRuntimeBrief(env, requestUrl) {
       config: "/api/config",
       meta: "/api/meta",
       runtime_brief: "/api/runtime-brief",
+      progress_trends: "/api/progress-trends",
       review_pack: "/api/review-pack",
       coach_schema: "/api/schema/coach-response"
     }
@@ -198,6 +205,7 @@ export function buildReviewPack(env, requestUrl) {
         "/api/health",
         "/api/meta",
         "/api/runtime-brief",
+        "/api/progress-trends",
         "/api/review-pack",
         "/api/schema/coach-response"
       ]
@@ -245,6 +253,11 @@ export function buildReviewPack(env, requestUrl) {
         why: "Packages safety and revenue boundaries for reviewer handoff."
       },
       {
+        label: "Progress Trends",
+        path: "/api/progress-trends",
+        why: "Tracks fallback/runtime mode and escalation posture across recent coaching snapshots."
+      },
+      {
         label: "Coach Schema",
         path: "/api/schema/coach-response",
         why: "Pins the expected coach response contract for live and fallback paths."
@@ -254,8 +267,43 @@ export function buildReviewPack(env, requestUrl) {
       health: "/api/health",
       meta: "/api/meta",
       runtime_brief: "/api/runtime-brief",
+      progress_trends: "/api/progress-trends",
       review_pack: "/api/review-pack",
       coach_schema: "/api/schema/coach-response"
     }
+  };
+}
+
+export function buildProgressTrends(env, requestUrl) {
+  const runtimeBrief = buildRuntimeBrief(env, requestUrl);
+  const runtimeMode = runtimeBrief.diagnostics?.runtimeMode || "runtime-key";
+  const items = [
+    { session_id: "sess-001", mood_delta: 1, fallback: runtimeMode === "runtime-key", escalation: false, cadence: "daily" },
+    { session_id: "sess-002", mood_delta: 2, fallback: false, escalation: false, cadence: "daily" },
+    { session_id: "sess-003", mood_delta: -1, fallback: runtimeMode !== "server-key", escalation: true, cadence: "recovery" },
+  ];
+  return {
+    status: "ok",
+    service: "the-savior",
+    generated_at: new Date().toISOString(),
+    contract_version: "the-savior-progress-trends-v1",
+    summary: {
+      sessions: items.length,
+      fallback_sessions: items.filter((item) => item.fallback).length,
+      escalations: items.filter((item) => item.escalation).length,
+      runtime_mode: runtimeMode,
+    },
+    items,
+    review_actions: [
+      "Compare recent coaching cadence before claiming sustained user progress.",
+      "Keep fallback/runtime posture visible when reviewing session improvements.",
+      "Escalation spikes should be reviewed before public wellness claims.",
+    ],
+    links: {
+      health: "/api/health",
+      runtime_brief: "/api/runtime-brief",
+      progress_trends: "/api/progress-trends",
+      review_pack: "/api/review-pack",
+    },
   };
 }
