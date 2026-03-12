@@ -70,10 +70,9 @@ function resolveRuntimeConnection() {
       typeof window.Capacitor.isNativePlatform === "function" &&
       window.Capacitor.isNativePlatform()
   );
-  const isLocalWeb = Boolean(
+  const isHttpWeb = Boolean(
     window.location &&
-      /^https?:$/i.test(window.location.protocol) &&
-      ["localhost", "127.0.0.1"].includes(window.location.hostname)
+      /^https?:$/i.test(window.location.protocol)
   );
 
   if (configured) {
@@ -94,7 +93,7 @@ function resolveRuntimeConnection() {
     };
   }
 
-  if (isLocalWeb && window.location) {
+  if (isHttpWeb && window.location) {
     return {
       apiBase: window.location.origin.replace(/\/+$/, ""),
       apiMisconfigured: false,
@@ -170,7 +169,7 @@ function applyAiAvailability() {
     state.backendReachable = false;
     state.reviewOnly = true;
     setAiSurfacesEnabled(false, "백엔드 설정 필요");
-    setRuntimeStatus("리뷰 전용 화면 · runtime-config.js에 apiBaseUrl을 지정해야 live 기능이 열립니다.", "warning");
+    setRuntimeStatus("리뷰 전용 화면 · 같은 도메인 API가 없으면 runtime-config.js로 연결 주소를 지정해 주세요.", "warning");
     setApiBaseStatus();
     return;
   }
@@ -178,7 +177,7 @@ function applyAiAvailability() {
   if (!state.backendReachable) {
     state.reviewOnly = true;
     setAiSurfacesEnabled(false, "백엔드 연결 필요");
-    setRuntimeStatus("리뷰 전용 화면 · 백엔드 미연결 상태입니다.", "warning");
+    setRuntimeStatus("리뷰 화면을 준비하는 중입니다. API 연결이 되면 live 기능이 함께 열립니다.", "warning");
     setApiBaseStatus();
     return;
   }
@@ -243,7 +242,7 @@ function renderRuntimeBrief(payload) {
 
   if (!payload || payload.status !== "ok") {
     setBriefBadge("brief-unavailable", "warning");
-    fillText("briefHeadline", "런타임 계약 정보를 가져오지 못했습니다. health/config 경로를 확인해 주세요.");
+    fillText("briefHeadline", "운영 브리프를 아직 가져오지 못했습니다. 잠시 후 다시 보이거나 health/config 경로에서 먼저 확인할 수 있습니다.");
     fillText("briefSchema", "unavailable");
     fillText("briefMode", "degraded");
     fillText("briefProvider", "network-check-required");
@@ -286,7 +285,7 @@ function renderReviewPack(payload) {
 
   if (!payload || payload.status !== "ok") {
     fillText("reviewPackBadge", "review-unavailable");
-    fillText("reviewPackHeadline", "리뷰 패키지 정보를 가져오지 못했습니다. health/meta/runtime surface를 확인해 주세요.");
+    fillText("reviewPackHeadline", "리뷰 패키지를 아직 가져오지 못했습니다. health/meta/runtime surface를 먼저 확인해 주세요.");
     fillText("reviewPackRuntime", "degraded");
     fillText("reviewPackLlmReady", "check-required");
     fillText("reviewPackAdsense", "unknown");

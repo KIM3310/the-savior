@@ -84,6 +84,7 @@ npm run dev:ollama
 
 ## Service-Grade Surfaces
 - 첫 화면에서 `Operator Readiness Brief`와 `Executive Review Pack`이 BYOK, Ollama, fallback, safety/revenue boundary를 바로 보여줍니다.
+- Pages에 Functions가 같이 배포된 경우 첫 화면은 같은 도메인의 `/api/*`를 자동으로 붙잡아 reviewer surface를 바로 채웁니다. 별도 `runtime-config.js`는 다른 백엔드 주소를 강제로 붙일 때만 필요합니다.
 - `/api/health`, `/api/meta`, `/api/runtime-brief`, `/api/review-pack`, `/api/schema/coach-response` 조합으로 리뷰어가 운영 posture를 빠르게 확인할 수 있습니다.
 - fallback 모드와 위기 대응 경계가 런타임 surface와 테스트에서 명시적으로 드러납니다.
 
