@@ -77,6 +77,7 @@ npm run dev:ollama
 - `GET /api/meta`: LLM/광고/레이트리밋 메타데이터
 - `GET /api/runtime-brief`: operator readiness brief
 - `GET /api/review-pack`: safety/revenue boundary review pack
+- `GET /api/progress-trends`: recent coaching / fallback / escalation trend snapshot for reviewer checks
 - `GET /api/schema/coach-response`: 코치 응답 계약 스키마
 
 모든 API 응답은 `X-Request-Id` 헤더를 포함해 장애 추적에 사용할 수 있습니다.
@@ -89,12 +90,14 @@ npm run dev:ollama
 ## Review Flow
 - `/api/health`와 `/api/meta`로 provider posture, monetization state, route coverage를 확인합니다.
 - `/api/runtime-brief`에서 runtime mode, schema contract, fallback behavior를 확인합니다.
+- `/api/progress-trends`에서 최근 coaching cadence, fallback 사용, escalation 경향을 함께 봅니다.
 - `/api/review-pack`에서 safety boundary와 revenue boundary를 public traffic 전에 분리해 읽습니다.
 - live chat과 fallback copy 검증은 provider posture를 이해한 뒤에만 진행합니다.
 
 ## Proof Assets
 - `Health Route` -> `/api/health`
 - `Runtime Brief` -> `/api/runtime-brief`
+- `Progress Trends` -> `/api/progress-trends`
 - `Review Pack` -> `/api/review-pack`
 - `Coach Schema` -> `/api/schema/coach-response`
 
