@@ -217,6 +217,26 @@ p {
   font-size: 0.82rem;
 }
 
+.review-lanes {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.lane-card {
+  border: 1px solid rgba(255, 213, 145, 0.16);
+  border-radius: 14px;
+  background: rgba(12, 12, 14, 0.55);
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lane-card h3 {
+  font-size: 1.02rem;
+}
+
 .brief-panel {
   margin-top: 1rem;
   padding: 0.92rem 0 1.08rem;
@@ -1082,6 +1102,7 @@ select:focus {
 }
 
 @media (max-width: 940px) {
+  .review-lanes,
   .brief-grid {
     grid-template-columns: 1fr;
   }
