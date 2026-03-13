@@ -30,3 +30,14 @@ test("public styles include bounded audience split treatment", () => {
   assert.match(stylesCss, /\.reviewer-shell\s*\{/);
   assert.match(stylesCss, /\.audience-card-review\s*\{/);
 });
+
+
+test("hero grounding surface exposes preview pills and default preset wiring", () => {
+  const appJs = readFileSync(path.join(ROOT, "public", "app.js"), "utf8");
+  assert.match(indexHtml, /heroGroundingMood/);
+  assert.match(indexHtml, /heroGroundingStress/);
+  assert.match(indexHtml, /heroGroundingPrompt/);
+  assert.match(stylesCss, /\.hero-grounding-preview\s*\{/);
+  assert.match(stylesCss, /\.hero-grounding-pill\s*\{/);
+  assert.match(appJs, /applyHeroGroundingPreset\("presentation", \{ scroll: false \}\)/);
+});

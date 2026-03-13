@@ -1423,33 +1423,46 @@ function setupQuickPrompts() {
   });
 }
 
-function setupHeroGrounding() {
+function applyHeroGroundingPreset(key, { scroll = true } = {}) {
+  const preset = HERO_GROUNDING_CASES[key];
   const summary = $("heroGroundingSummary");
-  const buttons = document.querySelectorAll("[data-grounding-case]");
   const mood = $("mood");
   const stress = $("stress");
   const note = $("checkinNote");
-  if (!summary || !buttons.length || !mood || !stress || !note) return;
+  if (!preset || !summary || !mood || !stress || !note) return;
+
+  mood.value = preset.mood;
+  stress.value = String(preset.stress);
+  note.value = preset.note;
+  summary.textContent = preset.summary;
+  const stressValue = $("stressValue");
+  if (stressValue) stressValue.textContent = String(preset.stress);
+  fillText("heroGroundingMood", `감정 · ${preset.mood}`);
+  fillText("heroGroundingStress", `스트레스 · ${preset.stress}/10`);
+  fillText("heroGroundingPrompt", preset.note);
+  document.querySelectorAll("[data-grounding-case]").forEach((item) => {
+    item.classList.toggle("is-active", safeText(item.getAttribute("data-grounding-case") || "") === key);
+  });
+  updateCounter("checkinNote", "checkinNoteCount");
+  if (scroll) {
+    $("checkin")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    note.focus();
+    setRuntimeStatus("체크인 시작값을 채웠습니다. 메모를 다듬고 바로 안정 루틴을 받아보세요.", "good");
+  }
+}
+
+function setupHeroGrounding() {
+  const buttons = document.querySelectorAll("[data-grounding-case]");
+  if (!buttons.length) return;
 
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
       const key = safeText(button.getAttribute("data-grounding-case") || "");
-      const preset = HERO_GROUNDING_CASES[key];
-      if (!preset) return;
-
-      mood.value = preset.mood;
-      stress.value = String(preset.stress);
-      note.value = preset.note;
-      summary.textContent = preset.summary;
-      buttons.forEach((item) => item.classList.toggle("is-active", item === button));
-      const stressValue = $("stressValue");
-      if (stressValue) stressValue.textContent = String(preset.stress);
-      updateCounter("checkinNote", "checkinNoteCount");
-      $("checkin")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      note.focus();
-      setRuntimeStatus("체크인 시작값을 채웠습니다. 메모를 다듬고 바로 안정 루틴을 받아보세요.", "good");
+      applyHeroGroundingPreset(key);
     });
   });
+
+  applyHeroGroundingPreset("presentation", { scroll: false });
 }
 
 function setupJournalForm() {
