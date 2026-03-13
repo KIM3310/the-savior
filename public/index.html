@@ -50,27 +50,99 @@
     </header>
 
     <main>
-      <section class="runtime-strip reveal" aria-live="polite">
-        <p id="runtimeStatus" class="runtime-pill">리뷰 표면 준비 중...</p>
-        <p id="apiBaseStatus" class="runtime-meta">API 기준 주소 확인 중</p>
+      <section class="hero veil reveal" tabindex="0">
+        <div class="hero-left">
+          <p class="micro">Buddhist Minimal Wellness Platform</p>
+          <h1>
+            고요함은,<br />
+            늘 미세한 빛에서 시작됩니다.
+          </h1>
+
+          <p class="hero-copy hidden-copy">
+            The Savior는 불교의 관찰, 호흡, 자비 원리를 바탕으로 사용자의 감정 상태를 빠르게 정리하고
+            행동 가능한 안정 루틴으로 연결하는 AI 웰니스 서비스입니다.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#checkin">지금 시작</a>
+            <a class="btn btn-ghost" href="#api-key">내 API 키 연결</a>
+            <a class="btn btn-ghost" href="#reviewer-gateway">리뷰어 검토 표면</a>
+          </div>
+
+          <div class="hero-metrics">
+            <article class="metric veil" tabindex="0">
+              <strong>01</strong>
+              <span class="hidden-copy">1분 감정 스캔</span>
+            </article>
+            <article class="metric veil" tabindex="0">
+              <strong>03</strong>
+              <span class="hidden-copy">3분 호흡 안정</span>
+            </article>
+            <article class="metric veil" tabindex="0">
+              <strong>24</strong>
+              <span class="hidden-copy">24시간 AI 코치</span>
+            </article>
+          </div>
+        </div>
+
+        <figure class="hero-visual veil" tabindex="0">
+          <img
+            class="hero-gif"
+            src="/media/real-candle-flame-hd.gif"
+            alt="실제 촛불 불꽃의 명상용 고해상도 GIF"
+            loading="eager"
+            decoding="async"
+          />
+          <figcaption class="hidden-copy">
+            Real Candle Flame, HD remastered visual
+          </figcaption>
+        </figure>
       </section>
 
-      <section class="review-lanes reveal" aria-label="빠른 검토 경로">
-        <article class="lane-card veil" tabindex="0">
-          <p class="panel-kicker">01 · Runtime</p>
-          <h3>Health + provider posture</h3>
-          <p class="hidden-copy">fallback, BYOK, local Ollama posture부터 읽고 시작합니다.</p>
+      <section class="audience-split reveal" aria-label="사용자와 리뷰어를 위한 시작 경로">
+        <article class="audience-card veil" tabindex="0">
+          <p class="panel-kicker">For You</p>
+          <h2>먼저 마음을 가라앉히는 입구</h2>
+          <p class="audience-copy hidden-copy">감정 체크, 호흡 안정, 저널 기록까지 지금의 컨디션을 정리하는 흐름부터 시작할 수 있습니다.</p>
+          <a class="audience-link" href="#checkin">감정 체크로 들어가기</a>
         </article>
-        <article class="lane-card veil" tabindex="0">
-          <p class="panel-kicker">02 · Safety</p>
-          <h3>Crisis boundary first</h3>
-          <p class="hidden-copy">위기 신호, 안전 escalation, revenue 분리 원칙을 먼저 확인합니다.</p>
+        <article id="reviewer-gateway" class="audience-card audience-card-review veil" tabindex="0">
+          <p class="panel-kicker">For Reviewers</p>
+          <h2>검토 증거는 아래 운영 표면에 분리해 두었습니다</h2>
+          <p class="audience-copy hidden-copy">runtime, safety, revenue, proof asset은 아래 Review Surface에 그대로 유지해 제품 감정선과 검토 계약을 섞지 않았습니다.</p>
+          <a class="audience-link" href="#runtime-brief">Review Surface로 이동</a>
         </article>
-        <article class="lane-card veil" tabindex="0">
-          <p class="panel-kicker">03 · Coaching</p>
-          <h3>Check-in to insight</h3>
-          <p class="hidden-copy">감정 체크, 코치 응답, 저널 인사이트가 한 제품 흐름으로 이어지는지 봅니다.</p>
-        </article>
+      </section>
+
+      <section id="review-surface" class="reviewer-shell reveal" aria-label="리뷰어 전용 검토 표면">
+        <div class="reviewer-shell-head veil" tabindex="0">
+          <p class="panel-kicker">Review Surface</p>
+          <h2>운영 계약과 증거는 이 아래에서 차분하게 확인하세요</h2>
+          <p class="hidden-copy">실사용자가 보는 감정 진입면과 분리해, reviewer는 runtime status·brief·review pack을 이어서 검토할 수 있습니다.</p>
+        </div>
+
+        <section class="runtime-strip reveal" aria-live="polite">
+          <p id="runtimeStatus" class="runtime-pill">리뷰 표면 준비 중...</p>
+          <p id="apiBaseStatus" class="runtime-meta">API 기준 주소 확인 중</p>
+        </section>
+
+        <section class="review-lanes reveal" aria-label="빠른 검토 경로">
+          <article class="lane-card veil" tabindex="0">
+            <p class="panel-kicker">01 · Runtime</p>
+            <h3>Health + provider posture</h3>
+            <p class="hidden-copy">fallback, BYOK, local Ollama posture부터 읽고 시작합니다.</p>
+          </article>
+          <article class="lane-card veil" tabindex="0">
+            <p class="panel-kicker">02 · Safety</p>
+            <h3>Crisis boundary first</h3>
+            <p class="hidden-copy">위기 신호, 안전 escalation, revenue 분리 원칙을 먼저 확인합니다.</p>
+          </article>
+          <article class="lane-card veil" tabindex="0">
+            <p class="panel-kicker">03 · Coaching</p>
+            <h3>Check-in to insight</h3>
+            <p class="hidden-copy">감정 체크, 코치 응답, 저널 인사이트가 한 제품 흐름으로 이어지는지 봅니다.</p>
+          </article>
+        </section>
       </section>
 
       <section id="runtime-brief" class="brief-panel reveal" aria-live="polite">
@@ -213,54 +285,6 @@
           <button id="copyReviewerBundleBtn" class="btn btn-ghost" type="button">Reviewer Bundle 복사</button>
         </div>
         <p class="hidden-copy" style="margin-top:12px;">Shortcuts: Shift+R routes · Shift+P posture · Shift+C crisis · Shift+B reviewer bundle · Shift+T breathing timer · Shift+? help</p>
-      </section>
-
-      <section class="hero veil reveal" tabindex="0">
-        <div class="hero-left">
-          <p class="micro">Buddhist Minimal Wellness Platform</p>
-          <h1>
-            고요함은,<br />
-            늘 미세한 빛에서 시작됩니다.
-          </h1>
-
-          <p class="hero-copy hidden-copy">
-            The Savior는 불교의 관찰, 호흡, 자비 원리를 바탕으로 사용자의 감정 상태를 빠르게 정리하고
-            행동 가능한 안정 루틴으로 연결하는 AI 웰니스 서비스입니다.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#checkin">지금 시작</a>
-            <a class="btn btn-ghost" href="#api-key">내 API 키 연결</a>
-          </div>
-
-          <div class="hero-metrics">
-            <article class="metric veil" tabindex="0">
-              <strong>01</strong>
-              <span class="hidden-copy">1분 감정 스캔</span>
-            </article>
-            <article class="metric veil" tabindex="0">
-              <strong>03</strong>
-              <span class="hidden-copy">3분 호흡 안정</span>
-            </article>
-            <article class="metric veil" tabindex="0">
-              <strong>24</strong>
-              <span class="hidden-copy">24시간 AI 코치</span>
-            </article>
-          </div>
-        </div>
-
-        <figure class="hero-visual veil" tabindex="0">
-          <img
-            class="hero-gif"
-            src="/media/real-candle-flame-hd.gif"
-            alt="실제 촛불 불꽃의 명상용 고해상도 GIF"
-            loading="eager"
-            decoding="async"
-          />
-          <figcaption class="hidden-copy">
-            Real Candle Flame, HD remastered visual
-          </figcaption>
-        </figure>
       </section>
 
       <section class="gallery reveal" aria-label="실사 명상 비주얼">
