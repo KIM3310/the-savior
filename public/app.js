@@ -175,6 +175,7 @@ function renderFirstSessionGuide() {
   let summary = "runtime 준비가 끝나면 check-in, coach, journal 순서로 이어집니다.";
   let path = "runtime 확인 중";
   let nextStep = "runtime 연결을 확인해 주세요.";
+  let boundary = "live AI가 없을 때도 review surface와 입력 준비는 먼저 확인할 수 있습니다.";
   let proof = "runtime brief 확인 중";
 
   if (state.apiMisconfigured) {
@@ -182,42 +183,49 @@ function renderFirstSessionGuide() {
     summary = "같은 도메인 Functions가 없으면 runtime-config.js에 API 기준 주소를 넣은 뒤 다시 시작하면 됩니다.";
     path = "review-only";
     nextStep = "runtime-config.js 또는 배포 구성을 먼저 확인하세요.";
+    boundary = "지금은 review-only 상태이므로 감정 입력 초안과 reviewer surface만 안전하게 점검하세요.";
     proof = "proof surfaces unavailable";
   } else if (!state.backendReachable) {
     headline = "지금은 리뷰 표면부터 확인하는 상태입니다";
     summary = "health, runtime brief, review pack이 먼저 보이고 live check-in은 API 연결 후 열립니다.";
     path = "review-only";
     nextStep = "Health / Runtime Brief를 확인한 뒤 live 연결을 기다리세요.";
+    boundary = "live provider가 아직 없어도 runtime, fallback, safety boundary 검토는 그대로 진행할 수 있습니다.";
     proof = "health first";
   } else if (state.userApiKey) {
     headline = "개인 API 키로 바로 첫 체크인을 시작할 수 있습니다";
     summary = "현재 세션에서만 키를 사용하므로 감정 체크 → 코치 → 저널 흐름을 바로 검증할 수 있습니다.";
     path = "BYOK session";
     nextStep = "Check-in에서 현재 감정과 스트레스를 입력해 첫 응답을 받아보세요.";
+    boundary = "세션 키는 현재 브라우저 세션에만 머물러 reviewer-safe 검토와 개인 시작선을 함께 지켜줍니다.";
     proof = "runtime brief + review pack ready";
   } else if (state.llmProviderPreference === "ollama" && state.ollamaEnabled) {
     headline = "로컬 모델 경로가 열려 있어 OpenAI 키 없이도 시작할 수 있습니다";
     summary = "Ollama 로컬 모델이 감정 체크와 코치 응답을 담당하므로 첫 사용 장벽이 낮습니다.";
     path = "Ollama local";
     nextStep = "Check-in에서 짧은 상황 설명을 넣고 로컬 응답 품질을 먼저 확인하세요.";
+    boundary = "로컬 모델 경로라서 첫 감정 입력을 차분히 검토한 뒤 필요할 때만 더 강한 provider로 넘어가면 됩니다.";
     proof = "local model + review surfaces ready";
   } else if (state.hasServerApiKey) {
     headline = "서버 키 폴백으로 바로 첫 흐름을 확인할 수 있습니다";
     summary = "BYOK가 없어도 첫 check-in, coach, journal 흐름을 검토한 뒤 필요할 때만 개인 키를 연결하면 됩니다.";
     path = "Server fallback";
     nextStep = "Check-in을 먼저 실행하고 이후 필요하면 API Key 섹션에서 개인 키로 전환하세요.";
+    boundary = "서버 키는 첫 흐름 확인용이고, 개인 키는 필요할 때만 추가해 reviewer-safe handoff를 유지할 수 있습니다.";
     proof = "server-key + review pack ready";
   } else if (state.ollamaEnabled) {
     headline = "OpenAI 키 없이도 로컬 모델 경로를 선택할 수 있습니다";
     summary = "Ollama가 켜져 있으면 로컬 모델로 시작하고, 더 강한 응답이 필요할 때만 개인 키를 더하면 됩니다.";
     path = "Optional Ollama";
     nextStep = "Check-in 또는 API Key 섹션 중 더 편한 시작점을 고르세요.";
+    boundary = "로컬 모델과 review surface가 먼저 열려 있어, 감정선과 운영 검토를 무리 없이 분리할 수 있습니다.";
     proof = "review pack ready";
   } else {
     headline = "개인 API 키를 한 번 넣으면 바로 첫 세션을 시작할 수 있습니다";
     summary = "현재는 live AI 경로가 비어 있으므로 API Key 섹션에서 세션용 키를 넣는 것이 가장 빠른 시작점입니다.";
     path = "BYOK required";
     nextStep = "API Key 섹션에서 세션 키를 입력한 뒤 Check-in으로 돌아오세요.";
+    boundary = "키를 넣기 전에는 reviewer surface와 감정 초안만 차분히 준비하고, live AI는 나중에 여세요.";
     proof = "runtime live, AI path pending";
   }
 
@@ -230,6 +238,7 @@ function renderFirstSessionGuide() {
   fillText("firstSessionMode", mode, mode);
   fillText("firstSessionPath", path, path);
   fillText("firstSessionNext", nextStep, nextStep);
+  fillText("firstSessionBoundary", boundary, boundary);
   fillText("firstSessionProof", proof, proof);
 }
 
