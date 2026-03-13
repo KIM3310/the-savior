@@ -49,6 +49,8 @@ test("review surface includes first-session readiness guide wiring", () => {
   assert.match(indexHtml, /firstSessionHeadline/);
   assert.match(indexHtml, /firstSessionMode/);
   assert.match(indexHtml, /firstSessionNext/);
+  assert.match(indexHtml, /firstSessionProof/);
   assert.match(appJs, /function renderFirstSessionGuide/);
   assert.match(appJs, /renderFirstSessionGuide\(\);/);
+  assert.match(appJs, /firstSessionProof/);
 });
