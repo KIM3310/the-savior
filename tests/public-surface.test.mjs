@@ -29,6 +29,8 @@ test("public styles include bounded audience split treatment", () => {
   assert.match(stylesCss, /\.audience-split\s*\{/);
   assert.match(stylesCss, /\.reviewer-shell\s*\{/);
   assert.match(stylesCss, /\.audience-card-review\s*\{/);
+  assert.match(stylesCss, /\.first-session-guide\s*\{/);
+  assert.match(stylesCss, /\.first-session-grid\s*\{/);
 });
 
 
@@ -40,4 +42,13 @@ test("hero grounding surface exposes preview pills and default preset wiring", (
   assert.match(stylesCss, /\.hero-grounding-preview\s*\{/);
   assert.match(stylesCss, /\.hero-grounding-pill\s*\{/);
   assert.match(appJs, /applyHeroGroundingPreset\("presentation", \{ scroll: false \}\)/);
+});
+
+test("review surface includes first-session readiness guide wiring", () => {
+  const appJs = readFileSync(path.join(ROOT, "public", "app.js"), "utf8");
+  assert.match(indexHtml, /firstSessionHeadline/);
+  assert.match(indexHtml, /firstSessionMode/);
+  assert.match(indexHtml, /firstSessionNext/);
+  assert.match(appJs, /function renderFirstSessionGuide/);
+  assert.match(appJs, /renderFirstSessionGuide\(\);/);
 });
