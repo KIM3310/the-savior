@@ -446,6 +446,38 @@ p {
   line-height: 1.75;
 }
 
+.hero-grounding {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 213, 145, 0.16);
+  background: linear-gradient(180deg, rgba(15, 15, 18, 0.82), rgba(9, 9, 11, 0.6));
+  display: grid;
+  gap: 0.8rem;
+}
+
+.hero-grounding-head {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.hero-grounding-head h2 {
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+  color: #f6e6ca;
+}
+
+.hero-grounding-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.hero-grounding-btn.is-active {
+  border-color: rgba(255, 213, 145, 0.38);
+  background: rgba(255, 213, 145, 0.08);
+  color: #f7e6c9;
+}
+
 .hero-actions {
   margin-top: 1.2rem;
   display: flex;

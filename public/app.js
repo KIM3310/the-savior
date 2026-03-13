@@ -37,6 +37,26 @@ const CHECKIN_HISTORY_STORAGE_KEY = "theSaviorCheckinHistory";
 const ACTIVITY_SUMMARY_STORAGE_KEY = "theSaviorActivitySummary";
 const DEFAULT_NATIVE_API_BASE = "https://the-savior-9z8.pages.dev";
 const AI_REQUEST_TIMEOUT_MS = 25_000;
+const HERO_GROUNDING_CASES = {
+  presentation: {
+    mood: "불안",
+    stress: 8,
+    note: "발표 직전이라 호흡이 짧아지고 손이 차가워졌어요.",
+    summary: "발표 직전 긴장을 위한 시작점입니다. 불안 8/10으로 체크인을 채우고 바로 1분 감정 체크로 내려갑니다."
+  },
+  overload: {
+    mood: "피곤",
+    stress: 7,
+    note: "할 일이 한꺼번에 몰려 머리가 멈춘 느낌이에요. 우선순위부터 정리하고 싶어요.",
+    summary: "과부하를 정리하는 시작점입니다. 피곤 7/10 상태로 체크인을 채우고 메모를 남긴 뒤 바로 루틴을 만들 수 있습니다."
+  },
+  sleep: {
+    mood: "슬픔",
+    stress: 6,
+    note: "자기 전에 생각이 멈추지 않아 몸은 피곤한데 마음이 가라앉지 않아요.",
+    summary: "잠들기 전 진정을 위한 시작점입니다. 저녁 감정선을 그대로 기록하고 호흡 세션으로 이어가기 좋습니다."
+  }
+};
 
 function $(id) {
   return document.getElementById(id);
@@ -1403,6 +1423,35 @@ function setupQuickPrompts() {
   });
 }
 
+function setupHeroGrounding() {
+  const summary = $("heroGroundingSummary");
+  const buttons = document.querySelectorAll("[data-grounding-case]");
+  const mood = $("mood");
+  const stress = $("stress");
+  const note = $("checkinNote");
+  if (!summary || !buttons.length || !mood || !stress || !note) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = safeText(button.getAttribute("data-grounding-case") || "");
+      const preset = HERO_GROUNDING_CASES[key];
+      if (!preset) return;
+
+      mood.value = preset.mood;
+      stress.value = String(preset.stress);
+      note.value = preset.note;
+      summary.textContent = preset.summary;
+      buttons.forEach((item) => item.classList.toggle("is-active", item === button));
+      const stressValue = $("stressValue");
+      if (stressValue) stressValue.textContent = String(preset.stress);
+      updateCounter("checkinNote", "checkinNoteCount");
+      $("checkin")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      note.focus();
+      setRuntimeStatus("체크인 시작값을 채웠습니다. 메모를 다듬고 바로 안정 루틴을 받아보세요.", "good");
+    });
+  });
+}
+
 function setupJournalForm() {
   const form = $("journalForm");
   const input = $("journalInput");
@@ -1943,6 +1992,7 @@ function init() {
   setupCheckinForm();
   setupChatForm();
   setupQuickPrompts();
+  setupHeroGrounding();
   setupJournalForm();
   setupTimer();
   setupRevealAnimation();
