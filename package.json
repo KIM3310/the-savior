@@ -1,0 +1,40 @@
+{
+  "name": "the-savior",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The Savior - Buddhist mind-body stabilization platform",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KIM3310/the-savior.git"
+  },
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",
+    "dev:ollama": "if [ ! -f .dev.vars ]; then cp .dev.vars.example .dev.vars; fi; wrangler pages dev public --compatibility-date=2025-01-15 --port 8788",
+    "deploy": "wrangler pages deploy public --project-name the-savior",
+    "check": "node --check functions/api/_logger.js && node --check functions/api/_security.js && node --check functions/api/_runtime.js && node --check functions/api/chat.js && node --check functions/api/config.js && node --check functions/api/key-check.js && node --check functions/api/health.js && node --check functions/api/meta.js && node --check functions/api/runtime-brief.js && node --check functions/api/escalation-readiness.js && node --check functions/api/review-pack.js && node --check functions/api/schema/coach-response.js && node --check public/app.js",
+    "test": "node --test tests/*.test.mjs",
+    "lint": "npx @biomejs/biome check functions/ tests/",
+    "mobile:add:ios": "npx cap add ios",
+    "mobile:add:android": "npx cap add android",
+    "mobile:sync": "npx cap sync",
+    "mobile:sync:ios": "DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer npx cap sync ios",
+    "mobile:copy": "npx cap copy",
+    "mobile:open:ios": "npx cap open ios",
+    "mobile:open:android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/ios": "^7.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.8",
+    "@capacitor/cli": "^7.2.0",
+    "wrangler": "^4.9.1"
+  }
+}
