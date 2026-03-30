@@ -4,7 +4,17 @@
   "private": true,
   "type": "module",
   "description": "The Savior - Buddhist mind-body stabilization platform",
+  "homepage": "https://github.com/KIM3310/the-savior",
+  "keywords": [
+    "mindfulness",
+    "meditation",
+    "cloudflare-pages",
+    "ai-coaching",
+    "typescript",
+    "vite"
+  ],
   "license": "MIT",
+  "author": "Doeon Kim",
   "engines": {
     "node": ">=20"
   },
