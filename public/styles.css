@@ -842,6 +842,10 @@ select:focus {
   background: rgba(10, 10, 12, 0.55);
   border: 1px solid rgba(255, 214, 146, 0.28);
 }
+.hero-grounding-btn:hover, .btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+}
 
 .result-card {
   margin-top: 0.75rem;
