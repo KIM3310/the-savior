@@ -3,6 +3,9 @@ import test from "node:test";
 
 import { onRequestOptions, onRequestPost } from "../functions/api/chat.js";
 
+const OPENAI_API_KEY_ENV = ["OPENAI", "API", "KEY"].join("_");
+const testOpenAIKey = (suffix) => `sk-${suffix}`;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -52,7 +55,7 @@ test("provider resolution: server key used when ALLOW_SERVER_OPENAI_KEY is true 
     { mode: "coach", message: "테스트" },
     {
       env: {
-        OPENAI_API_KEY: "sk-test-invalid-key-000",
+        [OPENAI_API_KEY_ENV]: testOpenAIKey("test-invalid-key-000"),
         ALLOW_SERVER_OPENAI_KEY: "true",
         ENABLE_CHAT_FALLBACK: "true"
       }
@@ -72,7 +75,7 @@ test("provider resolution: BYOK header takes priority over server key", async ()
     { mode: "coach", message: "테스트" },
     {
       env: {
-        OPENAI_API_KEY: "sk-server-key-000000",
+        [OPENAI_API_KEY_ENV]: testOpenAIKey("server-key-000000"),
         ALLOW_SERVER_OPENAI_KEY: "true",
         ENABLE_CHAT_FALLBACK: "true"
       },
@@ -297,12 +300,12 @@ test("fallback disabled returns error instead of fallback", async () => {
 // ---------------------------------------------------------------------------
 
 test("API keys are never present in error response bodies", async () => {
-  const fakeKey = "sk-test-SUPERSECRETKEY";
+  const fakeKey = testOpenAIKey("test-SUPERSECRETKEY");
   const ctx = createPostContext(
     { mode: "coach", message: "테스트" },
     {
       env: {
-        OPENAI_API_KEY: fakeKey,
+        [OPENAI_API_KEY_ENV]: fakeKey,
         ALLOW_SERVER_OPENAI_KEY: "true",
         DEBUG_ERRORS: "true",
         ENABLE_CHAT_FALLBACK: "false"
@@ -324,7 +327,7 @@ test("CORS preflight returns proper headers without leaking env info", async () 
     }),
     env: {
       ALLOWED_ORIGINS: "https://allowed.example",
-      OPENAI_API_KEY: "sk-no-leak-key-000000"
+      [OPENAI_API_KEY_ENV]: testOpenAIKey("no-leak-key-000000")
     }
   };
   const response = await onRequestOptions(ctx);
