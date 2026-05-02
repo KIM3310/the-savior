@@ -35,7 +35,8 @@
     "mobile:sync:ios": "DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer npx cap sync ios",
     "mobile:copy": "npx cap copy",
     "mobile:open:ios": "npx cap open ios",
-    "mobile:open:android": "npx cap open android"
+    "mobile:open:android": "npx cap open android",
+    "verify": "npm run check && npm run lint && npm test"
   },
   "dependencies": {
     "@capacitor/android": "^7.2.0",
