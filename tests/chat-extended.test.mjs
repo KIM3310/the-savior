@@ -52,7 +52,7 @@ test("provider resolution: server key used when ALLOW_SERVER_OPENAI_KEY is true 
     { mode: "coach", message: "테스트" },
     {
       env: {
-        OPENAI_API_KEY: "sk-test-invalid-key-for-provider-resolution-testing",
+        OPENAI_API_KEY: "sk-test-invalid-key-000",
         ALLOW_SERVER_OPENAI_KEY: "true",
         ENABLE_CHAT_FALLBACK: "true"
       }
@@ -72,12 +72,12 @@ test("provider resolution: BYOK header takes priority over server key", async ()
     { mode: "coach", message: "테스트" },
     {
       env: {
-        OPENAI_API_KEY: "sk-server-key-should-not-be-used-0000000",
+        OPENAI_API_KEY: "sk-server-key-000000",
         ALLOW_SERVER_OPENAI_KEY: "true",
         ENABLE_CHAT_FALLBACK: "true"
       },
       headers: {
-        "x-user-openai-key": "sk-byok-test-key-should-be-used-0000000"
+        "x-user-openai-key": "sk-byok-test-key-0000"
       }
     }
   );
@@ -297,7 +297,7 @@ test("fallback disabled returns error instead of fallback", async () => {
 // ---------------------------------------------------------------------------
 
 test("API keys are never present in error response bodies", async () => {
-  const fakeKey = "sk-proj-SUPERSECRETKEY1234567890abcdef";
+  const fakeKey = "sk-test-SUPERSECRETKEY";
   const ctx = createPostContext(
     { mode: "coach", message: "테스트" },
     {
@@ -324,7 +324,7 @@ test("CORS preflight returns proper headers without leaking env info", async () 
     }),
     env: {
       ALLOWED_ORIGINS: "https://allowed.example",
-      OPENAI_API_KEY: "sk-should-not-appear-anywhere-000000"
+      OPENAI_API_KEY: "sk-no-leak-key-000000"
     }
   };
   const response = await onRequestOptions(ctx);
