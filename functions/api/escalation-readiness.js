@@ -1,7 +1,7 @@
 /**
  * Escalation readiness endpoint for The Savior.
  *
- * Returns crisis escalation posture, guardrails, and reviewer actions
+ * Returns crisis escalation posture, guardrails, and operator actions
  * to confirm safety gating before public traffic.
  *
  * @module api/escalation-readiness
@@ -52,7 +52,7 @@ export async function onRequestOptions(context) {
  * GET handler for /api/escalation-readiness.
  *
  * Returns escalation posture including crisis gating mode,
- * guardrails, and reviewer actions.
+ * guardrails, and operator actions.
  *
  * @param {{ request: Request, env: Record<string, string> }} context
  * @returns {Promise<Response>}

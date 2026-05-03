@@ -203,7 +203,7 @@ test("buildRuntimeBrief returns complete payload with all required fields", () =
 // 10. buildReviewPack
 // ---------------------------------------------------------------------------
 
-test("buildReviewPack returns complete reviewer payload", () => {
+test("buildReviewPack returns complete operator payload", () => {
   const pack = buildReviewPack({}, "https://example.com/api");
   assert.equal(pack.status, "ok");
   assert.equal(pack.readiness_contract, REVIEW_PACK_CONTRACT);

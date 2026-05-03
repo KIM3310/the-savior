@@ -2,7 +2,7 @@
  * Progress trends endpoint for The Savior.
  *
  * Returns synthetic coaching session snapshots with fallback/runtime
- * posture and escalation data for reviewer consumption.
+ * posture and escalation data for operator consumption.
  *
  * @module api/progress-trends
  */

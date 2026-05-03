@@ -256,7 +256,7 @@ export function buildRuntimeBrief(env, requestUrl) {
       {
         label: "Review Pack",
         path: "/api/review-pack",
-        why: "Packages safety boundary, revenue boundary, and reviewer sequence in one payload."
+        why: "Packages safety boundary, revenue boundary, and operator sequence in one payload."
       },
       {
         label: "Progress Trends",
@@ -287,7 +287,7 @@ export function buildRuntimeBrief(env, requestUrl) {
 /**
  * Build the review-pack payload used by /api/review-pack.
  *
- * Wraps the runtime status with safety/revenue boundaries and reviewer sequence.
+ * Wraps the runtime status with safety/revenue boundaries and operator sequence.
  *
  * @param {Record<string, string>} env - Environment bindings.
  * @param {string} requestUrl - Full request URL.
@@ -305,7 +305,7 @@ export function buildReviewPack(env, requestUrl) {
     generated_at: new Date().toISOString(),
     readiness_contract: REVIEW_PACK_CONTRACT,
     headline:
-      "Reviewer pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and monetization separation in one contract.",
+      "Operator pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and monetization separation in one contract.",
     proof_bundle: {
       runtimeMode: diagnostics.runtimeMode || "runtime-key",
       llmReady: Boolean(diagnostics.llmReady),
@@ -328,7 +328,7 @@ export function buildReviewPack(env, requestUrl) {
     ],
     revenue_boundary: [
       "AdSense state must never influence crisis routing or coach response content.",
-      "Wellness coaching and monetization surfaces are separated so reviewers can inspect them independently.",
+      "Wellness coaching and monetization surfaces are separated so operators can inspect them independently.",
       "Operators should confirm that fallback mode still behaves safely when ads are configured."
     ],
     review_sequence: [
@@ -361,12 +361,12 @@ export function buildReviewPack(env, requestUrl) {
       {
         label: "Escalation Readiness",
         path: "/api/escalation-readiness",
-        why: "Pins crisis gating, fallback visibility, and reviewer actions in one surface."
+        why: "Pins crisis gating, fallback visibility, and operator actions in one surface."
       },
       {
         label: "Review Pack",
         path: "/api/review-pack",
-        why: "Packages safety and revenue boundaries for reviewer handoff."
+        why: "Packages safety and revenue boundaries for operator handoff."
       },
       {
         label: "Progress Trends",
@@ -437,7 +437,7 @@ export function buildEscalationReadiness(env, requestUrl) {
 /**
  * Build the progress-trends payload used by /api/progress-trends.
  *
- * Returns synthetic coaching session snapshots for reviewer consumption.
+ * Returns synthetic coaching session snapshots for operator consumption.
  *
  * @param {Record<string, string>} env - Environment bindings.
  * @param {string} requestUrl - Full request URL.

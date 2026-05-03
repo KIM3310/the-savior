@@ -20,9 +20,9 @@ test("public landing separates end-user front door from status page", () => {
   assert.ok(reviewerGatewayIndex < runtimeBriefIndex);
 
   assert.match(indexHtml, /For You/);
-  assert.match(indexHtml, /For Reviewers/);
-  assert.match(indexHtml, /리뷰어 검토 표면/);
-  assert.match(indexHtml, /Review Surface/);
+  assert.match(indexHtml, /For Operators/);
+  assert.match(indexHtml, /운영 검토 표면/);
+  assert.match(indexHtml, /Operations Surface/);
 });
 
 test("public styles include bounded audience split treatment", () => {
@@ -43,7 +43,7 @@ test("hero grounding surface exposes preview pills and default preset wiring", (
   assert.match(appJs, /applyHeroGroundingPreset\("presentation", \{ scroll: false \}\)/);
 });
 
-test("review surface includes first-session readiness guide wiring", () => {
+test("operations surface includes first-session readiness guide wiring", () => {
   const appJs = readFileSync(path.join(ROOT, "public", "app.js"), "utf8");
   assert.match(indexHtml, /firstSessionHeadline/);
   assert.match(indexHtml, /firstSessionMode/);
