@@ -2,7 +2,7 @@
 
 ## 1) 프로젝트 생성
 ```bash
-cd /Users/kim/the-savior
+cd the-savior
 npm install
 npx wrangler pages project create the-savior
 ```

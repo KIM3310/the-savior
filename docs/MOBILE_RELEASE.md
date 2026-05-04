@@ -11,7 +11,7 @@
 
 ## 1) Capacitor 세팅
 ```bash
-cd /Users/kim/the-savior
+cd the-savior
 npm install
 npm run mobile:add:ios
 npm run mobile:add:android
@@ -45,5 +45,5 @@ npm run mobile:sync
 - Android SDK 오류(`SDK location not found`) 시:
   - Android Studio 설치 후 SDK 다운로드
   - `android/local.properties.example`를 복사해 `android/local.properties` 생성
-    - `sdk.dir=/Users/<your-user>/Library/Android/sdk`
+    - `sdk.dir=<android-sdk-root>`
   - 또는 `ANDROID_HOME`/`ANDROID_SDK_ROOT` 환경변수 설정
