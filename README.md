@@ -21,6 +21,10 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 - **Verification:** Run `npm run verify`; it covers syntax checks, lint, and Node tests.
 - **Commercial read:** Treat it as a low-infrastructure wellness funnel with paid guided packs or community templates.
 
+## Commercialization Playbook
+
+- [Monetization and GTM playbook](docs/monetization-playbook.md) maps the repository to buyer segments, offer ladder, pricing hypotheses, proof gates, and risk boundaries.
+
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine
 - AI meditation coaching conversation
