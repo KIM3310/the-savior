@@ -2,6 +2,18 @@
 
 Buddhist-inspired mindfulness platform built on Cloudflare Pages + Functions + OpenAI API.
 
+## Product and Review Surface
+
+A calm consumer AI surface that tests whether journaling, reflection, and lightweight coaching can retain users without heavy infrastructure.
+
+| Lens | Definition |
+|---|---|
+| Buyer or user | Wellness creators, small community operators, and solo users looking for low-friction reflection tools. |
+| Commercial route | Use a freemium funnel: free journaling, paid guided packs, hosted sync, or creator/community templates. |
+| Review signal | Cloudflare Pages deployment, optional local or hosted AI adapters, journaling flows, and deterministic fallbacks. |
+| Safety boundary | This is wellness software, not clinical care; sensitive user content needs clear privacy controls and optional local-only mode. |
+| Fast proof | Run the app locally or inspect the Pages deployment and fallback behavior without requiring paid model keys. |
+
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine
 - AI meditation coaching conversation
