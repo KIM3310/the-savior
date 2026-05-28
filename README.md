@@ -14,6 +14,13 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 | Safety boundary | This is wellness software, not clinical care; sensitive user content needs clear privacy controls and optional local-only mode. |
 | Fast proof | Run the app locally or inspect the Pages deployment and fallback behavior without requiring paid model keys. |
 
+## Reviewer Fast Path
+
+- **First minute:** Try the check-in flow, then confirm fallback coaching works without a provider key.
+- **Local demo:** Run `npm install && npm run dev`, then open `http://localhost:8788`.
+- **Verification:** Run `npm run verify`; it covers syntax checks, lint, and Node tests.
+- **Commercial read:** Treat it as a low-infrastructure wellness funnel with paid guided packs or community templates.
+
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine
 - AI meditation coaching conversation
