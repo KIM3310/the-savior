@@ -25,6 +25,11 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 
 - [Monetization and GTM playbook](docs/monetization-playbook.md) maps the repository to buyer segments, offer ladder, pricing hypotheses, proof gates, and risk boundaries.
 
+## Executive Proof Pack
+
+- [Reviewer evidence map](docs/reviewer-evidence-map.md) gives a 7-minute route through the strongest hiring, buyer, and architecture signals.
+- [Quality gate](docs/quality-gate.md) lists the local checks, CI surface, release boundary, and no-key/demo expectations for this repository.
+
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine
 - AI meditation coaching conversation
