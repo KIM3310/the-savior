@@ -1,5 +1,10 @@
 # The Savior
 
+> **Curated supporting repo**
+> This repository is kept as optional proof, but it no longer leads the portfolio.
+> Current front door: **aix-pilot and doeon-kim-portfolio**.
+> Reason: Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story.
+
 Buddhist-inspired mindfulness platform built on Cloudflare Pages + Functions + OpenAI API.
 
 ## Product and Review Surface
@@ -31,6 +36,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 - [Quality notes](docs/quality-gate.md) lists the local checks, CI surface, and release expectations for this repository.
 - [Revenue growth model](docs/revenue-growth-model.md) maps the project to an ethical revenue path, activation loop, pricing logic, and growth experiments.
 - [Enterprise readiness notes](docs/enterprise-readiness.md) outlines security, data, operations, integration, and handoff expectations.
+- [Portfolio fit](docs/portfolio-fit.md) explains why this repository is archived/supporting and where the current portfolio front door lives.
 
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine

@@ -2,63 +2,47 @@
 
 Updated: 2026-05-30
 
-Use this page as the short path through the repository. It keeps the review grounded in the code, docs, commands, and boundaries that are already present.
+This repository is now curated as supporting material. Review it only after the flagship enterprise AI, operations, security, data, and runtime reliability projects have established the main story.
 
 ## Summary
 
 | Field | Notes |
 |---|---|
+| Repository | `the-savior` |
+| Status | Archived supporting repository |
 | Lane | B2C wellness and ads funnel |
-| Core idea | Cloudflare Pages mindfulness app with journaling, coaching, fallbacks, ads, and mobile packaging path. |
 | Primary reader | Wellness creators, small communities, and users seeking low-friction reflection tools. |
-| Stack | TypeScript/JavaScript, Cloudflare |
+| Why it moved back | Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story. |
+| Current successor | aix-pilot and doeon-kim-portfolio |
 
 ## Open First
 
-1. Start with the README fast path and architecture section.
-2. Open `docs/monetization-playbook.md` only when reviewing the product or service angle.
-3. Check the commands below before making claims about quality.
-4. Skim the CI workflows and fixture data before deeper implementation review.
-5. Read the boundaries section before presenting the project externally.
-
-## Checks
-
-| Purpose | Command |
-|---|---|
-| Full local gate | `npm run verify` |
-| Test suite | `npm test` |
-| Lint | `npm run lint` |
-
-## CI
-
-- .github/workflows/architecture-blueprint.yml
-- .github/workflows/ci.yml
-- .github/workflows/dependency-review.yml
-- .github/workflows/repository-health.yml
-- .github/workflows/repository-surface.yml
-- .github/workflows/secret-scan.yml
+1. Start with the successor repositories named above.
+2. Use this repository only for optional domain breadth or historical product exploration.
+3. Check `docs/portfolio-fit.md` before presenting it externally.
+4. Keep the archived/supporting status visible in any resume, portfolio, or buyer conversation.
 
 ## Evidence
 
-- package scripts and web/runtime checks
-- edge deployment configuration
 - npm run verify passes
 - Fallback works without keys
 - Privacy boundary is visible
 
 ## Commercial Notes
 
-| Possible offer | Working price assumption |
-|---|---|
-| Freemium wellness app | Ads + consent |
-| Paid guided packs | $4-$12 paid packs |
-| Creator/community templates | $5-$10/month sync/community |
+| Possible offer | Working price assumption | Scope |
+|---|---|---|
+| Freemium wellness app | Ads + consent | Scoped after review. |
+| Paid guided packs | $4-$12 paid packs | Scoped after review. |
+| Creator/community templates | $5-$10/month sync/community | Scoped after review. |
 
 ## Boundaries
 
 - Not clinical care
 - Sensitive content privacy
 - Escalation/safety copy required
+- Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story.
+- Do not present this as a current flagship or maintained product surface.
 
 ## Useful Metrics
 
