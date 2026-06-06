@@ -1,6 +1,6 @@
 # Service Architecture - the-savior
 
-This document defines the deployment and resource plan for turning this repository into a buyer-reviewable service. It intentionally avoids public public financial assumptions, public financial guesses, or contract assumptions.
+This document defines the deployment and resource plan for turning this repository into a buyer-reviewable service. It intentionally avoids public financial assumptions, public financial guesses, or contract assumptions.
 
 ## Commercial Role
 
@@ -42,6 +42,15 @@ Visitor or operator
 
 - analytics token
 - API keys only if dynamic features are enabled
+
+## Revenue Channel Architecture
+
+- **Primary channel:** B2C content, ads, and affiliate surfaces
+- **Monetization route:** Reflective wellness or narrative content surface with donation, premium content, or policy-safe ads only after safety review.
+- **Acquisition motion:** Search pages, short-form content, social proof, and portfolio links that clarify safety boundaries.
+- **Activation path:** Keep the experience non-clinical, add crisis-boundary copy where relevant, and review ad-policy fit before monetization.
+- **Margin control:** Keep hosting static, avoid paid backends until traffic justifies them, and separate reflective content from claims.
+- **Public boundary:** Keep revenue, pricing, and contract assumptions in private planning; this repository publishes service structure, resource needs, and technical proof only.
 
 ## Cost and Risk Controls
 

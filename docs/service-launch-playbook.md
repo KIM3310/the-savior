@@ -14,6 +14,15 @@ This file is a commercial planning artifact, but it does not publish public fina
 2. **Scoped diagnostic** - review the buyer workflow, data boundary, integration needs, and acceptance criteria.
 3. **Implementation or operating support** - connect only the resources approved in [service architecture](service-architecture.md).
 
+## Revenue Channel
+
+- **Channel:** B2C content, ads, and affiliate surfaces
+- **First commercial action:** Reflective wellness or narrative content surface with donation, premium content, or policy-safe ads only after safety review.
+- **Conversion path:** Search pages, short-form content, social proof, and portfolio links that clarify safety boundaries.
+- **Activation path:** Keep the experience non-clinical, add crisis-boundary copy where relevant, and review ad-policy fit before monetization.
+- **Retention path:** Email, content series, and recurring educational or reflective experiences.
+- **Public boundary:** Do not publish projections, price promises, or buyer-specific contract assumptions in this repository.
+
 ## Acquisition Channels
 
 - Portfolio and GitHub proof links
