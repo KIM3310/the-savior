@@ -30,7 +30,7 @@ This repository is now curated as supporting material. Review it only after the 
 
 ## Commercial Notes
 
-| Possible offer | Working price assumption | Scope |
+| Possible offer | Working scope assumption | Scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Scoped after review. |
 | Paid guided packs | $4-$12 paid packs | Scoped after review. |

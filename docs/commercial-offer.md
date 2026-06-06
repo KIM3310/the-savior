@@ -12,13 +12,13 @@ This is the buyer-ready version of the repository. It turns the technical proof 
 | Buyer | Wellness creators, small communities, and users seeking low-friction reflection tools. |
 | Pain wedge | Cloudflare Pages mindfulness app with journaling, coaching, fallbacks, ads, and mobile packaging path. |
 | Front-door offer | Freemium wellness app |
-| Entry price assumption | Ads + consent |
+| Entry scope | Ads + consent |
 | Proof before pitch | npm run verify passes |
 | Next buyer action | Review one proof artifact, then choose diagnostic, workshop, pilot, support, or revival path. |
 
 ## Packaged Offer Ladder
 
-| Offer | Price assumption | Buyer-facing scope |
+| Offer | Scope assumption | Buyer-facing scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Publish 20 guided routines |
 | Paid guided packs | $4-$12 paid packs | Add creator pack page |
@@ -35,7 +35,7 @@ This is the buyer-ready version of the repository. It turns the technical proof 
 - Cognitive fluency: one buyer, one painful workflow, one proof artifact, one next step.
 - Attention design: keep the primary CTA visible and remove side quests before the proof moment.
 - Risk reversal: make the first paid step small, time-boxed, and tied to acceptance criteria.
-- Proof before persuasion: show tests, demo output, scorecards, exports, or review packs before pricing.
+- Proof before persuasion: show tests, demo output, scorecards, exports, or review packs before scope discussion.
 - Autonomy: make opt-in, data boundaries, cancellation, and unsupported claims visible.
 - Status clarity: supporting or archived projects must not compete with the current flagship story.
 
@@ -61,9 +61,9 @@ This is the buyer-ready version of the repository. It turns the technical proof 
 
 ## Guardrails
 
-- Do not invent customers, revenue, endorsements, logos, or certifications.
+- Do not invent customers, financial outcomes, endorsements, logos, or certifications.
 - Do not claim production readiness without scoped validation, data access, monitoring, and support ownership.
-- Do not use pressure tactics, fake scarcity, hidden continuity, or confusing pricing.
+- Do not use pressure tactics, fake scarcity, hidden continuity, or confusing scope.
 - Not clinical care
 - Sensitive content privacy
 - Escalation/safety copy required

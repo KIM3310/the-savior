@@ -2,7 +2,7 @@
 
 Updated: 2026-05-30
 
-This note specializes the repository for revenue. It combines product strategy, UX design, behavioral economics, and neuroscience-informed attention and working-memory design in a practical way: reduce confusion, build trust, help the right user act, and avoid manipulative conversion patterns.
+This note specializes the repository for service launch. It combines product strategy, UX design, behavioral economics, and neuroscience-informed attention and working-memory design in a practical way: reduce confusion, build trust, help the right user act, and avoid manipulative conversion patterns.
 
 ## Commercial Focus
 
@@ -12,7 +12,7 @@ This note specializes the repository for revenue. It combines product strategy, 
 | Lane | B2C wellness and ads funnel |
 | Primary buyer or user | Wellness creators, small communities, and users seeking low-friction reflection tools. |
 | Value wedge | Cloudflare Pages mindfulness app with journaling, coaching, fallbacks, ads, and mobile packaging path. |
-| Revenue model | Revival, workshop, template, or diagnostic package |
+| Service model | Revival, workshop, template, or diagnostic package |
 | Operating note | Use the repository as proof behind a current flagship or narrow paid engagement. |
 | Best channel | Archive page, portfolio index, or direct link from the successor project. |
 
@@ -53,7 +53,7 @@ This note specializes the repository for revenue. It combines product strategy, 
 - Revival step: Paid guided packs ($4-$12 paid packs) only after the active successor and support boundary are clear.
 - Longer-term path: Creator/community templates ($5-$10/month sync/community) if the repository is refreshed and assigned an owner.
 
-## Pricing Frame
+## Scope Frame
 
 - Do not price the archive as a maintained product.
 - Price the revived diagnostic, workshop, template, or implementation path.
@@ -67,8 +67,8 @@ This note specializes the repository for revenue. It combines product strategy, 
 
 ## Ethical Guardrails
 
-- No fake users, fake logos, fake revenue, fake benchmarks, or unverifiable endorsements.
-- No urgency timers, hidden opt-outs, forced continuity, or confusing pricing.
+- No fake users, fake logos, fake financial outcomes, fake benchmarks, or unverifiable endorsements.
+- No urgency timers, hidden opt-outs, forced continuity, or confusing scope.
 - Conversion prompts should come after value or evidence, not before.
 - Data collection should be minimal, visible, and tied to product value.
 - Keep archived/supporting status visible in the README, index, and buyer conversation.
