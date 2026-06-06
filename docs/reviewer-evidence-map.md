@@ -33,8 +33,8 @@ This repository is now curated as supporting material. Review it only after the 
 | Possible offer | Working scope assumption | Scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Scoped after review. |
-| Paid guided packs | $4-$12 paid packs | Scoped after review. |
-| Creator/community templates | $5-$10/month sync/community | Scoped after review. |
+| Paid guided packs | Scope after buyer intake | Scoped after review. |
+| Creator/community templates | Scope after buyer intake | Scoped after review. |
 
 ## Boundaries
 

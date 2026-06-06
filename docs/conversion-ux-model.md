@@ -50,8 +50,8 @@ This note specializes the repository for service launch. It combines product str
 ## Conversion Path
 
 - Optional entry: Freemium wellness app (Ads + consent) when this archived proof exactly matches the buyer problem.
-- Revival step: Paid guided packs ($4-$12 paid packs) only after the active successor and support boundary are clear.
-- Longer-term path: Creator/community templates ($5-$10/month sync/community) if the repository is refreshed and assigned an owner.
+- Revival step: Paid guided packs (scope after buyer intake) only after the active successor and support boundary are clear.
+- Longer-term path: Creator/community templates (scope after buyer intake) if the repository is refreshed and assigned an owner.
 
 ## Scope Frame
 

@@ -21,8 +21,8 @@ This is the buyer-ready version of the repository. It turns the technical proof 
 | Offer | Scope assumption | Buyer-facing scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Publish 20 guided routines |
-| Paid guided packs | $4-$12 paid packs | Add creator pack page |
-| Creator/community templates | $5-$10/month sync/community | Test ads and paid pack |
+| Paid guided packs | Scope after buyer intake | Add creator pack page |
+| Creator/community templates | Scope after buyer intake | Test ads and paid pack |
 
 ## Close Path
 
