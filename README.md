@@ -1,5 +1,10 @@
 # The Savior
 
+## Live Demo
+
+- [Open the public GitHub Pages demo](https://kim3310.github.io/the-savior/)
+- Scope: credential-free, synthetic-data demo for reviewers and evaluators.
+
 > **Curated supporting repo**
 > This repository is kept as optional proof, but it no longer leads the portfolio.
 > Current front door: **aix-pilot and doeon-kim-portfolio**.
