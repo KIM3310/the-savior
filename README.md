@@ -130,7 +130,7 @@ npm run mobile:sync
 
 ## Security Notes
 - Never commit API keys
-- Default mode is zero-cost (BYOK or fallback only)
+- Default mode is BYOK or fallback only
 - All error responses redact API key fragments
 - User API keys stored in session storage only
 
