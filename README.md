@@ -32,7 +32,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 
 ## Service Launch Playbook
 
-- [Service launch playbook](docs/service-launch-playbook.md) maps the repository to review audiences, offer ladder, proof gates, proof gates, and risk boundaries.
+- [Service launch playbook](docs/service-launch-playbook.md) maps the repository to review audiences, proof gates, operating boundaries, and risk controls.
 
 ## Review Notes
 

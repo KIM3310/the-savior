@@ -33,7 +33,7 @@ This repository is now curated as supporting material. Review it only after the 
 | Possible offer | Working scope assumption | Scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Scoped after review. |
-| Paid guided packs | Scope after reviewer intake | Scoped after review. |
+| Guided packs | Scope after reviewer intake | Scoped after review. |
 | Creator/community templates | Scope after reviewer intake | Scoped after review. |
 
 ## Boundaries
