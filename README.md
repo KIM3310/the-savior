@@ -8,7 +8,7 @@
 > **Curated supporting repo**
 > This repository is kept as optional proof, but it no longer leads the portfolio.
 > Current front door: **aix-pilot and doeon-kim-portfolio**.
-> Reason: Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story.
+> Reason: Wellness and consumer-positioning is not strong enough for the main spec or B2B technical story.
 
 Buddhist-inspired mindfulness platform built on Cloudflare Pages + Functions + OpenAI API.
 
@@ -18,31 +18,27 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 
 | Lens | Definition |
 |---|---|
-| Buyer or user | Wellness creators, small community operators, and solo users looking for low-friction reflection tools. |
-| Commercial route | Use a freemium funnel: free journaling, paid guided packs, hosted sync, or creator/community templates. |
+| Audience | Wellness creators, small community operators, and solo users looking for low-friction reflection tools. |
+| Review path | Validate the demo, README, architecture notes, and quality gate before deeper workflow review. |
 | Review signal | Cloudflare Pages deployment, optional local or hosted AI adapters, journaling flows, and deterministic fallbacks. |
 | Safety boundary | This is wellness software, not clinical care; sensitive user content needs clear privacy controls and optional local-only mode. |
-| Fast proof | Run the app locally or inspect the Pages deployment and fallback behavior without requiring paid model keys. |
+| Fast proof | Run the app locally or inspect the Pages deployment and fallback behavior without requiring external model keys. |
 
 ## Reviewer Fast Path
 
 - **First minute:** Try the check-in flow, then confirm fallback coaching works without a provider key.
 - **Local demo:** Run `npm install && npm run dev`, then open `http://localhost:8788`.
 - **Verification:** Run `npm run verify`; it covers syntax checks, lint, and Node tests.
-- **Commercial read:** Treat it as a low-infrastructure wellness funnel with paid guided packs or community templates.
 
 ## Service Launch Playbook
 
-- [Service launch playbook](docs/service-launch-playbook.md) maps the repository to buyer segments, offer ladder, proof gates, proof gates, and risk boundaries.
+- [Service launch playbook](docs/service-launch-playbook.md) maps the repository to review audiences, offer ladder, proof gates, proof gates, and risk boundaries.
 
 ## Review Notes
 
 - [Review guide](docs/reviewer-evidence-map.md) summarizes the project angle, first files to inspect, verification commands, and known boundaries.
 - [Quality notes](docs/quality-gate.md) lists the local checks, CI surface, and release expectations for this repository.
-- [Service growth model](docs/service-growth-model.md) maps the project to an ethical service path, activation loop, scope logic, and growth experiments.
 - [Enterprise readiness notes](docs/enterprise-readiness.md) outlines security, data, operations, integration, and handoff expectations.
-- [Conversion UX model](docs/conversion-ux-model.md) maps the buyer path, behavioral design, UI/UX direction, scope frame, and ethical conversion guardrails.
-- [Commercial offer](docs/commercial-offer.md) packages the repository into a buyer-ready offer ladder, proof gate, outreach angle, and close path.
 - [Portfolio fit](docs/portfolio-fit.md) explains why this repository is archived/supporting and where the current portfolio front door lives.
 
 ## Features
@@ -52,7 +48,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 - OpenAI / Ollama provider support with automatic switching
 - BYOK (bring your own key) with server key fallback
 - Offline fallback coaching when no provider is available
-- AdSense ad slots + consent banner
+- BYOK runtime posture + safety consent banner
 - 14-day recovery insight dashboard with data export
 - Capacitor-based iOS/Android packaging
 
@@ -88,7 +84,7 @@ See full list of rate limit and security env vars in the source.
 - `GET /api/health` - Health check
 - `GET /api/meta` - Provider/rate-limit metadata
 - `GET /api/runtime-brief` - Operator readiness brief
-- `GET /api/review-pack` - Safety/revenue boundary summary
+- `GET /api/review-pack` - Safety/runtime boundary summary
 - `GET /api/progress-trends` - Coaching trend snapshot
 - `GET /api/escalation-readiness` - Crisis escalation readiness
 - `GET /api/schema/coach-response` - Coach response schema
@@ -148,7 +144,7 @@ This repository includes a neutral cloud and AI engineering blueprint that maps 
 
 ## Enterprise Productization
 
-- [Product operating model](docs/product-operating-model.md) defines the buyer, paid wedge, trust boundary, operating checks, and service path for this repository.
+- [Product operating model](docs/product-operating-model.md) defines the reviewer, trust boundary, trust boundary, operating checks, and service path for this repository.
 
 ## Service Architecture
 

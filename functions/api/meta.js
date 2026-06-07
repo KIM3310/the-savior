@@ -2,7 +2,7 @@
  * Meta endpoint for The Savior.
  *
  * Returns comprehensive runtime metadata including LLM posture,
- * API routes, monetization state, diagnostics, and rate-limit config.
+ * API routes, runtime policy state, diagnostics, and rate-limit config.
  *
  * @module api/meta
  */
@@ -60,7 +60,7 @@ export async function onRequestOptions(context) {
 /**
  * GET handler for /api/meta.
  *
- * Returns full runtime metadata: LLM config, API routes, monetization,
+ * Returns full runtime metadata: LLM config, API routes, runtimePolicy,
  * diagnostics, contracts, and rate-limit configuration.
  *
  * @param {{ request: Request, env: Record<string, string> }} context
@@ -101,10 +101,10 @@ export async function onRequestGet(context) {
   const providerPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
   const hasServerApiKey = hasEnabledServerApiKey(context.env);
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
-  const monetizationReady = Boolean(String(context.env.ADSENSE_CLIENT || "").trim());
+  const optionalScriptReady = Boolean(String(context.env.OPTIONAL_SCRIPT_CLIENT || "").trim());
   const diagnostics = buildRuntimeDiagnostics({
     hasServerApiKey,
-    monetizationReady,
+    optionalScriptReady,
     ollamaEnabled,
     providerPreference
   });
@@ -130,11 +130,11 @@ export async function onRequestGet(context) {
         publicBaseUrl: configuredBaseUrl || requestOrigin,
         routes: RUNTIME_ROUTES
       },
-      monetization: {
-        adsenseConfigured: monetizationReady,
+      runtimePolicy: {
+        optionalScriptConfigured: optionalScriptReady,
         slotsConfigured: {
-          top: Boolean(String(context.env.ADSENSE_SLOT_TOP || "").trim()),
-          bottom: Boolean(String(context.env.ADSENSE_SLOT_BOTTOM || "").trim())
+          top: Boolean(String(context.env.OPTIONAL_SCRIPT_SLOT_TOP || "").trim()),
+          bottom: Boolean(String(context.env.OPTIONAL_SCRIPT_SLOT_BOTTOM || "").trim())
         }
       },
       diagnostics,

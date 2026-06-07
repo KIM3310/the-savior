@@ -1,7 +1,7 @@
 /**
  * Operations pack endpoint for The Savior.
  *
- * Packages safety boundaries, revenue boundaries, and operator sequence
+ * Packages safety boundaries, runtime boundaries, and operator sequence
  * into a single payload for operator handoff.
  *
  * @module api/review-pack
@@ -51,7 +51,7 @@ export async function onRequestOptions(context) {
 /**
  * GET handler for /api/review-pack.
  *
- * Returns the complete status summary with safety/revenue boundaries,
+ * Returns the complete status summary with safety/runtime boundaries,
  * proof bundle, and operator sequence.
  *
  * @param {{ request: Request, env: Record<string, string> }} context

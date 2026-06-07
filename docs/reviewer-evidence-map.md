@@ -10,9 +10,9 @@ This repository is now curated as supporting material. Review it only after the 
 |---|---|
 | Repository | `the-savior` |
 | Status | Archived supporting repository |
-| Lane | B2C wellness and ads funnel |
+| Lane | B2C wellness reflection tool |
 | Primary reader | Wellness creators, small communities, and users seeking low-friction reflection tools. |
-| Why it moved back | Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story. |
+| Why it moved back | Wellness and consumer-positioning is not strong enough for the main spec or B2B technical story. |
 | Current successor | aix-pilot and doeon-kim-portfolio |
 
 ## Open First
@@ -20,7 +20,7 @@ This repository is now curated as supporting material. Review it only after the 
 1. Start with the successor repositories named above.
 2. Use this repository only for optional domain breadth or historical product exploration.
 3. Check `docs/portfolio-fit.md` before presenting it externally.
-4. Keep the archived/supporting status visible in any resume, portfolio, or buyer conversation.
+4. Keep the archived/supporting status visible in any resume, portfolio, or reviewer conversation.
 
 ## Evidence
 
@@ -28,20 +28,20 @@ This repository is now curated as supporting material. Review it only after the 
 - Fallback works without keys
 - Privacy boundary is visible
 
-## Commercial Notes
+## Review Notes
 
 | Possible offer | Working scope assumption | Scope |
 |---|---|---|
 | Freemium wellness app | Ads + consent | Scoped after review. |
-| Paid guided packs | Scope after buyer intake | Scoped after review. |
-| Creator/community templates | Scope after buyer intake | Scoped after review. |
+| Paid guided packs | Scope after reviewer intake | Scoped after review. |
+| Creator/community templates | Scope after reviewer intake | Scoped after review. |
 
 ## Boundaries
 
 - Not clinical care
 - Sensitive content privacy
 - Escalation/safety copy required
-- Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story.
+- Wellness and consumer-positioning is not strong enough for the main spec or B2B technical story.
 - Do not present this as a current flagship or maintained product surface.
 
 ## Useful Metrics

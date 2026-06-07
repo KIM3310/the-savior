@@ -142,7 +142,7 @@ export function buildCoachResponseSchema() {
  * @typedef {Object} RuntimeDiagnostics
  * @property {string} runtimeMode - Current runtime mode ("server-key", "ollama-local", or "runtime-key").
  * @property {boolean} llmReady - Whether any LLM path is available.
- * @property {boolean} monetizationReady - Whether AdSense is configured.
+ * @property {boolean} optionalScriptReady - Whether optional script is configured.
  * @property {string} nextAction - Human-readable next action for the operator.
  */
 
@@ -151,12 +151,12 @@ export function buildCoachResponseSchema() {
  *
  * @param {Object} params
  * @param {boolean} params.hasServerApiKey - Whether a server-side API key is enabled.
- * @param {boolean} params.monetizationReady - Whether AdSense client ID is configured.
+ * @param {boolean} params.optionalScriptReady - Whether optional script client ID is configured.
  * @param {boolean} params.ollamaEnabled - Whether Ollama is available.
  * @param {string} params.providerPreference - Normalized provider preference.
  * @returns {RuntimeDiagnostics}
  */
-export function buildRuntimeDiagnostics({ hasServerApiKey, monetizationReady, ollamaEnabled, providerPreference }) {
+export function buildRuntimeDiagnostics({ hasServerApiKey, optionalScriptReady, ollamaEnabled, providerPreference }) {
   const llmReady = hasServerApiKey || ollamaEnabled;
   let runtimeMode = "runtime-key";
   if (hasServerApiKey) runtimeMode = "server-key";
@@ -166,7 +166,7 @@ export function buildRuntimeDiagnostics({ hasServerApiKey, monetizationReady, ol
   return {
     runtimeMode,
     llmReady,
-    monetizationReady,
+    optionalScriptReady,
     nextAction: llmReady
       ? "Call /api/runtime-brief or /api/chat to validate the active runtime path."
       : "Provide BYOK at runtime or enable local/server LLM support before launch."
@@ -184,10 +184,10 @@ export function buildRuntimeBrief(env, requestUrl) {
   const providerPreference = normalizeProvider(env.LLM_PROVIDER || "");
   const hasServerApiKey = hasEnabledServerApiKey(env);
   const ollamaEnabled = isOllamaEnabled(env, requestUrl);
-  const monetizationReady = Boolean(String(env.ADSENSE_CLIENT || "").trim());
+  const optionalScriptReady = Boolean(String(env.OPTIONAL_SCRIPT_CLIENT || "").trim());
   const diagnostics = buildRuntimeDiagnostics({
     hasServerApiKey,
-    monetizationReady,
+    optionalScriptReady,
     ollamaEnabled,
     providerPreference
   });
@@ -210,11 +210,11 @@ export function buildRuntimeBrief(env, requestUrl) {
       byokPreferred: true,
       canServeWithoutUserKey: hasServerApiKey || ollamaEnabled
     },
-    monetization: {
-      adsenseConfigured: monetizationReady,
+    runtimePolicy: {
+      optionalScriptConfigured: optionalScriptReady,
       slotsConfigured: {
-        top: Boolean(String(env.ADSENSE_SLOT_TOP || "").trim()),
-        bottom: Boolean(String(env.ADSENSE_SLOT_BOTTOM || "").trim())
+        top: Boolean(String(env.OPTIONAL_SCRIPT_SLOT_TOP || "").trim()),
+        bottom: Boolean(String(env.OPTIONAL_SCRIPT_SLOT_BOTTOM || "").trim())
       }
     },
     review_flow: [
@@ -223,19 +223,19 @@ export function buildRuntimeBrief(env, requestUrl) {
       "Keep fallback mode visible so operators can distinguish scripted coaching from live LLM output."
     ],
     two_minute_review: [
-      "Open /api/health and /api/meta to confirm provider posture, monetization state, and route coverage.",
+      "Open /api/health and /api/meta to confirm provider posture, runtime policy state, and route coverage.",
       "Open /api/runtime-brief to verify runtime mode, schema contract, and fallback behavior.",
-      "Open /api/review-pack and confirm safety boundary versus revenue boundary before public traffic.",
+      "Open /api/review-pack and confirm safety boundary versus runtime boundary before public traffic.",
       "Validate live chat plus fallback copy only after BYOK, server-key, or Ollama posture is understood."
     ],
     operator_rules: [
-      "Crisis keywords always override monetization or engagement goals.",
+      "Crisis keywords always override runtime policy or engagement goals.",
       "Do not imply therapy, diagnosis, or guaranteed outcomes.",
       "Use runtime API keys ephemerally unless the user explicitly stores them in-session."
     ],
     watchouts: [
       "If neither BYOK, server key, nor Ollama is available, only fallback coaching can run.",
-      "AdSense state must never affect safety routing or crisis escalation."
+      "optional script state must never affect safety routing or crisis escalation."
     ],
     proof_assets: [
       {
@@ -256,7 +256,7 @@ export function buildRuntimeBrief(env, requestUrl) {
       {
         label: "Review Pack",
         path: "/api/review-pack",
-        why: "Packages safety boundary, revenue boundary, and operator sequence in one payload."
+        why: "Packages safety boundary, runtime boundary, and operator sequence in one payload."
       },
       {
         label: "Progress Trends",
@@ -287,7 +287,7 @@ export function buildRuntimeBrief(env, requestUrl) {
 /**
  * Build the review-pack payload used by /api/review-pack.
  *
- * Wraps the runtime status with safety/revenue boundaries and operator sequence.
+ * Wraps the runtime status with safety/runtime boundaries and operator sequence.
  *
  * @param {Record<string, string>} env - Environment bindings.
  * @param {string} requestUrl - Full request URL.
@@ -297,7 +297,7 @@ export function buildReviewPack(env, requestUrl) {
   const runtimeBrief = buildRuntimeBrief(env, requestUrl);
   const diagnostics = runtimeBrief.diagnostics || {};
   const llm = runtimeBrief.llm || {};
-  const monetization = runtimeBrief.monetization || {};
+  const runtimePolicy = runtimeBrief.runtimePolicy || {};
 
   return {
     status: "ok",
@@ -305,12 +305,12 @@ export function buildReviewPack(env, requestUrl) {
     generated_at: new Date().toISOString(),
     readiness_contract: REVIEW_PACK_CONTRACT,
     headline:
-      "Operator pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and monetization separation in one contract.",
+      "Operator pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and runtime policy separation in one contract.",
     proof_bundle: {
       runtimeMode: diagnostics.runtimeMode || "runtime-key",
       llmReady: Boolean(diagnostics.llmReady),
       providerReady: Boolean(llm.canServeWithoutUserKey),
-      adsenseConfigured: Boolean(monetization.adsenseConfigured),
+      optionalScriptConfigured: Boolean(runtimePolicy.optionalScriptConfigured),
       review_routes: [
         "/api/health",
         "/api/meta",
@@ -322,30 +322,30 @@ export function buildReviewPack(env, requestUrl) {
       ]
     },
     safety_boundary: [
-      "Crisis or self-harm signals override engagement and monetization concerns.",
+      "Crisis or self-harm signals override engagement and runtime policy concerns.",
       "Fallback coaching must remain explicit when no live LLM path is available.",
       "BYOK and server-key paths are runtime choices, not hidden defaults."
     ],
-    revenue_boundary: [
-      "AdSense state must never influence crisis routing or coach response content.",
-      "Wellness coaching and monetization surfaces are separated so operators can inspect them independently.",
-      "Operators should confirm that fallback mode still behaves safely when ads are configured."
+    runtime_boundary: [
+      "optional script state must never influence crisis routing or coach response content.",
+      "Wellness coaching and runtime policy surfaces are separated so operators can inspect them independently.",
+      "Operators should confirm that fallback mode still behaves safely when optional scripts are configured."
     ],
     review_sequence: [
-      "Open /api/health and /api/meta to confirm active provider posture and monetization configuration.",
+      "Open /api/health and /api/meta to confirm active provider posture and runtime policy configuration.",
       "Read /api/runtime-brief and /api/review-pack before enabling public traffic or demo sessions.",
       "Validate live chat plus fallback behavior only after safety and provider boundaries are understood."
     ],
     two_minute_review: [
       "Open /api/health, /api/meta, and /api/runtime-brief to confirm provider and fallback posture.",
-      "Open /api/review-pack to check safety escalation and revenue separation before public traffic.",
-      "Compare live and fallback behavior only after schema, provider, and monetization state are understood.",
+      "Open /api/review-pack to check safety escalation and runtime separation before public traffic.",
+      "Compare live and fallback behavior only after schema, provider, and runtime policy state are understood.",
       "Treat crisis escalation as a precondition, not a post-demo check."
     ],
     watchouts: [
       "A ready provider path does not by itself prove safe prompts, moderation, or escalation copy are correct.",
       "When neither BYOK, server key, nor Ollama is available, the service must stay visibly in fallback mode.",
-      "Monetization readiness is operational metadata and must not leak into coach tone or decision logic."
+      "RuntimePolicy readiness is operational metadata and must not leak into coach tone or decision logic."
     ],
     proof_assets: [
       {
@@ -366,7 +366,7 @@ export function buildReviewPack(env, requestUrl) {
       {
         label: "Review Pack",
         path: "/api/review-pack",
-        why: "Packages safety and revenue boundaries for operator handoff."
+        why: "Packages safety and runtime boundaries for operator handoff."
       },
       {
         label: "Progress Trends",
@@ -410,12 +410,12 @@ export function buildEscalationReadiness(env, requestUrl) {
     summary: {
       runtime_mode: runtimeMode,
       llm_ready: liveReady,
-      monetization_ready: Boolean(runtimeBrief.monetization?.adsenseConfigured),
+      optional_script_ready: Boolean(runtimeBrief.runtimePolicy?.optionalScriptConfigured),
       fallback_visible: true,
       escalation_gate: "crisis-keyword-override"
     },
     guardrails: [
-      "Crisis or self-harm signals always override monetization and engagement flows.",
+      "Crisis or self-harm signals always override runtime policy and engagement flows.",
       "Fallback coaching must stay explicit when no live LLM path is available.",
       "Operators should inspect escalation readiness before inviting public review traffic."
     ],

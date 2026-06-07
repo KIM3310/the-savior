@@ -10,14 +10,14 @@ These notes keep the repository available as supporting proof while preventing i
 |---|---|
 | Repository | `the-savior` |
 | Status | Archived supporting proof |
-| Portfolio role | Keep as optional consumer UX history, not a technical-review or buyer lead. |
+| Portfolio role | Keep as optional consumer UX history, not a technical-review or reviewer lead. |
 | Current successor | aix-pilot and doeon-kim-portfolio |
 
 ## Presentation Boundary
 
-- Do not lead with this repository in career, enterprise-buyer, or consulting conversations.
+- Do not lead with this repository in career, enterprise-reviewer, or consulting conversations.
 - Keep it behind the active B2B/enterprise portfolio unless the reviewer asks for this exact domain.
-- Treat any revenue idea here as optional or experimental, not the main commercial thesis.
+- Treat any growth idea here as optional or experimental, not the main technical thesis.
 - Refresh dependencies, demos, validation, and support ownership before reviving it.
 
 ## Before Presenting

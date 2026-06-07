@@ -139,7 +139,7 @@ test("buildCoachResponseSchema returns correct contract structure", () => {
 test("buildRuntimeDiagnostics returns server-key mode when server key enabled", () => {
   const result = buildRuntimeDiagnostics({
     hasServerApiKey: true,
-    monetizationReady: false,
+    optionalScriptReady: false,
     ollamaEnabled: false,
     providerPreference: "auto"
   });
@@ -150,7 +150,7 @@ test("buildRuntimeDiagnostics returns server-key mode when server key enabled", 
 test("buildRuntimeDiagnostics returns ollama-local mode when appropriate", () => {
   const result = buildRuntimeDiagnostics({
     hasServerApiKey: false,
-    monetizationReady: false,
+    optionalScriptReady: false,
     ollamaEnabled: true,
     providerPreference: "auto"
   });
@@ -161,7 +161,7 @@ test("buildRuntimeDiagnostics returns ollama-local mode when appropriate", () =>
 test("buildRuntimeDiagnostics returns runtime-key when no LLM available", () => {
   const result = buildRuntimeDiagnostics({
     hasServerApiKey: false,
-    monetizationReady: false,
+    optionalScriptReady: false,
     ollamaEnabled: false,
     providerPreference: "auto"
   });
@@ -173,7 +173,7 @@ test("buildRuntimeDiagnostics returns runtime-key when no LLM available", () => 
 test("buildRuntimeDiagnostics prefers runtime-key when ollama enabled but provider is openai", () => {
   const result = buildRuntimeDiagnostics({
     hasServerApiKey: false,
-    monetizationReady: false,
+    optionalScriptReady: false,
     ollamaEnabled: true,
     providerPreference: "openai"
   });
@@ -192,7 +192,7 @@ test("buildRuntimeBrief returns complete payload with all required fields", () =
   assert.ok(brief.headline);
   assert.ok(brief.report_contract);
   assert.ok(brief.llm);
-  assert.ok(brief.monetization);
+  assert.ok(brief.runtimePolicy);
   assert.ok(Array.isArray(brief.routes));
   assert.ok(brief.routes.length >= 8);
   assert.ok(brief.diagnostics);
@@ -209,10 +209,10 @@ test("buildReviewPack returns complete operator payload", () => {
   assert.equal(pack.readiness_contract, REVIEW_PACK_CONTRACT);
   assert.ok(pack.proof_bundle);
   assert.ok(Array.isArray(pack.safety_boundary));
-  assert.ok(Array.isArray(pack.revenue_boundary));
+  assert.ok(Array.isArray(pack.runtime_boundary));
   assert.ok(Array.isArray(pack.review_sequence));
   assert.ok(pack.safety_boundary.length >= 3);
-  assert.ok(pack.revenue_boundary.length >= 3);
+  assert.ok(pack.runtime_boundary.length >= 3);
 });
 
 // ---------------------------------------------------------------------------

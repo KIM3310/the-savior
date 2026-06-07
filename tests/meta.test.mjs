@@ -29,8 +29,8 @@ test("meta route returns runtime diagnostics", async () => {
       ALLOW_SERVER_OPENAI_KEY: "true",
       LLM_PROVIDER: "openai",
       PUBLIC_API_BASE_URL: "https://api.example.com/",
-      ADSENSE_CLIENT: "ca-pub-123",
-      ADSENSE_SLOT_TOP: "slot-top",
+      OPTIONAL_SCRIPT_CLIENT: "external-client-123",
+      OPTIONAL_SCRIPT_SLOT_TOP: "slot-top",
       CF_PAGES_BRANCH: "main",
       CF_PAGES_COMMIT_SHA: "abcdef123456"
     })
@@ -43,7 +43,7 @@ test("meta route returns runtime diagnostics", async () => {
   assert.equal(body.llm.hasServerApiKey, true);
   assert.equal(body.api.publicBaseUrl, "https://api.example.com");
   assert.equal(body.build.commit, "abcdef12");
-  assert.equal(body.monetization.adsenseConfigured, true);
+  assert.equal(body.runtimePolicy.optionalScriptConfigured, true);
   assert.ok(body.api.routes.includes("/api/meta"));
   assert.ok(body.api.routes.includes("/api/runtime-brief"));
   assert.ok(body.api.routes.includes("/api/escalation-readiness"));
@@ -87,7 +87,7 @@ test("runtime brief route exposes operator contract", async () => {
   const response = await getRuntimeBrief(
     createContext("https://the-savior-9z8.pages.dev/api/runtime-brief", {
       ENABLE_OLLAMA: "true",
-      ADSENSE_CLIENT: "ca-pub-123"
+      OPTIONAL_SCRIPT_CLIENT: "external-client-123"
     })
   );
   const body = await response.json();
@@ -97,7 +97,7 @@ test("runtime brief route exposes operator contract", async () => {
   assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
   assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
   assert.equal(body.llm.runtimeMode, "ollama-local");
-  assert.equal(body.monetization.adsenseConfigured, true);
+  assert.equal(body.runtimePolicy.optionalScriptConfigured, true);
   assert.ok(body.routes.includes("/api/runtime-brief"));
   assert.ok(body.routes.includes("/api/escalation-readiness"));
   assert.ok(body.routes.includes("/api/progress-trends"));
@@ -107,11 +107,11 @@ test("runtime brief route exposes operator contract", async () => {
   assert.equal(body.links.progress_trends, "/api/progress-trends");
 });
 
-test("status summary route exposes safety and revenue boundaries", async () => {
+test("status summary route exposes safety and runtime boundaries", async () => {
   const response = await getReviewPack(
     createContext("https://the-savior-9z8.pages.dev/api/review-pack", {
       ENABLE_OLLAMA: "true",
-      ADSENSE_CLIENT: "ca-pub-123"
+      OPTIONAL_SCRIPT_CLIENT: "external-client-123"
     })
   );
   const body = await response.json();
@@ -123,7 +123,7 @@ test("status summary route exposes safety and revenue boundaries", async () => {
   assert.ok(body.proof_bundle.review_routes.includes("/api/escalation-readiness"));
   assert.ok(body.proof_bundle.review_routes.includes("/api/progress-trends"));
   assert.ok(body.safety_boundary.length >= 3);
-  assert.ok(body.revenue_boundary.length >= 3);
+  assert.ok(body.runtime_boundary.length >= 3);
   assert.equal(body.two_minute_review.length, 4);
   assert.equal(body.proof_assets[0].label, "Health Route");
 });
@@ -132,7 +132,7 @@ test("escalation readiness route exposes crisis guardrails", async () => {
   const response = await getEscalationReadiness(
     createContext("https://the-savior-9z8.pages.dev/api/escalation-readiness", {
       ENABLE_OLLAMA: "true",
-      ADSENSE_CLIENT: "ca-pub-123"
+      OPTIONAL_SCRIPT_CLIENT: "external-client-123"
     })
   );
   const body = await response.json();
@@ -149,7 +149,7 @@ test("progress trends route exposes public coaching deltas", async () => {
   const response = await getProgressTrends(
     createContext("https://the-savior-9z8.pages.dev/api/progress-trends", {
       ENABLE_OLLAMA: "true",
-      ADSENSE_CLIENT: "ca-pub-123"
+      OPTIONAL_SCRIPT_CLIENT: "external-client-123"
     })
   );
   const body = await response.json();

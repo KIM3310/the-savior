@@ -13,9 +13,9 @@ npx wrangler pages secret put OPENAI_API_KEY --project-name the-savior
 ```
 
 대시보드 또는 CLI에서 아래 환경변수 추가:
-- `ADSENSE_CLIENT`
-- `ADSENSE_SLOT_TOP`
-- `ADSENSE_SLOT_BOTTOM`
+- `OPTIONAL_SCRIPT_CLIENT`
+- `OPTIONAL_SCRIPT_SLOT_TOP`
+- `OPTIONAL_SCRIPT_SLOT_BOTTOM`
 - `ALLOWED_ORIGINS` (예: `https://the-savior-9z8.pages.dev,capacitor://localhost`)
 - `PUBLIC_API_BASE_URL` (예: `https://the-savior-9z8.pages.dev`)
 - `CHAT_RATE_LIMIT_MAX`, `CHAT_RATE_LIMIT_WINDOW_MS`

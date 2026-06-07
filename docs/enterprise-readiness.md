@@ -10,16 +10,16 @@ This repository is archived as supporting material. It should not be positioned 
 |---|---|
 | Repository | `the-savior` |
 | Status | Archived supporting proof |
-| Lane | B2C wellness and ads funnel |
-| Primary reader or buyer | Wellness creators, small communities, and users seeking low-friction reflection tools. |
+| Lane | B2C wellness reflection tool |
+| Primary reader or reviewer | Wellness creators, small communities, and users seeking low-friction reflection tools. |
 | Current successor | aix-pilot and doeon-kim-portfolio |
 | Readiness posture | Historical or optional proof; not a current production-readiness claim. |
 
 ## Revival Requirements
 
 - Re-check dependencies, build path, secrets posture, and live demo status.
-- Reconfirm the buyer, data boundary, identity/access needs, monitoring, and support owner.
-- Replace broad consumer or experimental positioning with one narrow paid or reviewable use case.
+- Reconfirm the reviewer, data boundary, identity/access needs, monitoring, and support owner.
+- Replace broad consumer or experimental positioning with one narrow reviewable use case.
 - Keep the active flagship repositories as the main portfolio story unless this domain is explicitly requested.
 
 ## Proof Points
@@ -33,4 +33,4 @@ This repository is archived as supporting material. It should not be positioned 
 - Not clinical care
 - Sensitive content privacy
 - Escalation/safety copy required
-- Wellness and ad-funnel positioning is not strong enough for the main spec or B2B revenue story.
+- Wellness and consumer-positioning is not strong enough for the main spec or B2B technical story.

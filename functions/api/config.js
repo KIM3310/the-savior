@@ -1,7 +1,7 @@
 /**
  * Configuration endpoint for The Savior.
  *
- * Returns runtime configuration (provider posture, monetization,
+ * Returns runtime configuration (provider posture, runtimePolicy,
  * build info) to the front-end client.
  *
  * @module api/config
@@ -136,7 +136,7 @@ export async function onRequestOptions(context) {
  * GET handler for /api/config.
  *
  * Returns client-facing runtime configuration including provider posture,
- * Ollama status, monetization slots, and build metadata.
+ * Ollama status, optional script slots, and build metadata.
  *
  * @param {{ request: Request, env: Record<string, string> }} context
  * @returns {Promise<Response>}
@@ -175,9 +175,9 @@ export async function onRequestGet(context) {
   const llmProviderPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
   const ollamaModel = String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME;
-  const adsenseClient = context.env.ADSENSE_CLIENT || "";
-  const adsenseSlotTop = context.env.ADSENSE_SLOT_TOP || "";
-  const adsenseSlotBottom = context.env.ADSENSE_SLOT_BOTTOM || "";
+  const optionalScriptClient = context.env.OPTIONAL_SCRIPT_CLIENT || "";
+  const optionalScriptSlotTop = context.env.OPTIONAL_SCRIPT_SLOT_TOP || "";
+  const optionalScriptSlotBottom = context.env.OPTIONAL_SCRIPT_SLOT_BOTTOM || "";
   const configuredBaseUrl = sanitizeBaseUrl(context.env.PUBLIC_API_BASE_URL || "");
   const requestOrigin = sanitizeBaseUrl(new URL(context.request.url).origin);
 
@@ -190,10 +190,10 @@ export async function onRequestGet(context) {
       ollamaEnabled,
       ollamaModel,
       apiBaseUrl: configuredBaseUrl || requestOrigin,
-      adsenseClient,
-      adsenseSlots: {
-        top: adsenseSlotTop,
-        bottom: adsenseSlotBottom
+      optionalScriptClient,
+      optionalScriptSlots: {
+        top: optionalScriptSlotTop,
+        bottom: optionalScriptSlotBottom
       },
       generatedAt: new Date().toISOString(),
       build: {

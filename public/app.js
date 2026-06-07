@@ -7,12 +7,10 @@ const state = {
   remainingSeconds: 180,
   timerHandle: null,
   breathTick: 0,
-  adsEnabled: false,
   apiBase: "",
   apiMisconfigured: false,
   backendReachable: false,
   reviewOnly: false,
-  adConfig: null,
   userApiKey: "",
   hasServerApiKey: false,
   llmProviderPreference: "auto",
@@ -394,7 +392,7 @@ function renderReviewPack(payload) {
     fillText("reviewPackAdsense", "unknown");
     fillText("reviewPackRoutes", "0");
     renderBriefList("reviewPackSafety", [], "safety boundary fetch 실패 시 crisis/fallback 정책을 수동 확인합니다.");
-    renderBriefList("reviewPackRevenue", [], "monetization boundary를 수동 검토합니다.");
+    renderBriefList("reviewPackRuntime", [], "runtime boundary를 수동 검토합니다.");
     renderBriefList("reviewPackTwoMinuteReview", [], "health, runtime brief, status summary, live/fallback 검토 순으로 확인합니다.");
     renderBriefList("reviewPackSequence", [], "status summary fetch 실패 시 health/meta/runtime-brief부터 확인합니다.");
     renderProofAssets("reviewPackProofAssets", [], "status summary proof assets unavailable");
@@ -406,10 +404,10 @@ function renderReviewPack(payload) {
   fillText("reviewPackHeadline", payload.headline, "status summary unavailable");
   fillText("reviewPackRuntime", proof.runtimeMode, "runtime-key");
   fillText("reviewPackLlmReady", proof.llmReady ? "ready" : "fallback-only");
-  fillText("reviewPackAdsense", proof.adsenseConfigured ? "configured" : "not-configured");
+  fillText("reviewPackAdsense", proof.optionalScriptConfigured ? "configured" : "not-configured");
   fillText("reviewPackRoutes", Array.isArray(proof.review_routes) ? `${proof.review_routes.length} routes` : "0");
   renderBriefList("reviewPackSafety", payload.safety_boundary, "safety boundary unavailable");
-  renderBriefList("reviewPackRevenue", payload.revenue_boundary, "revenue boundary unavailable");
+  renderBriefList("reviewPackRuntime", payload.runtime_boundary, "runtime boundary unavailable");
   renderBriefList("reviewPackTwoMinuteReview", payload.two_minute_review, "two-minute review unavailable");
   renderBriefList("reviewPackSequence", payload.review_sequence, "review sequence unavailable");
   renderProofAssets("reviewPackProofAssets", payload.proof_assets, "proof assets unavailable");
@@ -419,7 +417,7 @@ async function copyProviderPostureSnapshot() {
   const brief = state.runtimeBrief || {};
   const llm = brief.llm || {};
   const diagnostics = brief.diagnostics || {};
-  const monetization = brief.monetization || {};
+  const runtimePolicy = brief.runtimePolicy || {};
   const reviewPack = state.reviewPack || {};
   const lines = [
     "the-savior provider posture",
@@ -429,11 +427,11 @@ async function copyProviderPostureSnapshot() {
     `Provider ready: ${llm.canServeWithoutUserKey ? "yes" : "no"}`,
     `Server key: ${llm.hasServerApiKey ? "enabled" : "disabled"}`,
     `Ollama: ${llm.ollamaEnabled ? `enabled (${llm.ollamaModel || state.ollamaModel || "-"})` : "disabled"}`,
-    `AdSense: ${monetization.adsenseConfigured ? "configured" : "not configured"}`,
+    `Runtime config: ${runtimePolicy.optionalScriptConfigured ? "configured" : "not configured"}`,
     "",
     "Boundary checks",
     ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
-    ...((reviewPack.revenue_boundary || []).slice(0, 1).map((item) => `- ${item}`)),
+    ...((reviewPack.runtime_boundary || []).slice(0, 1).map((item) => `- ${item}`)),
   ];
   const ok = await copyTextToClipboard(lines.join("\n"));
   setRuntimeStatus(ok ? "Provider posture를 복사했습니다." : "Provider posture 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -449,13 +447,13 @@ async function copyCrisisSnapshot() {
     `Headline: ${reviewPack.headline || brief.headline || "-"}`,
     `Runtime mode: ${diagnostics.runtimeMode || proof.runtimeMode || "-"}`,
     `Provider ready: ${proof.llmReady ? "yes" : "no"}`,
-    `AdSense: ${proof.adsenseConfigured ? "configured" : "not configured"}`,
+    `Runtime config: ${proof.optionalScriptConfigured ? "configured" : "not configured"}`,
     "",
     "Safety boundary",
     ...((reviewPack.safety_boundary || []).slice(0, 3).map((item) => `- ${item}`)),
     "",
-    "Revenue boundary",
-    ...((reviewPack.revenue_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    "Runtime boundary",
+    ...((reviewPack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
     "",
     "Focused routes",
     ...((proof.review_routes || []).slice(0, 4).map((item) => `- ${item}`)),
@@ -482,8 +480,8 @@ async function copyReviewerBundle() {
     "Safety boundary",
     ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
     "",
-    "Revenue boundary",
-    ...((reviewPack.revenue_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    "Runtime boundary",
+    ...((reviewPack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
   ];
   const ok = await copyTextToClipboard(lines.join("\n"));
   setRuntimeStatus(ok ? "Operator bundle을 복사했습니다." : "Operator bundle 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -1691,99 +1689,6 @@ function setupTimer() {
   });
 }
 
-function enableAdsense(config) {
-  const { adsenseClient, adsenseSlots } = config;
-  if (!adsenseClient || state.adsEnabled) return;
-
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`;
-  script.crossOrigin = "anonymous";
-  document.head.appendChild(script);
-
-  document.querySelectorAll(".adsbygoogle").forEach((unit) => {
-    const position = unit.getAttribute("data-position");
-    const slot = position === "bottom" ? adsenseSlots.bottom : adsenseSlots.top;
-    if (!slot) return;
-
-    unit.setAttribute("data-ad-client", adsenseClient);
-    unit.setAttribute("data-ad-slot", slot);
-    unit.setAttribute("data-ad-format", "auto");
-    unit.setAttribute("data-full-width-responsive", "true");
-    unit.classList.add("ad-live");
-
-    try {
-      // eslint-disable-next-line no-undef
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (error) {
-      console.error("AdSense render error", error);
-    }
-  });
-
-  state.adsEnabled = true;
-}
-
-function getAdsConsent() {
-  return localStorage.getItem("theSaviorAdsConsent");
-}
-
-function setAdsConsent(value) {
-  localStorage.setItem("theSaviorAdsConsent", value);
-}
-
-function dismissConsentBanner(banner) {
-  if (!banner) return;
-  banner.hidden = true;
-  banner.style.display = "none";
-}
-
-function setupConsentBanner(config) {
-  const banner = $("consentBanner");
-  if (!banner) return;
-
-  const accept = $("consentAccept");
-  const reject = $("consentReject");
-
-  banner.style.display = "";
-  banner.hidden = false;
-
-  if (banner.dataset.bound === "1") return;
-  banner.dataset.bound = "1";
-
-  if (accept) {
-    accept.addEventListener("click", (event) => {
-      event.preventDefault();
-      setAdsConsent("accepted");
-      dismissConsentBanner(banner);
-      enableAdsense(config);
-    });
-  }
-
-  if (reject) {
-    reject.addEventListener("click", (event) => {
-      event.preventDefault();
-      setAdsConsent("rejected");
-      dismissConsentBanner(banner);
-    });
-  }
-}
-
-function applyAdsPolicy(config) {
-  if (!config.adsenseClient) return;
-
-  const consent = getAdsConsent();
-  if (consent === "accepted") {
-    enableAdsense(config);
-    return;
-  }
-
-  if (consent === "rejected") {
-    return;
-  }
-
-  setupConsentBanner(config);
-}
-
 async function loadHealth() {
   try {
     const response = await fetch(apiUrl("/api/health"), { method: "GET" });
@@ -1885,13 +1790,11 @@ async function loadConfig() {
     }
     setApiBaseStatus();
 
-    state.adConfig = config;
     state.hasServerApiKey = Boolean(config.hasServerApiKey);
     state.llmProviderPreference = safeText(config.llmProviderPreference || "auto").toLowerCase() || "auto";
     state.ollamaEnabled = Boolean(config.ollamaEnabled);
     state.ollamaModel = safeText(config.ollamaModel || "");
     refreshUserApiKeyStatus();
-    applyAdsPolicy(config);
     state.backendReachable = true;
     if (state.userApiKey || state.hasServerApiKey || state.ollamaEnabled) {
       setRuntimeStatus("AI 응답 준비 완료", "good");
