@@ -89,12 +89,12 @@ test("redactSecrets handles nested objects", () => {
   const input = {
     error: "Failed with sk-test1234567890abcdef",
     nested: {
-      key: "sk-another-secret-key-value-here"
+      key: "sk-test-another-secret-key-value-here"
     }
   };
   const result = redactSecrets(input);
   assert.ok(!JSON.stringify(result).includes("sk-test1234567890"));
-  assert.ok(!JSON.stringify(result).includes("sk-another-secret"));
+  assert.ok(!JSON.stringify(result).includes("sk-test-another-secret"));
 });
 
 test("redactSecrets handles arrays", () => {
