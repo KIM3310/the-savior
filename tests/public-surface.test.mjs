@@ -10,14 +10,14 @@ const stylesCss = readFileSync(path.join(ROOT, "public", "styles.css"), "utf8");
 
 test("public landing separates end-user front door from status page", () => {
   const heroIndex = indexHtml.indexOf('<section class="hero');
-  const reviewerGatewayIndex = indexHtml.indexOf('id="reviewer-gateway"');
+  const architectureGatewayIndex = indexHtml.indexOf('id="architecture-gateway"');
   const runtimeBriefIndex = indexHtml.indexOf('id="runtime-brief"');
 
   assert.notEqual(heroIndex, -1);
-  assert.notEqual(reviewerGatewayIndex, -1);
+  assert.notEqual(architectureGatewayIndex, -1);
   assert.notEqual(runtimeBriefIndex, -1);
-  assert.ok(heroIndex < reviewerGatewayIndex);
-  assert.ok(reviewerGatewayIndex < runtimeBriefIndex);
+  assert.ok(heroIndex < architectureGatewayIndex);
+  assert.ok(architectureGatewayIndex < runtimeBriefIndex);
 
   assert.match(indexHtml, /For You/);
   assert.match(indexHtml, /For Operators/);
@@ -27,7 +27,7 @@ test("public landing separates end-user front door from status page", () => {
 
 test("public styles include bounded audience split treatment", () => {
   assert.match(stylesCss, /\.audience-split\s*\{/);
-  assert.match(stylesCss, /\.reviewer-shell\s*\{/);
+  assert.match(stylesCss, /\.architecture-shell\s*\{/);
   assert.match(stylesCss, /\.audience-card-review\s*\{/);
   assert.match(stylesCss, /\.first-session-guide\s*\{/);
   assert.match(stylesCss, /\.first-session-grid\s*\{/);

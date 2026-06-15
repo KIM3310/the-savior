@@ -209,7 +209,7 @@ p {
   background: linear-gradient(180deg, rgba(10, 11, 14, 0.9), rgba(8, 8, 10, 0.62));
 }
 
-.reviewer-shell {
+.architecture-shell {
   margin-top: 1rem;
   padding: 0.95rem 0 0;
   position: relative;
@@ -240,7 +240,7 @@ p {
   gap: 0.7rem;
 }
 
-.reviewer-shell::before {
+.architecture-shell::before {
   content: "";
   position: absolute;
   left: 0;
@@ -250,13 +250,13 @@ p {
   background: linear-gradient(90deg, transparent, rgba(129, 178, 168, 0.34), transparent);
 }
 
-.reviewer-shell-head {
+.architecture-shell-head {
   display: grid;
   gap: 0.34rem;
   margin-bottom: 0.75rem;
 }
 
-.reviewer-shell-head h2 {
+.architecture-shell-head h2 {
   font-size: clamp(1.2rem, 2.3vw, 1.72rem);
   color: #e8efe9;
 }

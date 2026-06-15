@@ -255,7 +255,7 @@ test("RUNTIME_ROUTES contains all expected routes", () => {
     "/api/meta",
     "/api/runtime-brief",
     "/api/escalation-readiness",
-    "/api/review-pack",
+    "/api/architecture-pack",
     "/api/schema/coach-response",
     "/api/progress-trends",
     "/api/key-check"

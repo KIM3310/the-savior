@@ -4,7 +4,7 @@ import { onRequestGet as getEscalationReadiness } from "../functions/api/escalat
 import { onRequestGet as getHealth } from "../functions/api/health.js";
 import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
 import { onRequestGet as getProgressTrends } from "../functions/api/progress-trends.js";
-import { onRequestGet as getReviewPack } from "../functions/api/review-pack.js";
+import { onRequestGet as getReviewPack } from "../functions/api/architecture-pack.js";
 import { onRequestGet as getRuntimeBrief } from "../functions/api/runtime-brief.js";
 import { onRequestGet as getCoachSchema } from "../functions/api/schema/coach-response.js";
 
@@ -47,10 +47,10 @@ test("meta route returns runtime diagnostics", async () => {
   assert.ok(body.api.routes.includes("/api/meta"));
   assert.ok(body.api.routes.includes("/api/runtime-brief"));
   assert.ok(body.api.routes.includes("/api/escalation-readiness"));
-  assert.ok(body.api.routes.includes("/api/review-pack"));
+  assert.ok(body.api.routes.includes("/api/architecture-pack"));
   assert.ok(body.api.routes.includes("/api/progress-trends"));
   assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
-  assert.equal(body.review_pack_contract, "the-savior-review-pack-v1");
+  assert.equal(body.architecture_pack_contract, "the-savior-architecture-pack-v1");
   assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
   assert.equal(body.ops_contract.schema, "ops-envelope-v1");
   assert.equal(body.diagnostics.runtimeMode, "server-key");
@@ -76,7 +76,7 @@ test("health route exposes actionable llm guidance", async () => {
   assert.equal(body.readiness_contract, "the-savior-runtime-brief-v1");
   assert.equal(body.report_contract.schema, "the-savior-coach-response-v1");
   assert.ok(body.routes.includes("/api/schema/coach-response"));
-  assert.equal(body.links.review_pack, "/api/review-pack");
+  assert.equal(body.links.architecture_pack, "/api/architecture-pack");
   assert.equal(body.links.escalation_readiness, "/api/escalation-readiness");
   assert.equal(body.links.progress_trends, "/api/progress-trends");
   assert.equal(body.ops_contract.schema, "ops-envelope-v1");
@@ -109,7 +109,7 @@ test("runtime brief route exposes operator contract", async () => {
 
 test("status summary route exposes safety and runtime boundaries", async () => {
   const response = await getReviewPack(
-    createContext("https://the-savior-9z8.pages.dev/api/review-pack", {
+    createContext("https://the-savior-9z8.pages.dev/api/architecture-pack", {
       ENABLE_OLLAMA: "true",
       OPTIONAL_SCRIPT_CLIENT: "external-client-123"
     })
@@ -117,9 +117,9 @@ test("status summary route exposes safety and runtime boundaries", async () => {
   const body = await response.json();
 
   assert.equal(response.status, 200);
-  assert.equal(body.readiness_contract, "the-savior-review-pack-v1");
+  assert.equal(body.readiness_contract, "the-savior-architecture-pack-v1");
   assert.equal(body.proof_bundle.runtimeMode, "ollama-local");
-  assert.ok(body.proof_bundle.review_routes.includes("/api/review-pack"));
+  assert.ok(body.proof_bundle.review_routes.includes("/api/architecture-pack"));
   assert.ok(body.proof_bundle.review_routes.includes("/api/escalation-readiness"));
   assert.ok(body.proof_bundle.review_routes.includes("/api/progress-trends"));
   assert.ok(body.safety_boundary.length >= 3);

@@ -1,7 +1,7 @@
 /**
  * Runtime configuration and diagnostics module for The Savior.
  *
- * Centralizes provider detection, runtime status generation, review-pack
+ * Centralizes provider detection, runtime status generation, architecture-pack
  * assembly, escalation readiness, and progress-trends synthesis.
  *
  * @module _runtime
@@ -13,8 +13,8 @@ export const OLLAMA_MODEL_NAME = "llama3.2:latest";
 /** @type {string} Contract version for runtime-brief payloads. */
 export const READINESS_CONTRACT = "the-savior-runtime-brief-v1";
 
-/** @type {string} Contract version for review-pack payloads. */
-export const REVIEW_PACK_CONTRACT = "the-savior-review-pack-v1";
+/** @type {string} Contract version for architecture-pack payloads. */
+export const REVIEW_PACK_CONTRACT = "the-savior-architecture-pack-v1";
 
 /** @type {string} Contract version for coach-response schema payloads. */
 export const COACH_RESPONSE_SCHEMA = "the-savior-coach-response-v1";
@@ -29,7 +29,7 @@ export const RUNTIME_ROUTES = [
   "/api/runtime-brief",
   "/api/escalation-readiness",
   "/api/progress-trends",
-  "/api/review-pack",
+  "/api/architecture-pack",
   "/api/schema/coach-response"
 ];
 
@@ -225,7 +225,7 @@ export function buildRuntimeBrief(env, requestUrl) {
     two_minute_review: [
       "Open /api/health and /api/meta to confirm provider posture, runtime policy state, and route coverage.",
       "Open /api/runtime-brief to verify runtime mode, schema contract, and fallback behavior.",
-      "Open /api/review-pack and confirm safety boundary versus runtime boundary before public traffic.",
+      "Open /api/architecture-pack and confirm safety boundary versus runtime boundary before public traffic.",
       "Validate live chat plus fallback copy only after BYOK, server-key, or Ollama posture is understood."
     ],
     operator_rules: [
@@ -254,8 +254,8 @@ export function buildRuntimeBrief(env, requestUrl) {
         why: "Makes crisis escalation posture and fallback guardrails explicit before public traffic."
       },
       {
-        label: "Review Pack",
-        path: "/api/review-pack",
+        label: "Architecture Pack",
+        path: "/api/architecture-pack",
         why: "Packages safety boundary, runtime boundary, and operator sequence in one payload."
       },
       {
@@ -278,20 +278,20 @@ export function buildRuntimeBrief(env, requestUrl) {
       runtime_brief: "/api/runtime-brief",
       escalation_readiness: "/api/escalation-readiness",
       progress_trends: "/api/progress-trends",
-      review_pack: "/api/review-pack",
+      architecture_pack: "/api/architecture-pack",
       coach_schema: "/api/schema/coach-response"
     }
   };
 }
 
 /**
- * Build the review-pack payload used by /api/review-pack.
+ * Build the architecture-pack payload used by /api/architecture-pack.
  *
  * Wraps the runtime status with safety/runtime boundaries and operator sequence.
  *
  * @param {Record<string, string>} env - Environment bindings.
  * @param {string} requestUrl - Full request URL.
- * @returns {Record<string, unknown>} Complete review-pack JSON payload.
+ * @returns {Record<string, unknown>} Complete architecture-pack JSON payload.
  */
 export function buildReviewPack(env, requestUrl) {
   const runtimeBrief = buildRuntimeBrief(env, requestUrl);
@@ -317,7 +317,7 @@ export function buildReviewPack(env, requestUrl) {
         "/api/runtime-brief",
         "/api/escalation-readiness",
         "/api/progress-trends",
-        "/api/review-pack",
+        "/api/architecture-pack",
         "/api/schema/coach-response"
       ]
     },
@@ -333,12 +333,12 @@ export function buildReviewPack(env, requestUrl) {
     ],
     review_sequence: [
       "Open /api/health and /api/meta to confirm active provider posture and runtime policy configuration.",
-      "Read /api/runtime-brief and /api/review-pack before enabling public traffic or demo sessions.",
+      "Read /api/runtime-brief and /api/architecture-pack before enabling public traffic or demo sessions.",
       "Validate live chat plus fallback behavior only after safety and provider boundaries are understood."
     ],
     two_minute_review: [
       "Open /api/health, /api/meta, and /api/runtime-brief to confirm provider and fallback posture.",
-      "Open /api/review-pack to check safety escalation and runtime separation before public traffic.",
+      "Open /api/architecture-pack to check safety escalation and runtime separation before public traffic.",
       "Compare live and fallback behavior only after schema, provider, and runtime policy state are understood.",
       "Treat crisis escalation as a precondition, not a post-demo check."
     ],
@@ -364,8 +364,8 @@ export function buildReviewPack(env, requestUrl) {
         why: "Pins crisis gating, fallback visibility, and operator actions in one surface."
       },
       {
-        label: "Review Pack",
-        path: "/api/review-pack",
+        label: "Architecture Pack",
+        path: "/api/architecture-pack",
         why: "Packages safety and runtime boundaries for operator handoff."
       },
       {
@@ -385,7 +385,7 @@ export function buildReviewPack(env, requestUrl) {
       runtime_brief: "/api/runtime-brief",
       escalation_readiness: "/api/escalation-readiness",
       progress_trends: "/api/progress-trends",
-      review_pack: "/api/review-pack",
+      architecture_pack: "/api/architecture-pack",
       coach_schema: "/api/schema/coach-response"
     }
   };
@@ -419,9 +419,9 @@ export function buildEscalationReadiness(env, requestUrl) {
       "Fallback coaching must stay explicit when no live LLM path is available.",
       "Operators should inspect escalation readiness before inviting public review traffic."
     ],
-    reviewer_actions: [
+    architecture_actions: [
       "Read this route before treating the public coach surface as launch-ready.",
-      "Verify live versus fallback posture, then compare with /api/review-pack.",
+      "Verify live versus fallback posture, then compare with /api/architecture-pack.",
       "Keep escalation copy reviewable whenever provider settings change."
     ],
     links: {
@@ -429,7 +429,7 @@ export function buildEscalationReadiness(env, requestUrl) {
       runtime_brief: "/api/runtime-brief",
       escalation_readiness: "/api/escalation-readiness",
       progress_trends: "/api/progress-trends",
-      review_pack: "/api/review-pack"
+      architecture_pack: "/api/architecture-pack"
     }
   };
 }
@@ -484,7 +484,7 @@ export function buildProgressTrends(env, requestUrl) {
       health: "/api/health",
       runtime_brief: "/api/runtime-brief",
       progress_trends: "/api/progress-trends",
-      review_pack: "/api/review-pack"
+      architecture_pack: "/api/architecture-pack"
     }
   };
 }

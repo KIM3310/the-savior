@@ -4,7 +4,7 @@
  * Packages safety boundaries, runtime boundaries, and operator sequence
  * into a single payload for operator handoff.
  *
- * @module api/review-pack
+ * @module api/architecture-pack
  */
 
 import { createLogger } from "./_logger.js";
@@ -19,7 +19,7 @@ const CORS_OPTIONS = {
 };
 
 /**
- * Handle CORS preflight for the review-pack endpoint.
+ * Handle CORS preflight for the architecture-pack endpoint.
  *
  * @param {{ request: Request, env: Record<string, string> }} context
  * @returns {Promise<Response>}
@@ -49,7 +49,7 @@ export async function onRequestOptions(context) {
 }
 
 /**
- * GET handler for /api/review-pack.
+ * GET handler for /api/architecture-pack.
  *
  * Returns the complete status summary with safety/runtime boundaries,
  * proof bundle, and operator sequence.
@@ -59,7 +59,7 @@ export async function onRequestOptions(context) {
  */
 export async function onRequestGet(context) {
   const requestId = getRequestId(context.request);
-  const log = createLogger({ requestId, scope: "review-pack", env: context.env });
+  const log = createLogger({ requestId, scope: "architecture-pack", env: context.env });
   const cors = resolveCors(context.request, context.env, CORS_OPTIONS);
   if (!cors.allowed) {
     log.warn("CORS origin blocked");
@@ -70,7 +70,7 @@ export async function onRequestGet(context) {
   }
 
   const rate = checkRateLimit(context.request, context.env, {
-    scope: "review-pack",
+    scope: "architecture-pack",
     limitDefault: 120,
     limitEnvName: "META_RATE_LIMIT_MAX",
     windowMsDefault: 60_000,

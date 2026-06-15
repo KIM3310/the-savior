@@ -118,7 +118,7 @@ export async function onRequestGet(context) {
         "server-key-guardrail",
         "ollama-local",
         "fallback-coach",
-        "review-pack-surface",
+        "architecture-pack-surface",
         "progress-trends-surface"
       ],
       routes: RUNTIME_ROUTES,
@@ -137,7 +137,7 @@ export async function onRequestGet(context) {
         runtime_brief: "/api/runtime-brief",
         escalation_readiness: "/api/escalation-readiness",
         progress_trends: "/api/progress-trends",
-        review_pack: "/api/review-pack",
+        architecture_pack: "/api/architecture-pack",
         coach_schema: "/api/schema/coach-response"
       }
     },

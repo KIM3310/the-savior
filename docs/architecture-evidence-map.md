@@ -1,8 +1,8 @@
-# Review Guide - The Savior
+# Architecture Guide - The Savior
 
 Updated: 2026-05-30
 
-This repository is now curated as supporting material. Review it only after the flagship enterprise AI, operations, security, data, and runtime reliability projects have established the main story.
+This repository is now curated as supporting material. Architecture it only after the flagship enterprise AI, operations, security, data, and runtime reliability projects have established the main story.
 
 ## Summary
 
@@ -20,7 +20,7 @@ This repository is now curated as supporting material. Review it only after the 
 1. Start with the successor repositories named above.
 2. Use this repository only for optional domain breadth or historical product exploration.
 3. Check `docs/portfolio-fit.md` before presenting it externally.
-4. Keep the archived/supporting status visible in any resume, portfolio, or reviewer conversation.
+4. Keep the archived/supporting status visible in any resume, portfolio, or technical reader conversation.
 
 ## Evidence
 
@@ -28,13 +28,13 @@ This repository is now curated as supporting material. Review it only after the 
 - Fallback works without keys
 - Privacy boundary is visible
 
-## Review Notes
+## Architecture Notes
 
 | Possible offer | Working scope assumption | Scope |
 |---|---|---|
-| Freemium wellness app | Ads + consent | Scoped after review. |
-| Guided packs | Scope after reviewer intake | Scoped after review. |
-| Creator/community templates | Scope after reviewer intake | Scoped after review. |
+| Freemium wellness app | Ads + consent | Scoped after architecture. |
+| Guided packs | Scope after product intake | Scoped after architecture. |
+| Creator/community templates | Scope after product intake | Scoped after architecture. |
 
 ## Boundaries
 

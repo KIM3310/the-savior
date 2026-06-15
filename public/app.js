@@ -400,7 +400,7 @@ function renderReviewPack(payload) {
   }
 
   const proof = payload.proof_bundle || {};
-  fillText("reviewPackBadge", payload.readiness_contract, "review-pack");
+  fillText("reviewPackBadge", payload.readiness_contract, "architecture-pack");
   fillText("reviewPackHeadline", payload.headline, "status summary unavailable");
   fillText("reviewPackRuntime", proof.runtimeMode, "runtime-key");
   fillText("reviewPackLlmReady", proof.llmReady ? "ready" : "fallback-only");
@@ -462,7 +462,7 @@ async function copyCrisisSnapshot() {
   setRuntimeStatus(ok ? "Crisis snapshot을 복사했습니다." : "Crisis snapshot 복사에 실패했습니다.", ok ? "good" : "warning");
 }
 
-async function copyReviewerBundle() {
+async function copyArchitectureBundle() {
   const brief = state.runtimeBrief || {};
   const reviewPack = state.reviewPack || {};
   const proof = reviewPack.proof_bundle || {};
@@ -474,8 +474,8 @@ async function copyReviewerBundle() {
     `Runtime posture: ${state.reviewOnly ? "audit-only" : state.backendReachable ? "live" : "checking"}`,
     `Provider preference: ${brief.llm?.providerPreference || state.llmProviderPreference || "-"}`,
     "",
-    "Review routes",
-    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Review routes unavailable."]),
+    "Architecture routes",
+    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Architecture routes unavailable."]),
     "",
     "Safety boundary",
     ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
@@ -543,9 +543,9 @@ function setupKeyboardShortcuts() {
     if (key === "r") {
       event.preventDefault();
       const routes = state.reviewPack?.proof_bundle?.review_routes || [];
-      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
-      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
+      setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
     } else if (key === "p") {
       event.preventDefault();
       await copyProviderPostureSnapshot();
@@ -554,7 +554,7 @@ function setupKeyboardShortcuts() {
       await copyCrisisSnapshot();
     } else if (key === "b") {
       event.preventDefault();
-      await copyReviewerBundle();
+      await copyArchitectureBundle();
     } else if (key === "t") {
       event.preventDefault();
       const start = $("startTimer");
@@ -1742,7 +1742,7 @@ async function loadRuntimeBrief() {
 
 async function loadReviewPack() {
   try {
-    const response = await fetch(apiUrl("/api/review-pack"), { method: "GET" });
+    const response = await fetch(apiUrl("/api/architecture-pack"), { method: "GET" });
     if (!response.ok) {
       renderReviewPack(null);
       return;
@@ -1851,7 +1851,7 @@ function setupCopyButtons() {
   const copyReviewPackBtn = $("copyReviewPackBtn");
   const copyProviderPostureBtn = $("copyProviderPostureBtn");
   const copyCrisisSnapshotBtn = $("copyCrisisSnapshotBtn");
-  const copyReviewerBundleBtn = $("copyReviewerBundleBtn");
+  const copyArchitectureBundleBtn = $("copyArchitectureBundleBtn");
   const checkinOutput = $("checkinOutput");
   const journalOutput = $("journalOutput");
 
@@ -1882,9 +1882,9 @@ function setupCopyButtons() {
   if (copyReviewRoutesBtn) {
     copyReviewRoutesBtn.addEventListener("click", async () => {
       const routes = state.reviewPack?.proof_bundle?.review_routes || [];
-      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
-      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
+      setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
     });
   }
 
@@ -1906,8 +1906,8 @@ function setupCopyButtons() {
     copyCrisisSnapshotBtn.addEventListener("click", copyCrisisSnapshot);
   }
 
-  if (copyReviewerBundleBtn) {
-    copyReviewerBundleBtn.addEventListener("click", copyReviewerBundle);
+  if (copyArchitectureBundleBtn) {
+    copyArchitectureBundleBtn.addEventListener("click", copyArchitectureBundle);
   }
 }
 
