@@ -20,7 +20,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 |---|---|
 | Audience | Wellness creators, small community operators, and solo users looking for low-friction reflection tools. |
 | Review path | Validate the demo, README, architecture notes, and quality gate before deeper workflow review. |
-| Review signal | Cloudflare Pages deployment, optional local or hosted AI adapters, journaling flows, and deterministic fallbacks. |
+| Architecture signal | Cloudflare Pages deployment, optional local or hosted AI adapters, journaling flows, and deterministic fallbacks. |
 | Safety boundary | This is wellness software, not clinical care; sensitive user content needs clear privacy controls and optional local-only mode. |
 | Fast proof | Run the app locally or inspect the Pages deployment and fallback behavior without requiring external model keys. |
 
@@ -113,7 +113,6 @@ the-savior/
 ```bash
 npm run check
 npm test
-# 37 passing, 0 failing
 ```
 
 ## Deploy
@@ -145,6 +144,10 @@ This repository includes a neutral cloud and AI engineering blueprint that maps 
 ## Enterprise Productization
 
 - [Product operating model](docs/product-operating-model.md) defines the reviewer, trust boundary, trust boundary, operating checks, and service path for this repository.
+
+## System Architecture
+
+- [System architecture](docs/system-architecture.md) maps the runtime boundary, data/control flow, cloud or local deployment surface, and operating assumptions for this repository.
 
 ## Service Architecture
 
