@@ -87,21 +87,21 @@ test("redactSecrets replaces API key patterns in strings", () => {
 
 test("redactSecrets handles nested objects", () => {
   const input = {
-    error: "Failed with sk-test1234567890abcdef",
+    error: "Failed with sk-test-redaction-key-value",
     nested: {
       key: "sk-test-another-secret-key-value-here"
     }
   };
   const result = redactSecrets(input);
-  assert.ok(!JSON.stringify(result).includes("sk-test1234567890"));
+  assert.ok(!JSON.stringify(result).includes("sk-test-redaction-key"));
   assert.ok(!JSON.stringify(result).includes("sk-test-another-secret"));
 });
 
 test("redactSecrets handles arrays", () => {
-  const input = ["normal text", "has sk-secret1234567890abc key"];
+  const input = ["normal text", "has sk-secret-redaction-key-value key"];
   const result = redactSecrets(input);
   assert.ok(Array.isArray(result));
-  assert.ok(!result[1].includes("sk-secret1234567890"));
+  assert.ok(!result[1].includes("sk-secret-redaction-key"));
 });
 
 test("redactSecrets passes through non-string primitives", () => {
