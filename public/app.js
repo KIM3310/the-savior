@@ -17,7 +17,7 @@ const state = {
   ollamaEnabled: false,
   ollamaModel: "",
   runtimeBrief: null,
-  reviewPack: null,
+  architecturePack: null,
   keyValidationTimer: null,
   keyValidationAbort: null,
   keyValidationSeq: 0,
@@ -227,7 +227,7 @@ function renderFirstSessionGuide() {
     proof = "runtime live, AI path pending";
   }
 
-  if (state.runtimeBrief?.status !== "ok" || state.reviewPack?.status !== "ok") {
+  if (state.runtimeBrief?.status !== "ok" || state.architecturePack?.status !== "ok") {
     proof = state.backendReachable ? "feature pages loading" : proof;
   }
 
@@ -348,8 +348,8 @@ function renderRuntimeBrief(payload) {
     fillText("briefMode", "degraded");
     fillText("briefProvider", "network-check-required");
     fillText("briefRouteCount", "0");
-    renderBriefList("briefReviewFlow", [], "runtime brief fetch 실패 시 health/meta부터 확인합니다.");
-    renderBriefList("briefTwoMinuteReview", [], "health, runtime brief, status summary, live/fallback 검토 순으로 확인합니다.");
+    renderBriefList("briefArchitectureFlow", [], "runtime brief fetch 실패 시 health/meta부터 확인합니다.");
+    renderBriefList("briefTwoMinuteArchitecture", [], "health, runtime brief, status summary, live/fallback 검토 순으로 확인합니다.");
     renderBriefList("briefOperatorRules", [], "BYOK, fallback, crisis escalation 정책을 수동 검토합니다.");
     renderProofAssets("briefProofAssets", [], "핵심 증거 surface를 불러오지 못했습니다.");
     renderBriefList("briefWatchouts", [], "런타임 surface가 없으면 배포 전 검증 증거가 약해집니다.");
@@ -374,43 +374,43 @@ function renderRuntimeBrief(payload) {
   fillText("briefMode", llm.runtimeMode, "runtime-key");
   fillText("briefProvider", providerParts.join(" · "), "auto");
   fillText("briefRouteCount", routes.length > 0 ? `${routes.length} routes` : "0");
-  renderBriefList("briefReviewFlow", payload.review_flow, "review flow unavailable");
-  renderBriefList("briefTwoMinuteReview", payload.two_minute_review, "two-minute review unavailable");
+  renderBriefList("briefArchitectureFlow", payload.architecture_flow, "architecture flow unavailable");
+  renderBriefList("briefTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute architecture unavailable");
   renderBriefList("briefOperatorRules", payload.operator_rules, "operator rules unavailable");
   renderProofAssets("briefProofAssets", payload.proof_assets, "proof assets unavailable");
   renderBriefList("briefWatchouts", payload.watchouts, "watchouts unavailable");
 }
 
-function renderReviewPack(payload) {
-  state.reviewPack = payload || null;
+function renderArchitecturePack(payload) {
+  state.architecturePack = payload || null;
 
   if (!payload || payload.status !== "ok") {
-    fillText("reviewPackBadge", "review-unavailable");
-    fillText("reviewPackHeadline", "리뷰 패키지를 아직 가져오지 못했습니다. health/meta/runtime surface를 먼저 확인해 주세요.");
-    fillText("reviewPackRuntime", "degraded");
-    fillText("reviewPackLlmReady", "check-required");
-    fillText("reviewPackAdsense", "unknown");
-    fillText("reviewPackRoutes", "0");
-    renderBriefList("reviewPackSafety", [], "safety boundary fetch 실패 시 crisis/fallback 정책을 수동 확인합니다.");
-    renderBriefList("reviewPackRuntime", [], "runtime boundary를 수동 검토합니다.");
-    renderBriefList("reviewPackTwoMinuteReview", [], "health, runtime brief, status summary, live/fallback 검토 순으로 확인합니다.");
-    renderBriefList("reviewPackSequence", [], "status summary fetch 실패 시 health/meta/runtime-brief부터 확인합니다.");
-    renderProofAssets("reviewPackProofAssets", [], "status summary proof assets unavailable");
+    fillText("architecturePackBadge", "review-unavailable");
+    fillText("architecturePackHeadline", "리뷰 패키지를 아직 가져오지 못했습니다. health/meta/runtime surface를 먼저 확인해 주세요.");
+    fillText("architecturePackRuntime", "degraded");
+    fillText("architecturePackLlmReady", "check-required");
+    fillText("architecturePackAdsense", "unknown");
+    fillText("architecturePackRoutes", "0");
+    renderBriefList("architecturePackSafety", [], "safety boundary fetch 실패 시 crisis/fallback 정책을 수동 확인합니다.");
+    renderBriefList("architecturePackRuntime", [], "runtime boundary를 수동 검토합니다.");
+    renderBriefList("architecturePackTwoMinuteArchitecture", [], "health, runtime brief, status summary, live/fallback 검토 순으로 확인합니다.");
+    renderBriefList("architecturePackSequence", [], "status summary fetch 실패 시 health/meta/runtime-brief부터 확인합니다.");
+    renderProofAssets("architecturePackProofAssets", [], "status summary proof assets unavailable");
     return;
   }
 
   const proof = payload.proof_bundle || {};
-  fillText("reviewPackBadge", payload.readiness_contract, "architecture-pack");
-  fillText("reviewPackHeadline", payload.headline, "status summary unavailable");
-  fillText("reviewPackRuntime", proof.runtimeMode, "runtime-key");
-  fillText("reviewPackLlmReady", proof.llmReady ? "ready" : "fallback-only");
-  fillText("reviewPackAdsense", proof.optionalScriptConfigured ? "configured" : "not-configured");
-  fillText("reviewPackRoutes", Array.isArray(proof.review_routes) ? `${proof.review_routes.length} routes` : "0");
-  renderBriefList("reviewPackSafety", payload.safety_boundary, "safety boundary unavailable");
-  renderBriefList("reviewPackRuntime", payload.runtime_boundary, "runtime boundary unavailable");
-  renderBriefList("reviewPackTwoMinuteReview", payload.two_minute_review, "two-minute review unavailable");
-  renderBriefList("reviewPackSequence", payload.review_sequence, "review sequence unavailable");
-  renderProofAssets("reviewPackProofAssets", payload.proof_assets, "proof assets unavailable");
+  fillText("architecturePackBadge", payload.readiness_contract, "architecture-pack");
+  fillText("architecturePackHeadline", payload.headline, "status summary unavailable");
+  fillText("architecturePackRuntime", proof.runtimeMode, "runtime-key");
+  fillText("architecturePackLlmReady", proof.llmReady ? "ready" : "fallback-only");
+  fillText("architecturePackAdsense", proof.optionalScriptConfigured ? "configured" : "not-configured");
+  fillText("architecturePackRoutes", Array.isArray(proof.architecture_routes) ? `${proof.architecture_routes.length} routes` : "0");
+  renderBriefList("architecturePackSafety", payload.safety_boundary, "safety boundary unavailable");
+  renderBriefList("architecturePackRuntime", payload.runtime_boundary, "runtime boundary unavailable");
+  renderBriefList("architecturePackTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute architecture unavailable");
+  renderBriefList("architecturePackSequence", payload.architecture_sequence, "architecture sequence unavailable");
+  renderProofAssets("architecturePackProofAssets", payload.proof_assets, "proof assets unavailable");
 }
 
 async function copyProviderPostureSnapshot() {
@@ -418,7 +418,7 @@ async function copyProviderPostureSnapshot() {
   const llm = brief.llm || {};
   const diagnostics = brief.diagnostics || {};
   const runtimePolicy = brief.runtimePolicy || {};
-  const reviewPack = state.reviewPack || {};
+  const architecturePack = state.architecturePack || {};
   const lines = [
     "the-savior provider posture",
     `Headline: ${brief.headline || "-"}`,
@@ -430,8 +430,8 @@ async function copyProviderPostureSnapshot() {
     `Runtime config: ${runtimePolicy.optionalScriptConfigured ? "configured" : "not configured"}`,
     "",
     "Boundary checks",
-    ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
-    ...((reviewPack.runtime_boundary || []).slice(0, 1).map((item) => `- ${item}`)),
+    ...((architecturePack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    ...((architecturePack.runtime_boundary || []).slice(0, 1).map((item) => `- ${item}`)),
   ];
   const ok = await copyTextToClipboard(lines.join("\n"));
   setRuntimeStatus(ok ? "Provider posture를 복사했습니다." : "Provider posture 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -439,24 +439,24 @@ async function copyProviderPostureSnapshot() {
 
 async function copyCrisisSnapshot() {
   const brief = state.runtimeBrief || {};
-  const reviewPack = state.reviewPack || {};
+  const architecturePack = state.architecturePack || {};
   const diagnostics = brief.diagnostics || {};
-  const proof = reviewPack.proof_bundle || {};
+  const proof = architecturePack.proof_bundle || {};
   const lines = [
     "the-savior crisis snapshot",
-    `Headline: ${reviewPack.headline || brief.headline || "-"}`,
+    `Headline: ${architecturePack.headline || brief.headline || "-"}`,
     `Runtime mode: ${diagnostics.runtimeMode || proof.runtimeMode || "-"}`,
     `Provider ready: ${proof.llmReady ? "yes" : "no"}`,
     `Runtime config: ${proof.optionalScriptConfigured ? "configured" : "not configured"}`,
     "",
     "Safety boundary",
-    ...((reviewPack.safety_boundary || []).slice(0, 3).map((item) => `- ${item}`)),
+    ...((architecturePack.safety_boundary || []).slice(0, 3).map((item) => `- ${item}`)),
     "",
     "Runtime boundary",
-    ...((reviewPack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    ...((architecturePack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
     "",
     "Focused routes",
-    ...((proof.review_routes || []).slice(0, 4).map((item) => `- ${item}`)),
+    ...((proof.architecture_routes || []).slice(0, 4).map((item) => `- ${item}`)),
   ];
   const ok = await copyTextToClipboard(lines.join("\n"));
   setRuntimeStatus(ok ? "Crisis snapshot을 복사했습니다." : "Crisis snapshot 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -464,12 +464,12 @@ async function copyCrisisSnapshot() {
 
 async function copyArchitectureBundle() {
   const brief = state.runtimeBrief || {};
-  const reviewPack = state.reviewPack || {};
-  const proof = reviewPack.proof_bundle || {};
-  const shareRoutes = Array.isArray(proof.review_routes) ? proof.review_routes : [];
+  const architecturePack = state.architecturePack || {};
+  const proof = architecturePack.proof_bundle || {};
+  const shareRoutes = Array.isArray(proof.architecture_routes) ? proof.architecture_routes : [];
   const lines = [
     "the-savior status bundle",
-    `Headline: ${reviewPack.headline || brief.headline || "-"}`,
+    `Headline: ${architecturePack.headline || brief.headline || "-"}`,
     `API base: ${state.apiBase || "(unset)"}`,
     `Runtime posture: ${state.reviewOnly ? "audit-only" : state.backendReachable ? "live" : "checking"}`,
     `Provider preference: ${brief.llm?.providerPreference || state.llmProviderPreference || "-"}`,
@@ -478,10 +478,10 @@ async function copyArchitectureBundle() {
     ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Architecture routes unavailable."]),
     "",
     "Safety boundary",
-    ...((reviewPack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    ...((architecturePack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
     "",
     "Runtime boundary",
-    ...((reviewPack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
+    ...((architecturePack.runtime_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
   ];
   const ok = await copyTextToClipboard(lines.join("\n"));
   setRuntimeStatus(ok ? "Operator bundle을 복사했습니다." : "Operator bundle 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -542,7 +542,7 @@ function setupKeyboardShortcuts() {
     const key = event.key.toLowerCase();
     if (key === "r") {
       event.preventDefault();
-      const routes = state.reviewPack?.proof_bundle?.review_routes || [];
+      const routes = state.architecturePack?.proof_bundle?.architecture_routes || [];
       const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
       setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
@@ -1740,18 +1740,18 @@ async function loadRuntimeBrief() {
   }
 }
 
-async function loadReviewPack() {
+async function loadArchitecturePack() {
   try {
     const response = await fetch(apiUrl("/api/architecture-pack"), { method: "GET" });
     if (!response.ok) {
-      renderReviewPack(null);
+      renderArchitecturePack(null);
       return;
     }
 
     const payload = await response.json();
-    renderReviewPack(payload);
+    renderArchitecturePack(payload);
   } catch {
-    renderReviewPack(null);
+    renderArchitecturePack(null);
   }
 }
 
@@ -1760,7 +1760,7 @@ async function loadConfig() {
     state.backendReachable = false;
     refreshUserApiKeyStatus();
     renderRuntimeBrief(null);
-    renderReviewPack(null);
+    renderArchitecturePack(null);
     applyAiAvailability();
     return;
   }
@@ -1771,7 +1771,7 @@ async function loadConfig() {
       state.backendReachable = false;
       refreshUserApiKeyStatus();
       renderRuntimeBrief(null);
-      renderReviewPack(null);
+      renderArchitecturePack(null);
       applyAiAvailability();
       return;
     }
@@ -1804,13 +1804,13 @@ async function loadConfig() {
     applyAiAvailability();
     loadHealth();
     loadRuntimeBrief();
-    loadReviewPack();
+    loadArchitecturePack();
   } catch (error) {
     console.error("Config load failed", error);
     state.backendReachable = false;
     refreshUserApiKeyStatus();
     renderRuntimeBrief(null);
-    renderReviewPack(null);
+    renderArchitecturePack(null);
     applyAiAvailability();
   }
 }
@@ -1847,8 +1847,8 @@ function setupCopyButtons() {
   const copyCheckinBtn = $("copyCheckinBtn");
   const copyJournalBtn = $("copyJournalBtn");
   const copyRuntimeBriefBtn = $("copyRuntimeBriefBtn");
-  const copyReviewRoutesBtn = $("copyReviewRoutesBtn");
-  const copyReviewPackBtn = $("copyReviewPackBtn");
+  const copyArchitectureRoutesBtn = $("copyArchitectureRoutesBtn");
+  const copyArchitecturePackBtn = $("copyArchitecturePackBtn");
   const copyProviderPostureBtn = $("copyProviderPostureBtn");
   const copyCrisisSnapshotBtn = $("copyCrisisSnapshotBtn");
   const copyArchitectureBundleBtn = $("copyArchitectureBundleBtn");
@@ -1879,19 +1879,19 @@ function setupCopyButtons() {
     });
   }
 
-  if (copyReviewRoutesBtn) {
-    copyReviewRoutesBtn.addEventListener("click", async () => {
-      const routes = state.reviewPack?.proof_bundle?.review_routes || [];
+  if (copyArchitectureRoutesBtn) {
+    copyArchitectureRoutesBtn.addEventListener("click", async () => {
+      const routes = state.architecturePack?.proof_bundle?.architecture_routes || [];
       const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
       setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
     });
   }
 
-  if (copyReviewPackBtn) {
-    copyReviewPackBtn.addEventListener("click", async () => {
-      const payload = state.reviewPack
-        ? JSON.stringify(state.reviewPack, null, 2)
+  if (copyArchitecturePackBtn) {
+    copyArchitecturePackBtn.addEventListener("click", async () => {
+      const payload = state.architecturePack
+        ? JSON.stringify(state.architecturePack, null, 2)
         : "";
       const ok = await copyTextToClipboard(payload);
       setRuntimeStatus(ok ? "Operations pack을 복사했습니다." : "Operations pack 복사에 실패했습니다.", ok ? "good" : "warning");

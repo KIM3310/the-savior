@@ -4,7 +4,7 @@ import { onRequestGet as getEscalationReadiness } from "../functions/api/escalat
 import { onRequestGet as getHealth } from "../functions/api/health.js";
 import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
 import { onRequestGet as getProgressTrends } from "../functions/api/progress-trends.js";
-import { onRequestGet as getReviewPack } from "../functions/api/architecture-pack.js";
+import { onRequestGet as getArchitecturePack } from "../functions/api/architecture-pack.js";
 import { onRequestGet as getRuntimeBrief } from "../functions/api/runtime-brief.js";
 import { onRequestGet as getCoachSchema } from "../functions/api/schema/coach-response.js";
 
@@ -101,14 +101,14 @@ test("runtime brief route exposes operator contract", async () => {
   assert.ok(body.routes.includes("/api/runtime-brief"));
   assert.ok(body.routes.includes("/api/escalation-readiness"));
   assert.ok(body.routes.includes("/api/progress-trends"));
-  assert.ok(body.review_flow.length >= 3);
-  assert.equal(body.two_minute_review.length, 4);
+  assert.ok(body.architecture_flow.length >= 3);
+  assert.equal(body.two_minute_architecture.length, 4);
   assert.equal(body.proof_assets[0].path, "/api/health");
   assert.equal(body.links.progress_trends, "/api/progress-trends");
 });
 
 test("status summary route exposes safety and runtime boundaries", async () => {
-  const response = await getReviewPack(
+  const response = await getArchitecturePack(
     createContext("https://the-savior-9z8.pages.dev/api/architecture-pack", {
       ENABLE_OLLAMA: "true",
       OPTIONAL_SCRIPT_CLIENT: "external-client-123"
@@ -119,12 +119,12 @@ test("status summary route exposes safety and runtime boundaries", async () => {
   assert.equal(response.status, 200);
   assert.equal(body.readiness_contract, "the-savior-architecture-pack-v1");
   assert.equal(body.proof_bundle.runtimeMode, "ollama-local");
-  assert.ok(body.proof_bundle.review_routes.includes("/api/architecture-pack"));
-  assert.ok(body.proof_bundle.review_routes.includes("/api/escalation-readiness"));
-  assert.ok(body.proof_bundle.review_routes.includes("/api/progress-trends"));
+  assert.ok(body.proof_bundle.architecture_routes.includes("/api/architecture-pack"));
+  assert.ok(body.proof_bundle.architecture_routes.includes("/api/escalation-readiness"));
+  assert.ok(body.proof_bundle.architecture_routes.includes("/api/progress-trends"));
   assert.ok(body.safety_boundary.length >= 3);
   assert.ok(body.runtime_boundary.length >= 3);
-  assert.equal(body.two_minute_review.length, 4);
+  assert.equal(body.two_minute_architecture.length, 4);
   assert.equal(body.proof_assets[0].label, "Health Route");
 });
 

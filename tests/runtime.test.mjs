@@ -5,7 +5,7 @@ import {
   buildCoachResponseSchema,
   buildEscalationReadiness,
   buildProgressTrends,
-  buildReviewPack,
+  buildArchitecturePack,
   buildRuntimeBrief,
   buildRuntimeDiagnostics,
   COACH_RESPONSE_SCHEMA,
@@ -15,7 +15,7 @@ import {
   normalizeProvider,
   parseBoolFlag,
   READINESS_CONTRACT,
-  REVIEW_PACK_CONTRACT,
+  ARCHITECTURE_PACK_CONTRACT,
   RUNTIME_ROUTES,
   sanitizeBaseUrl
 } from "../functions/api/_runtime.js";
@@ -200,17 +200,17 @@ test("buildRuntimeBrief returns complete payload with all required fields", () =
 });
 
 // ---------------------------------------------------------------------------
-// 10. buildReviewPack
+// 10. buildArchitecturePack
 // ---------------------------------------------------------------------------
 
-test("buildReviewPack returns complete operator payload", () => {
-  const pack = buildReviewPack({}, "https://example.com/api");
+test("buildArchitecturePack returns complete operator payload", () => {
+  const pack = buildArchitecturePack({}, "https://example.com/api");
   assert.equal(pack.status, "ok");
-  assert.equal(pack.readiness_contract, REVIEW_PACK_CONTRACT);
+  assert.equal(pack.readiness_contract, ARCHITECTURE_PACK_CONTRACT);
   assert.ok(pack.proof_bundle);
   assert.ok(Array.isArray(pack.safety_boundary));
   assert.ok(Array.isArray(pack.runtime_boundary));
-  assert.ok(Array.isArray(pack.review_sequence));
+  assert.ok(Array.isArray(pack.architecture_sequence));
   assert.ok(pack.safety_boundary.length >= 3);
   assert.ok(pack.runtime_boundary.length >= 3);
 });

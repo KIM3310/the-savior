@@ -14,7 +14,7 @@ export const OLLAMA_MODEL_NAME = "llama3.2:latest";
 export const READINESS_CONTRACT = "the-savior-runtime-brief-v1";
 
 /** @type {string} Contract version for architecture-pack payloads. */
-export const REVIEW_PACK_CONTRACT = "the-savior-architecture-pack-v1";
+export const ARCHITECTURE_PACK_CONTRACT = "the-savior-architecture-pack-v1";
 
 /** @type {string} Contract version for coach-response schema payloads. */
 export const COACH_RESPONSE_SCHEMA = "the-savior-coach-response-v1";
@@ -132,7 +132,7 @@ export function buildCoachResponseSchema() {
     optional_fields: ["resources", "next_steps"],
     operator_rules: [
       "Escalate immediately when crisis intent or self-harm risk is detected.",
-      "Prefer BYOK at runtime; any server-side LLM key must stay explicitly enabled and reviewable.",
+      "Prefer BYOK at runtime; any server-side LLM key must stay explicitly enabled and inspectable.",
       "Fallback responses must remain explicit when a live LLM path is unavailable."
     ]
   };
@@ -217,12 +217,12 @@ export function buildRuntimeBrief(env, requestUrl) {
         bottom: Boolean(String(env.OPTIONAL_SCRIPT_SLOT_BOTTOM || "").trim())
       }
     },
-    review_flow: [
+    architecture_flow: [
       "Check config and health before opening the coaching surface to external traffic.",
       "Validate BYOK or server-key posture before enabling live OpenAI responses.",
       "Keep fallback mode visible so operators can distinguish scripted coaching from live LLM output."
     ],
-    two_minute_review: [
+    two_minute_architecture: [
       "Open /api/health and /api/meta to confirm provider posture, runtime policy state, and route coverage.",
       "Open /api/runtime-brief to verify runtime mode, schema contract, and fallback behavior.",
       "Open /api/architecture-pack and confirm safety boundary versus runtime boundary before public traffic.",
@@ -246,7 +246,7 @@ export function buildRuntimeBrief(env, requestUrl) {
       {
         label: "Runtime Brief",
         path: "/api/runtime-brief",
-        why: "Pins runtime mode, schema contract, review flow, and watchouts."
+        why: "Pins runtime mode, schema contract, architecture flow, and watchouts."
       },
       {
         label: "Escalation Readiness",
@@ -293,7 +293,7 @@ export function buildRuntimeBrief(env, requestUrl) {
  * @param {string} requestUrl - Full request URL.
  * @returns {Record<string, unknown>} Complete architecture-pack JSON payload.
  */
-export function buildReviewPack(env, requestUrl) {
+export function buildArchitecturePack(env, requestUrl) {
   const runtimeBrief = buildRuntimeBrief(env, requestUrl);
   const diagnostics = runtimeBrief.diagnostics || {};
   const llm = runtimeBrief.llm || {};
@@ -303,7 +303,7 @@ export function buildReviewPack(env, requestUrl) {
     status: "ok",
     service: "the-savior",
     generated_at: new Date().toISOString(),
-    readiness_contract: REVIEW_PACK_CONTRACT,
+    readiness_contract: ARCHITECTURE_PACK_CONTRACT,
     headline:
       "Operator pack for a Buddhist wellness copilot: safety escalation, BYOK/runtime posture, and runtime policy separation in one contract.",
     proof_bundle: {
@@ -311,7 +311,7 @@ export function buildReviewPack(env, requestUrl) {
       llmReady: Boolean(diagnostics.llmReady),
       providerReady: Boolean(llm.canServeWithoutUserKey),
       optionalScriptConfigured: Boolean(runtimePolicy.optionalScriptConfigured),
-      review_routes: [
+      architecture_routes: [
         "/api/health",
         "/api/meta",
         "/api/runtime-brief",
@@ -331,12 +331,12 @@ export function buildReviewPack(env, requestUrl) {
       "Wellness coaching and runtime policy surfaces are separated so operators can inspect them independently.",
       "Operators should confirm that fallback mode still behaves safely when optional scripts are configured."
     ],
-    review_sequence: [
+    architecture_sequence: [
       "Open /api/health and /api/meta to confirm active provider posture and runtime policy configuration.",
       "Read /api/runtime-brief and /api/architecture-pack before enabling public traffic or demo sessions.",
       "Validate live chat plus fallback behavior only after safety and provider boundaries are understood."
     ],
-    two_minute_review: [
+    two_minute_architecture: [
       "Open /api/health, /api/meta, and /api/runtime-brief to confirm provider and fallback posture.",
       "Open /api/architecture-pack to check safety escalation and runtime separation before public traffic.",
       "Compare live and fallback behavior only after schema, provider, and runtime policy state are understood.",
@@ -422,7 +422,7 @@ export function buildEscalationReadiness(env, requestUrl) {
     architecture_actions: [
       "Read this route before treating the public coach surface as launch-ready.",
       "Verify live versus fallback posture, then compare with /api/architecture-pack.",
-      "Keep escalation copy reviewable whenever provider settings change."
+      "Keep escalation copy inspectable whenever provider settings change."
     ],
     links: {
       health: "/api/health",
@@ -475,7 +475,7 @@ export function buildProgressTrends(env, requestUrl) {
       runtime_mode: runtimeMode
     },
     items,
-    review_actions: [
+    architecture_actions: [
       "Compare recent coaching cadence before claiming sustained user progress.",
       "Keep fallback/runtime posture visible when reviewing session improvements.",
       "Escalation spikes should be reviewed before public wellness claims."

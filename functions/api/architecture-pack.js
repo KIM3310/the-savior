@@ -9,7 +9,7 @@
 
 import { createLogger } from "./_logger.js";
 import { jsonResponse } from "./_response.js";
-import { buildReviewPack } from "./_runtime.js";
+import { buildArchitecturePack } from "./_runtime.js";
 import { checkRateLimit, getRequestId, resolveCors } from "./_security.js";
 
 /** @type {{ methods: string, allowHeaders: string }} */
@@ -89,7 +89,7 @@ export async function onRequestGet(context) {
 
   log.info("status summary served");
 
-  return jsonResponse(buildReviewPack(context.env, context.request.url), 200, {
+  return jsonResponse(buildArchitecturePack(context.env, context.request.url), 200, {
     corsHeaders: cors.headers,
     extraHeaders: {
       ...rate.headers,
