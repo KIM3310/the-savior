@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://the-savior-9z8.pages.dev/sitemap.xml
+Sitemap: https://kim3310.github.io/the-savior/sitemap.xml

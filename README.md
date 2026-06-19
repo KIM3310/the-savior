@@ -152,3 +152,17 @@ This repository includes a neutral cloud and AI engineering blueprint that maps 
 ## Service Architecture
 
 - [Service architecture](docs/service-architecture.md) defines the cloud resources, account information, cost controls, and production guardrails needed to turn this repo into a scoped service without publishing public financial assumptions.
+
+<!-- search-growth-readme:start -->
+
+## Search And Service Surface
+
+- Public entry: free static ritual experience
+- Paid boundary: premium theme packs, private journal export, and supporter bundle
+- Canonical URL: https://kim3310.github.io/the-savior/
+- Lead capture: mailto:ehdjs1351@gmail.com?subject=The%20Savior%20private%20workspace&body=I%20am%20interested%20in%20premium%20theme%20packs%2C%20private%20journal%20export%2C%20and%20supporter%20bundle%20for%20The%20Savior.
+- Machine-readable offer: [docs/service-offer.json](docs/service-offer.json)
+- Search growth implementation: [docs/search-growth-implementation.md](docs/search-growth-implementation.md)
+- Revenue architecture: [docs/revenue-architecture.md](docs/revenue-architecture.md)
+
+<!-- search-growth-readme:end -->
