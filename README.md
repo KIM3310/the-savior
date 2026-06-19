@@ -160,7 +160,7 @@ This repository includes a neutral cloud and AI engineering blueprint that maps 
 - Public entry: free static ritual experience
 - Paid boundary: premium theme packs, private journal export, and supporter bundle
 - Canonical URL: https://kim3310.github.io/the-savior/
-- Lead capture: mailto:ehdjs1351@gmail.com?subject=The%20Savior%20private%20workspace&body=I%20am%20interested%20in%20premium%20theme%20packs%2C%20private%20journal%20export%2C%20and%20supporter%20bundle%20for%20The%20Savior.
+- Lead capture: https://github.com/KIM3310/the-savior/issues/new?template=service-inquiry.yml&title=Private+workspace+inquiry%3A+The+Savior
 - Machine-readable offer: [docs/service-offer.json](docs/service-offer.json)
 - Search growth implementation: [docs/search-growth-implementation.md](docs/search-growth-implementation.md)
 - Revenue architecture: [docs/revenue-architecture.md](docs/revenue-architecture.md)
