@@ -10,7 +10,7 @@ These notes keep the repository available as supporting proof while preventing i
 |---|---|
 | Repository | `the-savior` |
 | Status | Archived supporting proof |
-| Project role | Keep as optional consumer UX history, not a architecture-walkthrough or architecture inspection lead. |
+| Project role | Keep as optional consumer UX history, not an architecture walkthrough or architecture inspection lead. |
 | Current successor | aix-pilot and doeon-kim-portfolio |
 
 ## Presentation Boundary
