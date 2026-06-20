@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { onRequestGet as getArchitecturePack } from "../functions/api/architecture-pack.js";
 import { onRequestGet as getEscalationReadiness } from "../functions/api/escalation-readiness.js";
 import { onRequestGet as getHealth } from "../functions/api/health.js";
 import { onRequestGet as getMeta, onRequestOptions } from "../functions/api/meta.js";
 import { onRequestGet as getProgressTrends } from "../functions/api/progress-trends.js";
-import { onRequestGet as getArchitecturePack } from "../functions/api/architecture-pack.js";
 import { onRequestGet as getRuntimeBrief } from "../functions/api/runtime-brief.js";
 import { onRequestGet as getCoachSchema } from "../functions/api/schema/coach-response.js";
 

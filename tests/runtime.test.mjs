@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  ARCHITECTURE_PACK_CONTRACT,
+  buildArchitecturePack,
   buildCoachResponseSchema,
   buildEscalationReadiness,
   buildProgressTrends,
-  buildArchitecturePack,
   buildRuntimeBrief,
   buildRuntimeDiagnostics,
   COACH_RESPONSE_SCHEMA,
@@ -15,7 +16,6 @@ import {
   normalizeProvider,
   parseBoolFlag,
   READINESS_CONTRACT,
-  ARCHITECTURE_PACK_CONTRACT,
   RUNTIME_ROUTES,
   sanitizeBaseUrl
 } from "../functions/api/_runtime.js";
