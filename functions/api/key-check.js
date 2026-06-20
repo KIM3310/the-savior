@@ -1,8 +1,8 @@
 /**
  * API key validation endpoint for The Savior.
  *
- * Accepts a user-supplied OpenAI API key, validates its format, and
- * verifies it against the OpenAI models endpoint.
+ * Accepts a user-supplied OpenAI/OpenRouter API key, validates its format, and
+ * verifies it against the matching models endpoint.
  *
  * @module api/key-check
  */
@@ -42,6 +42,11 @@ function isLikelyOpenAIKey(value) {
   return key.startsWith("sk-") && !/\s/.test(key) && key.length >= 20 && key.length <= 260;
 }
 
+function resolveKeyProvider(apiKey) {
+  const openRouterPrefix = ["sk", "or"].join("-") + "-";
+  return apiKey.startsWith(openRouterPrefix) ? "openrouter" : "openai";
+}
+
 /**
  * Extract an error message from an OpenAI API response payload.
  *
@@ -63,17 +68,20 @@ function extractErrorMessage(payload) {
  */
 
 /**
- * Verify an API key against the OpenAI models endpoint.
+ * Verify an API key against the provider models endpoint.
  *
  * @param {string} apiKey - The API key to verify.
  * @returns {Promise<KeyVerificationResult>}
  */
 async function verifyApiKeyWithOpenAI(apiKey) {
+  const provider = resolveKeyProvider(apiKey);
+  const modelsUrl =
+    provider === "openrouter" ? "https://openrouter.ai/api/v1/models" : "https://api.openai.com/v1/models";
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS);
   let response = null;
   try {
-    response = await fetch("https://api.openai.com/v1/models", {
+    response = await fetch(modelsUrl, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${apiKey}`
@@ -133,7 +141,7 @@ async function verifyApiKeyWithOpenAI(apiKey) {
   return {
     valid: false,
     usable: false,
-    message: detail ? "키 유효성 확인 중 OpenAI 응답 오류가 발생했습니다." : "키 유효성 확인 중 오류가 발생했습니다."
+    message: detail ? "키 유효성 확인 중 provider 응답 오류가 발생했습니다." : "키 유효성 확인 중 오류가 발생했습니다."
   };
 }
 

@@ -9,6 +9,7 @@
 
 /** @type {string} Default Ollama model identifier. */
 export const OLLAMA_MODEL_NAME = "llama3.2:latest";
+export const OPENROUTER_MODEL_NAME = "mistralai/mistral-small-2603";
 
 /** @type {string} Contract version for runtime-brief payloads. */
 export const READINESS_CONTRACT = "the-savior-runtime-brief-v1";
@@ -48,13 +49,13 @@ export function sanitizeBaseUrl(value) {
  * Normalize a provider preference string to one of the known values.
  *
  * @param {unknown} value - Raw provider string (e.g. from env or payload).
- * @returns {"openai" | "ollama" | "gemini" | "auto"}
+ * @returns {"openrouter" | "openai" | "ollama" | "gemini" | "auto"}
  */
 export function normalizeProvider(value) {
   const raw = String(value || "")
     .trim()
     .toLowerCase();
-  if (raw === "openai" || raw === "ollama" || raw === "gemini") return raw;
+  if (raw === "openrouter" || raw === "openai" || raw === "ollama" || raw === "gemini") return raw;
   return "auto";
 }
 
@@ -77,10 +78,14 @@ export function parseBoolFlag(value) {
  * Check whether a server-side OpenAI API key is enabled and present.
  *
  * @param {Record<string, string>} env - Environment bindings.
- * @returns {boolean} True when ALLOW_SERVER_OPENAI_KEY is truthy and OPENAI_API_KEY is set.
+ * @returns {boolean} True when OpenRouter is configured, Gemini is configured, or ALLOW_SERVER_OPENAI_KEY enables OPENAI_API_KEY.
  */
 export function hasEnabledServerApiKey(env) {
-  return (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY)) || Boolean(env.GEMINI_API_KEY);
+  return (
+    Boolean(env.OPENROUTER_API_KEY) ||
+    Boolean(env.GEMINI_API_KEY) ||
+    (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY))
+  );
 }
 
 /**
@@ -160,7 +165,12 @@ export function buildRuntimeDiagnostics({ hasServerApiKey, optionalScriptReady, 
   const llmReady = hasServerApiKey || ollamaEnabled;
   let runtimeMode = "runtime-key";
   if (hasServerApiKey) runtimeMode = "server-key";
-  else if (ollamaEnabled && providerPreference !== "openai" && providerPreference !== "gemini")
+  else if (
+    ollamaEnabled &&
+    providerPreference !== "openai" &&
+    providerPreference !== "gemini" &&
+    providerPreference !== "openrouter"
+  )
     runtimeMode = "ollama-local";
 
   return {
@@ -203,7 +213,9 @@ export function buildRuntimeBrief(env, requestUrl) {
       providerPreference,
       runtimeMode: diagnostics.runtimeMode,
       hasServerApiKey,
+      hasServerOpenRouterKey: Boolean(String(env.OPENROUTER_API_KEY || "").trim()),
       hasServerGeminiKey: Boolean(String(env.GEMINI_API_KEY || "").trim()),
+      openRouterModel: String(env.OPENROUTER_MODEL || "").trim() || OPENROUTER_MODEL_NAME,
       geminiModel: String(env.GEMINI_MODEL || "").trim() || "gemini-2.5-flash",
       ollamaEnabled,
       ollamaModel: String(env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME,

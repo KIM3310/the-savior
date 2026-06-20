@@ -35,13 +35,13 @@ function sanitizeBaseUrl(value) {
  * Normalize a provider preference string.
  *
  * @param {unknown} value
- * @returns {"openai" | "ollama" | "auto"}
+ * @returns {"openrouter" | "openai" | "ollama" | "gemini" | "auto"}
  */
 function normalizeProvider(value) {
   const raw = String(value || "")
     .trim()
     .toLowerCase();
-  if (raw === "openai" || raw === "ollama") return raw;
+  if (raw === "openrouter" || raw === "openai" || raw === "ollama" || raw === "gemini") return raw;
   return "auto";
 }
 
@@ -66,7 +66,7 @@ function parseBoolFlag(value) {
  * @returns {boolean}
  */
 function hasEnabledServerApiKey(env) {
-  return parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY);
+  return Boolean(env.OPENROUTER_API_KEY) || (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY));
 }
 
 /**
@@ -172,6 +172,7 @@ export async function onRequestGet(context) {
   }
 
   const hasServerApiKey = hasEnabledServerApiKey(context.env);
+  const hasServerOpenRouterKey = Boolean(String(context.env.OPENROUTER_API_KEY || "").trim());
   const llmProviderPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
   const ollamaModel = String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME;
@@ -186,7 +187,9 @@ export async function onRequestGet(context) {
   return jsonResponse(
     {
       hasServerApiKey,
+      hasServerOpenRouterKey,
       llmProviderPreference,
+      openRouterModel: String(context.env.OPENROUTER_MODEL || "mistralai/mistral-small-2603").trim(),
       ollamaEnabled,
       ollamaModel,
       apiBaseUrl: configuredBaseUrl || requestOrigin,

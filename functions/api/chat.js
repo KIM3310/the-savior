@@ -3,7 +3,7 @@ import { jsonResponse } from "./_response.js";
 import { checkRateLimit, getRequestId, RequestValidationError, readJsonBody, resolveCors } from "./_security.js";
 
 /** @typedef {"coach" | "checkin" | "journal" | "crisis"} ChatMode */
-/** @typedef {"openai" | "gemini" | "ollama" | "fallback" | "crisis-hand-off"} ProviderName */
+/** @typedef {"openrouter" | "openai" | "gemini" | "ollama" | "fallback" | "crisis-hand-off"} ProviderName */
 
 /**
  * @typedef {Object} ChatResponsePayload
@@ -18,6 +18,8 @@ import { checkRateLimit, getRequestId, RequestValidationError, readJsonBody, res
  */
 
 const OPENAI_MODEL_NAME = "gpt-5.2";
+const OPENROUTER_MODEL_NAME = "mistralai/mistral-small-2603";
+const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
 const GEMINI_MODEL_NAME = "gemini-2.5-flash";
 const OLLAMA_MODEL_NAME = "llama3.2:latest";
 const OLLAMA_DEFAULT_BASE_URL = "http://127.0.0.1:11434";
@@ -365,6 +367,10 @@ function resolveApiKey(request, env) {
   return userKey || serverKey;
 }
 
+function resolveOpenRouterApiKey(env) {
+  return normalizeApiKey(typeof env.OPENROUTER_API_KEY === "string" ? env.OPENROUTER_API_KEY : "");
+}
+
 function sanitizeBaseUrl(value) {
   if (typeof value !== "string") return "";
   return value.trim().replace(/\/+$/, "");
@@ -372,7 +378,7 @@ function sanitizeBaseUrl(value) {
 
 function normalizeProvider(value) {
   const raw = sanitizeText(value || "", 16).toLowerCase();
-  if (raw === "openai" || raw === "ollama" || raw === "gemini") return raw;
+  if (raw === "openrouter" || raw === "openai" || raw === "ollama" || raw === "gemini") return raw;
   return "auto";
 }
 
@@ -417,14 +423,18 @@ function resolveOllamaBaseUrl(env, requestUrl) {
  * @param {Record<string, string>} env
  * @param {Request} request
  * @param {boolean} hasOpenAIKey
- * @returns {"openai" | "ollama"}
+ * @returns {"openrouter" | "openai" | "gemini" | "ollama"}
  */
-function resolveProvider(payload, env, request, hasOpenAIKey, hasGeminiKey) {
+function resolveProvider(payload, env, request, hasOpenAIKey, hasGeminiKey, hasOpenRouterKey) {
   const payloadProvider = normalizeProvider(payload?.provider ? payload.provider : "");
   const envProvider = normalizeProvider(env.LLM_PROVIDER || "");
 
   if (payloadProvider !== "auto") return payloadProvider;
   if (envProvider !== "auto") return envProvider;
+
+  if (hasOpenRouterKey) {
+    return "openrouter";
+  }
 
   if (!hasOpenAIKey && hasGeminiKey) {
     return "gemini";
@@ -518,6 +528,65 @@ async function runOpenAI(apiKey, systemPrompt, userPrompt) {
   }
 
   return text;
+}
+
+async function runOpenRouter(apiKey, systemPrompt, userPrompt, env) {
+  if (!apiKey) {
+    throw new OpenAIRequestError("OpenRouter API key is not available.", 500);
+  }
+
+  const baseUrl = sanitizeBaseUrl(env.OPENROUTER_BASE_URL || "") || OPENROUTER_DEFAULT_BASE_URL;
+  const model = sanitizeText(env.OPENROUTER_MODEL || OPENROUTER_MODEL_NAME, 96) || OPENROUTER_MODEL_NAME;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), OPENAI_TIMEOUT_MS);
+  let response = null;
+  try {
+    response = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "HTTP-Referer": sanitizeBaseUrl(env.OPENROUTER_HTTP_REFERER || "") || "https://the-savior.pages.dev",
+        "X-OpenRouter-Title": sanitizeText(env.OPENROUTER_APP_TITLE || "the-savior", 80)
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model,
+        temperature: 0.7,
+        max_tokens: 500,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new OpenAIRequestError("OpenRouter API timed out.", 504);
+    }
+    throw new OpenAIRequestError("OpenRouter API request failed.", 502);
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    const apiMessage = payload?.error?.message ? payload.error.message : "OpenRouter API request failed.";
+    throw new OpenAIRequestError(apiMessage, response.status);
+  }
+
+  const text = payload?.choices?.[0]?.message?.content?.trim() || "";
+  if (!text) {
+    throw new Error("OpenRouter response was empty.");
+  }
+
+  return { model, text };
 }
 
 async function runGemini(apiKey, systemPrompt, userPrompt, model = GEMINI_MODEL_NAME) {
@@ -870,9 +939,17 @@ export async function onRequestPost(context) {
       });
     }
 
+    const openRouterApiKey = resolveOpenRouterApiKey(context.env);
     const apiKey = resolveApiKey(context.request, context.env);
     const geminiApiKey = sanitizeText(context.env.GEMINI_API_KEY || "", 512);
-    const provider = resolveProvider(payload, context.env, context.request, Boolean(apiKey), Boolean(geminiApiKey));
+    const provider = resolveProvider(
+      payload,
+      context.env,
+      context.request,
+      Boolean(apiKey),
+      Boolean(geminiApiKey),
+      Boolean(openRouterApiKey)
+    );
     const systemPrompt = buildSystemPrompt(mode);
     const userPrompt = buildUserPrompt(mode, payload || {});
 
@@ -943,6 +1020,57 @@ export async function onRequestPost(context) {
           mode,
           provider: "gemini",
           model: geminiModel
+        },
+        200,
+        {
+          corsHeaders: cors.headers,
+          extraHeaders: {
+            ...rate.headers,
+            "X-Request-Id": requestId
+          }
+        }
+      );
+    }
+
+    if (provider === "openrouter") {
+      if (!openRouterApiKey) {
+        if (isFallbackEnabled(context.env)) {
+          return jsonResponse(buildFallbackPayload(mode, parsedPayload, "openrouter_key_missing"), 200, {
+            corsHeaders: cors.headers,
+            extraHeaders: {
+              ...rate.headers,
+              "X-Request-Id": requestId
+            }
+          });
+        }
+
+        return jsonResponse(
+          {
+            error: "OpenRouter API 키가 설정되지 않았습니다.",
+            detail: "서버 secret OPENROUTER_API_KEY를 설정해 주세요."
+          },
+          400,
+          {
+            corsHeaders: cors.headers,
+            extraHeaders: {
+              ...rate.headers,
+              "X-Request-Id": requestId
+            }
+          }
+        );
+      }
+
+      const result = await runOpenRouter(openRouterApiKey, systemPrompt, userPrompt, context.env);
+      log.info("openrouter response delivered", { mode, model: result.model });
+      endTimer({ mode, provider: "openrouter" });
+
+      return jsonResponse(
+        {
+          reply: result.text,
+          escalated: false,
+          mode,
+          provider: "openrouter",
+          model: result.model
         },
         200,
         {
