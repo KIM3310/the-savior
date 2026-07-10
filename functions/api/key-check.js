@@ -43,7 +43,7 @@ function isLikelyOpenAIKey(value) {
 }
 
 function resolveKeyProvider(apiKey) {
-  const openRouterPrefix = ["sk", "or"].join("-") + "-";
+  const openRouterPrefix = "sk-or-";
   return apiKey.startsWith(openRouterPrefix) ? "openrouter" : "openai";
 }
 

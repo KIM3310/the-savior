@@ -1,8 +1,8 @@
-# Architecture Guide - The Savior
+# Repository Review Guide - The Savior
 
 Updated: 2026-05-30
 
-This repository is now curated as supporting material. Architecture it only after the flagship enterprise AI, operations, security, data, and runtime reliability projects have established the main story.
+This repository is now curated as supporting material. Review it only after the flagship enterprise AI, operations, security, data, and runtime reliability projects have established the main story.
 
 ## Summary
 
@@ -12,7 +12,7 @@ This repository is now curated as supporting material. Architecture it only afte
 | Status | Archived supporting repository |
 | Lane | B2C wellness reflection tool |
 | Primary reader | Wellness creators, small communities, and users seeking low-friction reflection tools. |
-| Why it moved back | Wellness and consumer-positioning is not strong enough for the main spec or B2B architecture story. |
+| Why it moved back | Wellness and consumer positioning are not strong enough for the main product or B2B story. |
 | Current successor | aix-pilot and doeon-kim-portfolio |
 
 ## Open First
@@ -32,16 +32,16 @@ This repository is now curated as supporting material. Architecture it only afte
 
 | Possible offer | Working scope assumption | Scope |
 |---|---|---|
-| Freemium wellness app | Ads + consent | Scoped after architecture. |
-| Guided packs | Scope after product intake | Scoped after architecture. |
-| Creator/community templates | Scope after product intake | Scoped after architecture. |
+| Freemium wellness app | Ads + consent | Scoped after product review. |
+| Guided packs | Scope after product intake | Scoped after product review. |
+| Creator/community templates | Scope after product intake | Scoped after product review. |
 
 ## Boundaries
 
 - Not clinical care
 - Sensitive content privacy
 - Escalation/safety copy required
-- Wellness and consumer-positioning is not strong enough for the main spec or B2B architecture story.
+- Wellness and consumer positioning are not strong enough for the main product or B2B story.
 - Do not present this as a current flagship or maintained product surface.
 
 ## Useful Metrics

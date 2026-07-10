@@ -3,7 +3,7 @@
 ## Public Demo
 
 - URL: https://kim3310.github.io/the-savior/
-- Scope: credential-free synthetic demo surface for quick architecture inspection inspection.
+- Scope: credential-free synthetic demo surface for quick product review.
 
 Repository: `the-savior`
 Last updated: 2026-06-03 KST

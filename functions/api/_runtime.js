@@ -258,7 +258,7 @@ export function buildRuntimeBrief(env, requestUrl) {
       {
         label: "Runtime Brief",
         path: "/api/runtime-brief",
-        why: "Pins runtime mode, schema contract, architecture flow, and watchouts."
+        why: "Pins runtime mode, schema contract, review flow, and watchouts."
       },
       {
         label: "Escalation Readiness",
@@ -266,7 +266,7 @@ export function buildRuntimeBrief(env, requestUrl) {
         why: "Makes crisis escalation posture and fallback guardrails explicit before public traffic."
       },
       {
-        label: "Architecture Pack",
+        label: "Review Pack",
         path: "/api/architecture-pack",
         why: "Packages safety boundary, runtime boundary, and operator sequence in one payload."
       },
@@ -376,7 +376,7 @@ export function buildArchitecturePack(env, requestUrl) {
         why: "Pins crisis gating, fallback visibility, and operator actions in one surface."
       },
       {
-        label: "Architecture Pack",
+        label: "Review Pack",
         path: "/api/architecture-pack",
         why: "Packages safety and runtime boundaries for operator handoff."
       },

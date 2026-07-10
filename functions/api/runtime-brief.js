@@ -2,7 +2,7 @@
  * Runtime brief endpoint for The Savior.
  *
  * Returns the complete runtime-brief payload including provider posture,
- * architecture flow, operator rules, and proof assets.
+ * review flow, operator rules, and proof assets.
  *
  * @module api/runtime-brief
  */
@@ -52,7 +52,7 @@ export async function onRequestOptions(context) {
  * GET handler for /api/runtime-brief.
  *
  * Returns comprehensive runtime posture, schema contracts,
- * architecture flow, watchouts, and proof assets.
+ * review flow, watchouts, and proof assets.
  *
  * @param {{ request: Request, env: Record<string, string> }} context
  * @returns {Promise<Response>}

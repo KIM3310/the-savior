@@ -374,8 +374,8 @@ function renderRuntimeBrief(payload) {
   fillText("briefMode", llm.runtimeMode, "runtime-key");
   fillText("briefProvider", providerParts.join(" · "), "auto");
   fillText("briefRouteCount", routes.length > 0 ? `${routes.length} routes` : "0");
-  renderBriefList("briefArchitectureFlow", payload.architecture_flow, "architecture flow unavailable");
-  renderBriefList("briefTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute architecture unavailable");
+  renderBriefList("briefArchitectureFlow", payload.architecture_flow, "review flow unavailable");
+  renderBriefList("briefTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute review unavailable");
   renderBriefList("briefOperatorRules", payload.operator_rules, "operator rules unavailable");
   renderProofAssets("briefProofAssets", payload.proof_assets, "proof assets unavailable");
   renderBriefList("briefWatchouts", payload.watchouts, "watchouts unavailable");
@@ -400,7 +400,7 @@ function renderArchitecturePack(payload) {
   }
 
   const proof = payload.proof_bundle || {};
-  fillText("architecturePackBadge", payload.readiness_contract, "architecture-pack");
+  fillText("architecturePackBadge", payload.readiness_contract, "review-pack");
   fillText("architecturePackHeadline", payload.headline, "status summary unavailable");
   fillText("architecturePackRuntime", proof.runtimeMode, "runtime-key");
   fillText("architecturePackLlmReady", proof.llmReady ? "ready" : "fallback-only");
@@ -408,8 +408,8 @@ function renderArchitecturePack(payload) {
   fillText("architecturePackRoutes", Array.isArray(proof.architecture_routes) ? `${proof.architecture_routes.length} routes` : "0");
   renderBriefList("architecturePackSafety", payload.safety_boundary, "safety boundary unavailable");
   renderBriefList("architecturePackRuntime", payload.runtime_boundary, "runtime boundary unavailable");
-  renderBriefList("architecturePackTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute architecture unavailable");
-  renderBriefList("architecturePackSequence", payload.architecture_sequence, "architecture sequence unavailable");
+  renderBriefList("architecturePackTwoMinuteArchitecture", payload.two_minute_architecture, "two-minute review unavailable");
+  renderBriefList("architecturePackSequence", payload.architecture_sequence, "review sequence unavailable");
   renderProofAssets("architecturePackProofAssets", payload.proof_assets, "proof assets unavailable");
 }
 
@@ -474,8 +474,8 @@ async function copyArchitectureBundle() {
     `Runtime posture: ${state.reviewOnly ? "audit-only" : state.backendReachable ? "live" : "checking"}`,
     `Provider preference: ${brief.llm?.providerPreference || state.llmProviderPreference || "-"}`,
     "",
-    "Architecture routes",
-    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Architecture routes unavailable."]),
+    "Review routes",
+    ...(shareRoutes.length > 0 ? shareRoutes.map((item) => `- ${item}`) : ["- Review routes unavailable."]),
     "",
     "Safety boundary",
     ...((architecturePack.safety_boundary || []).slice(0, 2).map((item) => `- ${item}`)),
@@ -543,9 +543,9 @@ function setupKeyboardShortcuts() {
     if (key === "r") {
       event.preventDefault();
       const routes = state.architecturePack?.proof_bundle?.architecture_routes || [];
-      const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
-      setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
+      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
     } else if (key === "p") {
       event.preventDefault();
       await copyProviderPostureSnapshot();
@@ -1882,9 +1882,9 @@ function setupCopyButtons() {
   if (copyArchitectureRoutesBtn) {
     copyArchitectureRoutesBtn.addEventListener("click", async () => {
       const routes = state.architecturePack?.proof_bundle?.architecture_routes || [];
-      const payload = ["the-savior architecture routes", ...routes.map((item) => `- ${item}`)].join("\n");
+      const payload = ["the-savior review routes", ...routes.map((item) => `- ${item}`)].join("\n");
       const ok = await copyTextToClipboard(payload);
-      setRuntimeStatus(ok ? "Architecture routes를 복사했습니다." : "Architecture routes 복사에 실패했습니다.", ok ? "good" : "warning");
+      setRuntimeStatus(ok ? "Review routes를 복사했습니다." : "Review routes 복사에 실패했습니다.", ok ? "good" : "warning");
     });
   }
 
