@@ -16,7 +16,7 @@
   "license": "MIT",
   "author": "Doeon Kim",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "repository": {
     "type": "git",
@@ -51,6 +51,7 @@
   "overrides": {
     "esbuild": "^0.28.1",
     "ws": "^8.20.1",
-    "brace-expansion": "^5.0.6"
+    "brace-expansion": "^5.0.7",
+    "sharp": "^0.35.3"
   }
 }
