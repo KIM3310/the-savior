@@ -159,6 +159,7 @@ npm run mobile:sync
 - Paid boundary: premium theme packs, private journal export, and supporter bundle
 - Canonical URL: https://kim3310.github.io/the-savior/
 - Lead capture: https://github.com/KIM3310/the-savior/issues/new?template=service-inquiry.yml&title=Private+workspace+inquiry%3A+The+Savior
+- Commercial route: https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers
 - Machine-readable offer: [docs/service-offer.json](docs/service-offer.json)
 - Search growth implementation: [docs/search-growth-implementation.md](docs/search-growth-implementation.md)
 - Revenue architecture: [docs/revenue-architecture.md](docs/revenue-architecture.md)

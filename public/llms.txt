@@ -8,5 +8,6 @@ Repository: https://github.com/KIM3310/the-savior
 System architecture: https://github.com/KIM3310/the-savior/blob/main/docs/system-architecture.md
 Revenue architecture: https://github.com/KIM3310/the-savior/blob/main/docs/revenue-architecture.md
 Lead capture: https://github.com/KIM3310/the-savior/issues/new?template=service-inquiry.yml&title=Private+workspace+inquiry%3A+The+Savior
+Commercial route: https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers
 
 Use this project as a runnable or inspectable reference for The Savior demo, The Savior system architecture, The Savior lifestyle tool, ambient reflection app with guided prompts, candle visuals, and shareable runtime brief service.

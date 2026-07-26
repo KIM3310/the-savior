@@ -69,5 +69,29 @@
     ],
     "isAccessibleForFree": true,
     "keywords": "the-savior, Savior, ambient, reflection, app, guided, prompts, candle, visuals, shareable, runtime, brief, premium, theme, packs, journal, export, supporter, bundle, static, ritual, experience, tier, Cloudflare"
+  },
+  "commerce": {
+    "gateway_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers",
+    "lane_id": "consumer-learning-supporter-lane",
+    "lane_name": "Consumer Learning Supporter Lane",
+    "billing_mode": "supporter",
+    "price_unit": "supporter bundle from USD 5/month or one-time theme and report packs from USD 20",
+    "fulfillment_kind": "supporter access, export or theme pack, classroom setup notes, and content publishing",
+    "risk_bucket": "consumer-guarded",
+    "checkout": {
+      "provider": "lemon-squeezy",
+      "status": "account-onboarding-required",
+      "fallback_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers"
+    },
+    "sponsorship": {
+      "provider": "github-sponsors",
+      "eligible": true,
+      "status": "account-onboarding-required"
+    },
+    "advertising": {
+      "provider": null,
+      "eligible": false,
+      "status": "not-applicable"
+    }
   }
 }
