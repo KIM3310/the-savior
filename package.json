@@ -39,14 +39,14 @@
     "verify": "npm run check && npm run lint && npm test"
   },
   "dependencies": {
-    "@capacitor/android": "^7.2.0",
+    "@capacitor/android": "^7.6.8",
     "@capacitor/core": "^7.2.0",
-    "@capacitor/ios": "^7.2.0"
+    "@capacitor/ios": "^7.6.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.8",
-    "@capacitor/cli": "^7.2.0",
-    "wrangler": "^4.95.0"
+    "@biomejs/biome": "^2.5.5",
+    "@capacitor/cli": "^7.6.8",
+    "wrangler": "^4.114.0"
   },
   "overrides": {
     "esbuild": "^0.28.1",
