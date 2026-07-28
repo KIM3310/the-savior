@@ -2,7 +2,7 @@
 
 ## Live Demo
 
-- [Open the public GitHub Pages demo](https://kim3310.github.io/the-savior/)
+- [Open the public Cloudflare Pages demo](https://the-savior-9z8.pages.dev/)
 - Scope: credential-free, synthetic-data demo for product reviewers and evaluators.
 
 > **Curated supporting repo**
@@ -45,7 +45,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 - 1-minute emotional check-in with 3-minute calming routine
 - AI meditation coaching conversation
 - Journal insight generation
-- OpenAI / Ollama provider support with automatic switching
+- OpenAI, OpenRouter, Gemini, and Ollama provider support with explicit routing
 - BYOK (bring your own key) with server key fallback
 - Offline fallback coaching when no provider is available
 - BYOK runtime posture + safety consent banner
@@ -70,7 +70,11 @@ npm run dev:ollama
 ## Environment Variables (Cloudflare Pages)
 - `OPENAI_API_KEY`: Server OpenAI key (off by default, needs `ALLOW_SERVER_OPENAI_KEY=true`)
 - `ALLOW_SERVER_OPENAI_KEY`: Enable server key usage
-- `LLM_PROVIDER`: `auto | openai | ollama` (default `auto`)
+- `OPENROUTER_API_KEY`: Server-side OpenRouter key
+- `OPENROUTER_MODEL`: OpenRouter model name (default `mistralai/mistral-small-2603`)
+- `GEMINI_API_KEY`: Server-side Gemini key
+- `GEMINI_MODEL`: Gemini model name (default `gemini-2.5-flash`)
+- `LLM_PROVIDER`: `auto | openrouter | openai | gemini | ollama` (default `auto`)
 - `ENABLE_OLLAMA`: `true/false`
 - `OLLAMA_BASE_URL`: Ollama API address (default `http://127.0.0.1:11434`)
 - `OLLAMA_MODEL`: Ollama model name (default `llama3.2:latest`)
@@ -105,7 +109,7 @@ the-savior/
 2. Rate limiting (per-IP sliding window)
 3. Input validation (size, content-type, sanitization)
 4. Crisis keyword detection - returns hotline resources immediately if matched
-5. Provider resolution: BYOK key > server key > Ollama > offline fallback
+5. Provider resolution: explicit provider override, then OpenRouter server key, OpenAI BYOK/server key, Gemini server key, Ollama, or explicit offline fallback
 6. LLM call with provider-specific timeouts
 7. Error mapping to safe user-facing messages (keys never exposed)
 
@@ -157,8 +161,8 @@ npm run mobile:sync
 
 - Public entry: free static ritual experience
 - Paid boundary: premium theme packs, private journal export, and supporter bundle
-- Canonical URL: https://kim3310.github.io/the-savior/
-- Lead capture: https://github.com/KIM3310/the-savior/issues/new?template=service-inquiry.yml&title=Private+workspace+inquiry%3A+The+Savior
+- Canonical URL: https://the-savior-9z8.pages.dev/
+- Lead capture: https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior&inquiry=consumer-prototype-customization#private-inquiry
 - Commercial route: https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers
 - Machine-readable offer: [docs/service-offer.json](docs/service-offer.json)
 - Search growth implementation: [docs/search-growth-implementation.md](docs/search-growth-implementation.md)

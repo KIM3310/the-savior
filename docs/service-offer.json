@@ -1,11 +1,11 @@
 {
   "name": "The Savior",
   "slug": "the-savior",
-  "canonical_url": "https://kim3310.github.io/the-savior/",
+  "canonical_url": "https://the-savior-9z8.pages.dev/",
   "repository_url": "https://github.com/KIM3310/the-savior",
   "architecture_url": "https://github.com/KIM3310/the-savior/blob/main/docs/system-architecture.md",
   "revenue_architecture_url": "https://github.com/KIM3310/the-savior/blob/main/docs/revenue-architecture.md",
-  "lead_capture_url": "https://github.com/KIM3310/the-savior/issues/new?template=service-inquiry.yml&title=Private+workspace+inquiry%3A+The+Savior",
+  "lead_capture_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior&inquiry=consumer-prototype-customization#private-inquiry",
   "productized_offer": "ambient reflection app with guided prompts, candle visuals, and shareable runtime brief",
   "first_paid_sku": "premium theme packs, private journal export, and supporter bundle",
   "free_lead_magnet": "free static ritual experience",
@@ -43,7 +43,7 @@
     "name": "The Savior",
     "applicationCategory": "LifestyleApplication",
     "operatingSystem": "Web, serverless, and local development environments",
-    "url": "https://kim3310.github.io/the-savior/",
+    "url": "https://the-savior-9z8.pages.dev/",
     "codeRepository": "https://github.com/KIM3310/the-savior",
     "description": "The Savior: ambient reflection app with guided prompts, candle visuals, and shareable runtime brief. Free entry point: free static ritual experience. Paid path: premium theme packs, private journal export, and supporter.",
     "creator": {
@@ -58,13 +58,13 @@
         "price": "0",
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock",
-        "url": "https://kim3310.github.io/the-savior/"
+        "url": "https://the-savior-9z8.pages.dev/"
       },
       {
         "@type": "Offer",
         "name": "premium theme packs, private journal export, and supporter bundle",
         "availability": "https://schema.org/LimitedAvailability",
-        "url": "https://github.com/KIM3310/the-savior/blob/main/docs/revenue-architecture.md"
+        "url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior&inquiry=consumer-prototype-customization#private-inquiry"
       }
     ],
     "isAccessibleForFree": true,
@@ -72,20 +72,20 @@
   },
   "commerce": {
     "gateway_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers",
-    "lane_id": "consumer-learning-supporter-lane",
-    "lane_name": "Consumer Learning Supporter Lane",
-    "billing_mode": "supporter",
-    "price_unit": "supporter bundle from USD 5/month or one-time theme and report packs from USD 20",
-    "fulfillment_kind": "supporter access, export or theme pack, classroom setup notes, and content publishing",
+    "lane_id": "consumer-prototype-customization",
+    "lane_name": "Consumer Prototype Customization",
+    "billing_mode": "one-time",
+    "price_unit": "fixed customization from USD 1,000",
+    "fulfillment_kind": "one audience-specific flow, branded content set, privacy and claim boundary, deployment package, and handoff notes",
     "risk_bucket": "consumer-guarded",
     "checkout": {
-      "provider": "lemon-squeezy",
-      "status": "account-onboarding-required",
-      "fallback_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers"
+      "provider": null,
+      "status": "not-configured",
+      "fallback_url": "https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior&inquiry=consumer-prototype-customization#private-inquiry"
     },
     "sponsorship": {
       "provider": "github-sponsors",
-      "eligible": true,
+      "eligible": false,
       "status": "sponsors-listing-not-configured"
     },
     "advertising": {

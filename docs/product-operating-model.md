@@ -2,7 +2,7 @@
 
 ## Public Demo
 
-- URL: https://kim3310.github.io/the-savior/
+- URL: https://the-savior-9z8.pages.dev/
 - Scope: credential-free synthetic demo surface for quick product review.
 
 Repository: `the-savior`

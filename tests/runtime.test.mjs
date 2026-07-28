@@ -84,6 +84,12 @@ test("hasEnabledServerApiKey requires both flag and key", () => {
   assert.equal(hasEnabledServerApiKey({}), false);
 });
 
+test("hasEnabledServerApiKey ignores whitespace-only provider keys", () => {
+  assert.equal(hasEnabledServerApiKey({ OPENROUTER_API_KEY: "   " }), false);
+  assert.equal(hasEnabledServerApiKey({ GEMINI_API_KEY: "\n\t" }), false);
+  assert.equal(hasEnabledServerApiKey({ ALLOW_SERVER_OPENAI_KEY: "true", OPENAI_API_KEY: " " }), false);
+});
+
 // ---------------------------------------------------------------------------
 // 5. isLocalHostname
 // ---------------------------------------------------------------------------

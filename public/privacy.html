@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Privacy Policy | The Savior</title>
-    <meta name="description" content="The Savior 개인정보처리방침" />
+    <meta name="description" content="The Savior의 브라우저 저장, AI 프로바이더 전송, 삭제·내보내기 경계를 설명합니다." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://the-savior-9z8.pages.dev/privacy" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -20,37 +22,57 @@
 
     <main class="info-page">
       <h1>개인정보처리방침</h1>
-      <p>최종 업데이트: 2026-02-19</p>
+      <p>최종 업데이트: 2026-07-28</p>
 
-      <h2>1. 수집 항목</h2>
+      <h2>1. 브라우저에 저장되는 항목</h2>
       <ul>
-        <li>서비스 이용 중 사용자가 입력한 텍스트(감정/저널/대화)</li>
-        <li>기술 로그(IP, User-Agent, 오류 로그)</li>
-        <li>사용자 API 키는 브라우저 로컬 저장소에 저장되며, 요청 처리 시에만 일시 전송되고 DB에는 저장하지 않음</li>
-        <li>선택 기능 동의 상태(쿠키/로컬 저장소)</li>
+        <li><code>sessionStorage</code>: 사용자 OpenAI API 키, 최근 대화 최대 8개, 현재 체크인·저널 결과. 브라우저 세션이 끝나면 제거됩니다.</li>
+        <li><code>localStorage</code>: 체크인 메타데이터(날짜, 감정, 스트레스, 폴백 여부; 최대 180개), 활동 횟수, 연속 이용 날짜, 선택 기능 동의 상태.</li>
+        <li>이전 버전의 로컬 API 키가 발견되면 <code>sessionStorage</code>로 한 번 이동한 뒤 기존 <code>localStorage</code> 키를 삭제합니다.</li>
+        <li>전체 감정 메모나 저널 원문은 장기 체크인 기록에 저장하지 않습니다.</li>
       </ul>
 
-      <h2>2. 이용 목적</h2>
+      <h2>2. 서버에서 처리되는 항목과 목적</h2>
       <ul>
-        <li>AI 코칭 응답 생성</li>
-        <li>서비스 안정성 및 보안 개선</li>
-        <li>성능 측정</li>
+        <li>사용자가 AI 기능을 실행하면 감정·저널·대화 입력과 최근 대화 문맥이 응답 생성을 위해 Pages Functions로 전송됩니다.</li>
+        <li>사용자 OpenAI 키는 인증 헤더로 요청 시에만 전송되며 애플리케이션 데이터베이스에 저장하거나 로그에 기록하지 않습니다.</li>
+        <li>Cloudflare 및 보안·속도 제한 계층은 IP, User-Agent, 요청 시각, 요청 ID 같은 기술 메타데이터를 처리할 수 있습니다.</li>
+        <li>오류 진단, 남용 방지, 서비스 안정성 확인을 위해 최소한의 요청 메타데이터를 사용합니다.</li>
       </ul>
 
-      <h2>3. 보관 기간</h2>
+      <h2>3. AI 프로바이더 처리 경로</h2>
+      <p>실제 전송 대상은 운영자가 설정한 <code>LLM_PROVIDER</code>와 사용 가능한 키에 따라 결정됩니다.</p>
+      <ul>
+        <li><strong>OpenAI</strong>: 사용자 BYOK 또는 명시적으로 허용된 서버 키 경로. 프롬프트와 생성에 필요한 문맥이 OpenAI로 전송됩니다.</li>
+        <li><strong>OpenRouter</strong>: 서버 환경변수로 구성된 게이트웨이 경로. 선택된 모델 공급자에게 프롬프트가 전달될 수 있습니다.</li>
+        <li><strong>Gemini</strong>: 서버 환경변수로 구성된 Google Gemini 경로. 프롬프트와 생성 문맥이 Google로 전송됩니다.</li>
+        <li><strong>Ollama</strong>: 운영자가 구성한 Ollama endpoint로 전송되는 로컬·사설 모델 경로입니다.</li>
+        <li><strong>deterministic fallback</strong>: 외부 AI 프로바이더 없이 사전 정의된 안전 응답을 반환합니다. 위기 신호도 프로바이더 호출 전에 정적 안내로 우선 처리됩니다.</li>
+      </ul>
+
+      <h2>4. 보관 및 삭제</h2>
       <p>
-        법령상 보관 의무가 있는 항목을 제외한 데이터는 목적 달성 후 지체 없이 파기합니다.
+        세션 데이터는 브라우저 세션 동안, 로컬 기록은 사용자가 초기화하거나 브라우저 저장소를 삭제할 때까지 해당 기기에 남습니다.
+        메인 화면의 내보내기와 초기화 기능으로 저장 데이터를 직접 확인하고 삭제할 수 있습니다. 애플리케이션은 프롬프트를 자체 데이터베이스에 영구 저장하지 않지만,
+        호스팅 사업자와 선택된 AI 프로바이더의 처리·보관 정책은 각각 적용될 수 있습니다.
       </p>
 
-      <h2>4. 제3자 제공/위탁</h2>
+      <h2>5. 선택형 분석 기능</h2>
+      <p>
+        선택형 분석 스크립트는 운영자가 유효한 설정을 제공하고 사용자가 동의한 경우에만 활성화됩니다.
+        현재 설정 여부는 런타임 구성에 따라 달라질 수 있습니다.
+      </p>
+
+      <h2>6. 이용자 권리</h2>
       <ul>
-        <li>OpenAI: 텍스트 분석 및 응답 생성</li>
-        <li>선택형 분석 도구: 성능 측정</li>
+        <li>메인 화면에서 브라우저 저장 데이터를 JSON으로 내보낼 수 있습니다.</li>
+        <li>초기화 기능으로 API 키, 대화, 체크인 기록, 활동 요약, 동의 상태를 삭제할 수 있습니다.</li>
+        <li>서버 측 접근·정정·삭제 문의는 아래 연락처로 접수할 수 있습니다.</li>
       </ul>
 
-      <h2>5. 이용자 권리</h2>
+      <h2>7. 문의</h2>
       <p>
-        이용자는 언제든지 본인 정보 열람/정정/삭제를 요청할 수 있습니다. 요청은 contact@the-savior.app으로 접수합니다.
+        개인정보 관련 문의는 contact@the-savior.app으로 접수합니다. 민감한 저널 원문, API 키, 비밀번호를 이메일에 포함하지 마세요.
       </p>
     </main>
 

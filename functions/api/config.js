@@ -60,13 +60,27 @@ function parseBoolFlag(value) {
 }
 
 /**
+ * Check whether an environment value contains non-whitespace text.
+ *
+ * @param {unknown} value
+ * @returns {boolean}
+ */
+function hasText(value) {
+  return Boolean(String(value || "").trim());
+}
+
+/**
  * Check whether a server-side OpenAI API key is enabled.
  *
  * @param {Record<string, string>} env
  * @returns {boolean}
  */
 function hasEnabledServerApiKey(env) {
-  return Boolean(env.OPENROUTER_API_KEY) || (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY));
+  return (
+    hasText(env.OPENROUTER_API_KEY) ||
+    hasText(env.GEMINI_API_KEY) ||
+    (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && hasText(env.OPENAI_API_KEY))
+  );
 }
 
 /**
@@ -172,7 +186,8 @@ export async function onRequestGet(context) {
   }
 
   const hasServerApiKey = hasEnabledServerApiKey(context.env);
-  const hasServerOpenRouterKey = Boolean(String(context.env.OPENROUTER_API_KEY || "").trim());
+  const hasServerOpenRouterKey = hasText(context.env.OPENROUTER_API_KEY);
+  const hasServerGeminiKey = hasText(context.env.GEMINI_API_KEY);
   const llmProviderPreference = normalizeProvider(context.env.LLM_PROVIDER || "");
   const ollamaEnabled = isOllamaEnabled(context.env, context.request.url);
   const ollamaModel = String(context.env.OLLAMA_MODEL || OLLAMA_MODEL_NAME).trim() || OLLAMA_MODEL_NAME;
@@ -188,6 +203,7 @@ export async function onRequestGet(context) {
     {
       hasServerApiKey,
       hasServerOpenRouterKey,
+      hasServerGeminiKey,
       llmProviderPreference,
       openRouterModel: String(context.env.OPENROUTER_MODEL || "mistralai/mistral-small-2603").trim(),
       ollamaEnabled,

@@ -75,6 +75,16 @@ export function parseBoolFlag(value) {
 }
 
 /**
+ * Check whether an environment value contains non-whitespace text.
+ *
+ * @param {unknown} value - Raw environment binding value.
+ * @returns {boolean}
+ */
+export function hasText(value) {
+  return Boolean(String(value || "").trim());
+}
+
+/**
  * Check whether a server-side OpenAI API key is enabled and present.
  *
  * @param {Record<string, string>} env - Environment bindings.
@@ -82,9 +92,9 @@ export function parseBoolFlag(value) {
  */
 export function hasEnabledServerApiKey(env) {
   return (
-    Boolean(env.OPENROUTER_API_KEY) ||
-    Boolean(env.GEMINI_API_KEY) ||
-    (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && Boolean(env.OPENAI_API_KEY))
+    hasText(env.OPENROUTER_API_KEY) ||
+    hasText(env.GEMINI_API_KEY) ||
+    (parseBoolFlag(env.ALLOW_SERVER_OPENAI_KEY) && hasText(env.OPENAI_API_KEY))
   );
 }
 
@@ -213,8 +223,8 @@ export function buildRuntimeBrief(env, requestUrl) {
       providerPreference,
       runtimeMode: diagnostics.runtimeMode,
       hasServerApiKey,
-      hasServerOpenRouterKey: Boolean(String(env.OPENROUTER_API_KEY || "").trim()),
-      hasServerGeminiKey: Boolean(String(env.GEMINI_API_KEY || "").trim()),
+      hasServerOpenRouterKey: hasText(env.OPENROUTER_API_KEY),
+      hasServerGeminiKey: hasText(env.GEMINI_API_KEY),
       openRouterModel: String(env.OPENROUTER_MODEL || "").trim() || OPENROUTER_MODEL_NAME,
       geminiModel: String(env.GEMINI_MODEL || "").trim() || "gemini-2.5-flash",
       ollamaEnabled,
