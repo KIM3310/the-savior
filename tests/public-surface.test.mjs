@@ -20,6 +20,10 @@ const chatJs = readFileSync(path.join(ROOT, "functions", "api", "chat.js"), "utf
 const robotsTxt = readFileSync(path.join(ROOT, "public", "robots.txt"), "utf8");
 const sitemapXml = readFileSync(path.join(ROOT, "public", "sitemap.xml"), "utf8");
 const adsTxt = readFileSync(path.join(ROOT, "public", "ads.txt"), "utf8");
+const guideHtml = readFileSync(path.join(ROOT, "public", "guide.html"), "utf8");
+const architectureHtml = readFileSync(path.join(ROOT, "public", "architecture.html"), "utf8");
+const verificationHtml = readFileSync(path.join(ROOT, "public", "verification.html"), "utf8");
+const publisherHtml = readFileSync(path.join(ROOT, "public", "publisher.html"), "utf8");
 const productionSmoke = readFileSync(path.join(ROOT, "scripts", "smoke_production.sh"), "utf8");
 const SITE_ORIGIN = "https://the-savior-9z8.pages.dev";
 
@@ -90,10 +94,14 @@ test("Cloudflare search discovery covers the public policy surface", () => {
   assert.match(indexHtml, new RegExp(`<link rel="canonical" href="${SITE_ORIGIN}/"`));
   assert.match(indexHtml, new RegExp(`property="og:url" content="${SITE_ORIGIN}/"`));
   assert.match(indexHtml, /<meta name="google-adsense-account" content="ca-pub-4973160293737562" \/>/);
-  assert.match(
-    indexHtml,
-    /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4973160293737562/
-  );
+  const loader = /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4973160293737562/;
+  assert.doesNotMatch(indexHtml, loader);
+  for (const editorialPage of [guideHtml, architectureHtml, verificationHtml]) {
+    assert.match(editorialPage, loader);
+  }
+  for (const adFreePage of [publisherHtml, privacyHtml]) {
+    assert.doesNotMatch(adFreePage, loader);
+  }
   assert.match(robotsTxt, new RegExp(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`));
   assert.equal(adsTxt, "google.com, pub-4973160293737562, DIRECT, f08c47fec0942fa0\n");
 

@@ -8,7 +8,7 @@ Free narrative prototype planning sheet for branching content and lightweight pu
 
 - Audience: interactive fiction builders and prototype reviewers
 - Central resource: https://kim3310-doeon-kim-portfolio.pages.dev/resources/the-savior/
-- Live system: https://kim3310.github.io/the-savior/
+- Live system: https://the-savior-9z8.pages.dev/
 - Advertising boundary: ads allowed only on public narrative-design pages; saved play state, personal notes, and result flows are ad-free
 - Current ad state: code-ready on the central resource; serving depends on Google AdSense site approval and consent policy.
 

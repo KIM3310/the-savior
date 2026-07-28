@@ -6,7 +6,7 @@
   "audience": "interactive fiction builders and prototype reviewers",
   "public_resource": {
     "url": "https://kim3310-doeon-kim-portfolio.pages.dev/resources/the-savior/",
-    "live_demo": "https://kim3310.github.io/the-savior/",
+    "live_demo": "https://the-savior-9z8.pages.dev/",
     "readiness_checklist": [
       "Architecture Summary",
       "Runtime And Data Flow",

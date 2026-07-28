@@ -12,3 +12,9 @@ Resource route: https://kim3310-doeon-kim-portfolio.pages.dev/resources/the-savi
 Commercial route: https://kim3310-doeon-kim-portfolio.pages.dev/?offer=the-savior#service-offers
 
 Use this project as a runnable or inspectable reference for The Savior demo, The Savior system architecture, The Savior lifestyle tool, ambient reflection app with guided prompts, candle visuals, and shareable runtime brief service.
+# ADSENSE-PUBLICATION:START
+Editorial guide: https://the-savior-9z8.pages.dev/guide.html
+Architecture article: https://the-savior-9z8.pages.dev/architecture.html
+Verification article: https://the-savior-9z8.pages.dev/verification.html
+Publisher information: https://the-savior-9z8.pages.dev/publisher.html
+# ADSENSE-PUBLICATION:END
