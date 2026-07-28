@@ -81,6 +81,11 @@ check_endpoint \
   "<loc>${canonical_origin}/pricing</loc>" \
   "<loc>${canonical_origin}/resources</loc>" \
   "<loc>${canonical_origin}/media-credits</loc>"
+check_endpoint \
+  "/ads.txt" \
+  "text/plain" \
+  "/ads.txt" \
+  "google.com, pub-4973160293737562, DIRECT, f08c47fec0942fa0"
 check_endpoint "/api/health" "application/json" "/api/health" '"service":"the-savior"'
 
 echo "Production policy, search, and health surface smoke passed."

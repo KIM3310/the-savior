@@ -19,6 +19,7 @@ const appJs = readFileSync(path.join(ROOT, "public", "app.js"), "utf8");
 const chatJs = readFileSync(path.join(ROOT, "functions", "api", "chat.js"), "utf8");
 const robotsTxt = readFileSync(path.join(ROOT, "public", "robots.txt"), "utf8");
 const sitemapXml = readFileSync(path.join(ROOT, "public", "sitemap.xml"), "utf8");
+const adsTxt = readFileSync(path.join(ROOT, "public", "ads.txt"), "utf8");
 const productionSmoke = readFileSync(path.join(ROOT, "scripts", "smoke_production.sh"), "utf8");
 const SITE_ORIGIN = "https://the-savior-9z8.pages.dev";
 
@@ -88,7 +89,13 @@ test("privacy disclosures match browser storage and the runtime provider matrix"
 test("Cloudflare search discovery covers the public policy surface", () => {
   assert.match(indexHtml, new RegExp(`<link rel="canonical" href="${SITE_ORIGIN}/"`));
   assert.match(indexHtml, new RegExp(`property="og:url" content="${SITE_ORIGIN}/"`));
+  assert.match(indexHtml, /<meta name="google-adsense-account" content="ca-pub-4973160293737562" \/>/);
+  assert.match(
+    indexHtml,
+    /pagead2\.googlesyndication\.com\/pagead\/js\/adsbygoogle\.js\?client=ca-pub-4973160293737562/
+  );
   assert.match(robotsTxt, new RegExp(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`));
+  assert.equal(adsTxt, "google.com, pub-4973160293737562, DIRECT, f08c47fec0942fa0\n");
 
   const routes = ["about", "privacy", "terms", "contact", "pricing", "resources", "media-credits"];
   for (const route of routes) {
@@ -123,8 +130,9 @@ test("public canonical metadata uses the real Pages URL consistently", () => {
   assert.match(siteIndexHtml, new RegExp(`<link rel="canonical" href="${SITE_ORIGIN}/"`));
 });
 
-test("production smoke validates response identity and excludes ads.txt", () => {
-  assert.doesNotMatch(productionSmoke, /\/ads\.txt/);
+test("production smoke validates response identity and ads.txt", () => {
+  assert.match(productionSmoke, /\/ads\.txt/);
+  assert.match(productionSmoke, /google\.com, pub-4973160293737562, DIRECT, f08c47fec0942fa0/);
   assert.match(productionSmoke, /%\{content_type\}/);
   assert.match(productionSmoke, /%\{url_effective\}/);
   assert.match(productionSmoke, /<h1>개인정보처리방침<\/h1>/);
