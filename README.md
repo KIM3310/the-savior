@@ -19,7 +19,6 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 | Area | Details |
 |---|---|
 | Users | Wellness creators, small community operators, and solo users looking for low-friction reflection tools. |
-| Technical path | Validate the demo, README, architecture notes, and quality gate before deeper workflow review. |
 | System scope | Cloudflare Pages deployment, optional local or hosted AI adapters, journaling flows, and deterministic fallbacks. |
 | Operating boundary | This is wellness software, not clinical care; sensitive user content needs clear privacy controls and optional local-only mode. |
 | Evaluation path | Run the app locally or inspect the Pages deployment and fallback behavior without requiring external model keys. |
