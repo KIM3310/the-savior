@@ -6,7 +6,7 @@ Updated: 2026-05-30
 
 | Field | Decision |
 |---|---|
-| Status | Archived/supporting |
+| Status | Supporting (active; not a flagship) |
 | Why | Wellness and consumer positioning are not strong enough for the main product or B2B story. |
 | Show instead | aix-pilot and doeon-kim-portfolio |
 | Still useful for | Keep as optional consumer UX history, not a primary product walkthrough. |
@@ -15,4 +15,4 @@ Updated: 2026-05-30
 
 - Keep this repository available, but do not lead with it.
 - Use it only when this exact domain, stack, or product pattern is relevant.
-- Do not lead with it unless it is revived with fresh operating data and a narrow product review path.
+- Do not lead with it unless its portfolio role changes based on fresh operating data and a narrow product review path.
