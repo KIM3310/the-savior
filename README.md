@@ -1,5 +1,7 @@
 # The Savior
 
+[![CI](https://github.com/KIM3310/the-savior/actions/workflows/ci.yml/badge.svg)](https://github.com/KIM3310/the-savior/actions/workflows/ci.yml)
+
 ## Live Demo
 
 - [Open the public Cloudflare Pages demo](https://the-savior-9z8.pages.dev/)
@@ -38,7 +40,7 @@ A calm consumer AI surface that tests whether journaling, reflection, and lightw
 - [Architecture guide](docs/architecture-evidence-map.md) summarizes the system scope, first files to inspect, runtime commands, and known boundaries.
 - [Quality notes](docs/quality-gate.md) lists the local checks, CI surface, and release expectations for this repository.
 - [Enterprise readiness notes](docs/enterprise-readiness.md) outlines security, data, operations, integration, and handoff expectations.
-- [Repository positioning](docs/repository-positioning.md) explains why this repository is archived/supporting and where the current technical entry points live.
+- [Repository positioning](docs/repository-positioning.md) explains why this active repository is a supporting project rather than a portfolio flagship and where the current technical entry points live.
 
 ## Features
 - 1-minute emotional check-in with 3-minute calming routine
